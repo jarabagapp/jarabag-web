@@ -64,6 +64,14 @@ const triggerDownload = (store: string) => {
   }, 4000)
 }
 
+const scrollToSection = (targetId: string, event?: Event) => {
+  if (event) event.preventDefault()
+  const targetEl = document.getElementById(targetId)
+  if (targetEl) {
+    targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+}
+
 // Interactive Simulator State
 const activeStep = ref(1) // 1: Discover, 2: Reserve, 3: Claim, 4: Success
 const walletBalance = ref(4500)
@@ -519,7 +527,8 @@ onUnmounted(() => {
             </p>
             <a
               href="#simulator"
-              class="mt-6 px-6 py-3 bg-[#E8621A] hover:bg-[#CF5112] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors inline-block select-none"
+              @click="scrollToSection('simulator', $event)"
+              class="mt-6 px-6 py-3 bg-[#E8621A] hover:bg-[#CF5112] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors inline-block select-none cursor-pointer"
             >
               Start Live Simulator
             </a>
