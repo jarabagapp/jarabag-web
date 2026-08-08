@@ -1,0 +1,464 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════
+   JaraBag Design Tokens — oklch color space
+   All values consumed via CSS variables + Tailwind utilities
+   ═══════════════════════════════════════════════════════ */
+
+@theme {
+  /* ─── Brand Colors: Orange Primary ─── */
+  --color-primary-50: oklch(0.97 0.02 55);
+  --color-primary-100: oklch(0.93 0.05 55);
+  --color-primary-200: oklch(0.87 0.1 55);
+  --color-primary-300: oklch(0.8 0.14 55);
+  --color-primary-400: oklch(0.75 0.18 55);
+  --color-primary-500: oklch(0.68 0.19 50);
+  --color-primary-600: oklch(0.6 0.18 48);
+  --color-primary-700: oklch(0.52 0.16 45);
+  --color-primary-800: oklch(0.44 0.13 43);
+  --color-primary-900: oklch(0.36 0.1 40);
+  --color-primary-950: oklch(0.25 0.07 38);
+
+  /* ─── Brand Colors: Yellow Accent ─── */
+  --color-accent-50: oklch(0.98 0.02 95);
+  --color-accent-100: oklch(0.95 0.05 95);
+  --color-accent-200: oklch(0.92 0.09 95);
+  --color-accent-300: oklch(0.88 0.14 95);
+  --color-accent-400: oklch(0.84 0.16 92);
+  --color-accent-500: oklch(0.78 0.16 88);
+  --color-accent-600: oklch(0.7 0.15 85);
+  --color-accent-700: oklch(0.6 0.13 80);
+  --color-accent-800: oklch(0.5 0.1 78);
+  --color-accent-900: oklch(0.4 0.08 75);
+  --color-accent-950: oklch(0.3 0.06 72);
+
+  /* ─── Warm Neutrals (tinted toward brand) ─── */
+  --color-neutral-50: oklch(0.98 0.005 70);
+  --color-neutral-100: oklch(0.96 0.008 70);
+  --color-neutral-200: oklch(0.92 0.01 70);
+  --color-neutral-300: oklch(0.87 0.012 65);
+  --color-neutral-400: oklch(0.7 0.015 60);
+  --color-neutral-500: oklch(0.55 0.015 55);
+  --color-neutral-600: oklch(0.45 0.015 50);
+  --color-neutral-700: oklch(0.37 0.012 48);
+  --color-neutral-800: oklch(0.28 0.01 45);
+  --color-neutral-900: oklch(0.2 0.008 42);
+  --color-neutral-950: oklch(0.14 0.006 40);
+
+  /* ─── Semantic: Success (Green) ─── */
+  --color-success-50: oklch(0.97 0.02 155);
+  --color-success-100: oklch(0.93 0.05 155);
+  --color-success-500: oklch(0.65 0.18 155);
+  --color-success-600: oklch(0.55 0.16 155);
+  --color-success-700: oklch(0.45 0.13 155);
+  --color-success-900: oklch(0.3 0.08 155);
+
+  /* ─── Semantic: Error (Red) ─── */
+  --color-error-50: oklch(0.97 0.02 25);
+  --color-error-100: oklch(0.93 0.05 25);
+  --color-error-500: oklch(0.6 0.2 25);
+  --color-error-600: oklch(0.52 0.19 25);
+  --color-error-700: oklch(0.44 0.16 25);
+  --color-error-900: oklch(0.3 0.1 25);
+
+  /* ─── Semantic: Warning (Amber) ─── */
+  --color-warning-50: oklch(0.98 0.02 80);
+  --color-warning-100: oklch(0.94 0.06 80);
+  --color-warning-500: oklch(0.78 0.16 75);
+  --color-warning-600: oklch(0.68 0.15 72);
+  --color-warning-700: oklch(0.58 0.13 70);
+  --color-warning-900: oklch(0.38 0.08 65);
+
+  /* ─── Semantic: Info (Blue) ─── */
+  --color-info-50: oklch(0.97 0.02 240);
+  --color-info-100: oklch(0.93 0.05 240);
+  --color-info-500: oklch(0.6 0.16 240);
+  --color-info-600: oklch(0.52 0.15 240);
+  --color-info-700: oklch(0.44 0.13 240);
+
+  /* ─── Typography ─── */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+
+  /* ─── Radii ─── */
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* ─── Shadows (warm-tinted) ─── */
+  --shadow-xs: 0 1px 2px oklch(0.2 0.01 50 / 0.06);
+  --shadow-sm: 0 1px 3px oklch(0.2 0.01 50 / 0.1), 0 1px 2px oklch(0.2 0.01 50 / 0.06);
+  --shadow-md: 0 4px 6px oklch(0.2 0.01 50 / 0.1), 0 2px 4px oklch(0.2 0.01 50 / 0.06);
+  --shadow-lg: 0 10px 15px oklch(0.2 0.01 50 / 0.1), 0 4px 6px oklch(0.2 0.01 50 / 0.05);
+  --shadow-xl: 0 20px 25px oklch(0.2 0.01 50 / 0.1), 0 8px 10px oklch(0.2 0.01 50 / 0.04);
+
+  /* ─── Semantic Theme Colors for Super Admin ─── */
+  --color-surface-base: var(--surface-base);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-text-main: var(--text-primary);
+  --color-text-sub: var(--text-secondary);
+  --color-text-muted: var(--text-tertiary);
+  --color-border-subtle: var(--border-default);
+  --color-border-strong: var(--border-strong);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Semantic Surface / Text tokens (light mode default)
+   These are NOT @theme utilities — they're runtime variables
+   toggled by dark mode
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ─── Surface ─── */
+  --surface-base: var(--color-neutral-50);
+  --surface-raised: oklch(1 0 0);
+  --surface-sunken: var(--color-neutral-100);
+  --surface-overlay: oklch(1 0 0 / 0.95);
+  --surface-brand: var(--color-primary-500);
+  --surface-brand-subtle: var(--color-primary-50);
+
+  /* ─── Text ─── */
+  --text-primary: var(--color-neutral-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-tertiary: var(--color-neutral-400);
+  --text-inverse: oklch(1 0 0);
+  --text-brand: var(--color-primary-600);
+  --text-on-brand: oklch(1 0 0);
+
+  /* ─── Borders ─── */
+  --border-default: var(--color-neutral-200);
+  --border-strong: var(--color-neutral-300);
+  --border-brand: var(--color-primary-400);
+
+  /* ─── Focus Ring ─── */
+  --ring-color: var(--color-primary-400);
+  --ring-offset: 2px;
+  --ring-width: 2px;
+
+  /* ─── Motion Durations ─── */
+  --duration-fast: 120ms;
+  --duration-normal: 240ms;
+  --duration-slow: 480ms;
+
+  /* ─── Z-Index Scale ─── */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-overlay: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-toast: 700;
+  --z-tooltip: 800;
+
+  /* ─── Safe Area ─── */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
+
+  /* ─── Layout ─── */
+  --sidebar-width: 260px;
+  --topbar-height: 56px;
+  --bottomnav-height: 64px;
+  --gutter: 16px;
+  --content-max-width: 1280px;
+}
+
+/* ─── Dark Mode ─── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --surface-base: var(--color-neutral-950);
+    --surface-raised: var(--color-neutral-900);
+    --surface-sunken: oklch(0.1 0.005 40);
+    --surface-overlay: oklch(0.16 0.008 42 / 0.97);
+    --surface-brand: var(--color-primary-500);
+    --surface-brand-subtle: oklch(0.22 0.04 50);
+
+    --text-primary: var(--color-neutral-50);
+    --text-secondary: var(--color-neutral-400);
+    --text-tertiary: var(--color-neutral-500);
+    --text-inverse: var(--color-neutral-950);
+    --text-brand: var(--color-primary-300);
+
+    --border-default: var(--color-neutral-800);
+    --border-strong: var(--color-neutral-700);
+    --border-brand: var(--color-primary-500);
+
+    --ring-color: var(--color-primary-400);
+  }
+}
+
+[data-theme='dark'] {
+  --surface-base: var(--color-neutral-950);
+  --surface-raised: var(--color-neutral-900);
+  --surface-sunken: oklch(0.1 0.005 40);
+  --surface-overlay: oklch(0.16 0.008 42 / 0.97);
+  --surface-brand: var(--color-primary-500);
+  --surface-brand-subtle: oklch(0.22 0.04 50);
+
+  --text-primary: var(--color-neutral-50);
+  --text-secondary: var(--color-neutral-400);
+  --text-tertiary: var(--color-neutral-500);
+  --text-inverse: var(--color-neutral-950);
+  --text-brand: var(--color-primary-300);
+
+  --border-default: var(--color-neutral-800);
+  --border-strong: var(--color-neutral-700);
+  --border-brand: var(--color-primary-500);
+
+  --ring-color: var(--color-primary-400);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Global Reset & Base Styles
+   ═══════════════════════════════════════════════════════ */
+
+/* *,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+} */
+
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  height: 100dvh;
+  min-height: 100dvh;
+  overflow: hidden; /* Prevent bounce on the root */
+}
+
+#app {
+  height: 100%;
+  overflow-y: auto; /* Allow scrolling on the app container */
+  -webkit-overflow-scrolling: touch;
+}
+
+body.admin-mode #app {
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background-color: var(--surface-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-wrap: break-word;
+}
+
+/* Prevent body scroll when overlay is open */
+body.scroll-locked {
+  overflow: hidden;
+  touch-action: none;
+}
+
+@layer base {
+  /* ─── Headings ─── */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    line-height: 1.25;
+    color: var(--text-primary);
+    text-wrap: balance;
+  }
+
+  /* ─── Links ─── */
+  a {
+    color: var(--text-brand);
+    text-decoration-skip-ink: auto;
+    text-underline-offset: 0.15em;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* ─── Images ─── */
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Accessibility
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Focus Ring (never removed, only styled) ─── */
+:focus-visible {
+  outline: var(--ring-width) solid var(--ring-color);
+  outline-offset: var(--ring-offset);
+  border-radius: var(--radius-xs);
+}
+
+/* ─── Skip Link ─── */
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--gutter);
+  top: calc(-100% - 1px);
+  z-index: var(--z-tooltip);
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  color: var(--text-on-brand);
+  background-color: var(--surface-brand);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: top var(--duration-fast) ease-out;
+}
+
+.skip-link:focus {
+  top: var(--gutter);
+}
+
+/* ─── Screen Reader Only ─── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Utility Classes
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Surface backgrounds ─── */
+.bg-surface-base { background-color: var(--surface-base); }
+.bg-surface-raised { background-color: var(--surface-raised); }
+.bg-surface-sunken { background-color: var(--surface-sunken); }
+.bg-surface-overlay { background-color: var(--surface-overlay); }
+
+/* ─── Text colors ─── */
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-brand { color: var(--text-brand); }
+
+/* ─── Border ─── */
+.border-default { border-color: var(--border-default); }
+.border-strong { border-color: var(--border-strong); }
+
+/* ─── Tap target sizing ─── */
+.tap-target {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.input-field {
+  background-color: var(--color-neutral-900);
+  border: 1px solid var(--border-strong, var(--color-neutral-700));
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-neutral-100);
+  font-size: 0.875rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-field:focus {
+  border-color: #f97316;
+}
+
+
+/* ─── Focus ring removal guard — always provide an alternative ─── */
+.focus-ring-inset:focus-visible {
+  outline-offset: calc(-1 * var(--ring-width) - var(--ring-offset));
+}
+
+/* ═══════════════════════════════════════════════════════
+   Scrollbar Styling (subtle, warm-tinted)
+   ═══════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-neutral-300);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-neutral-400);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) ::-webkit-scrollbar-thumb {
+    background-color: var(--color-neutral-700);
+  }
+
+  :root:not([data-theme='light']) ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-neutral-600);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Selection
+   ═══════════════════════════════════════════════════════ */
+
+::selection {
+  background-color: var(--color-primary-200);
+  color: var(--color-primary-900);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Leaflet Map Stacking Context Isolation
+   Prevents map tile z-indexes from leaking out and
+   overlapping sticky headers and navigation.
+   ═══════════════════════════════════════════════════════ */
+
+.leaflet-container {
+  isolation: isolate;
+  z-index: 0;
+}

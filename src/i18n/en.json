@@ -1,0 +1,126 @@
+{
+  "common": {
+    "appName": "JaraBag",
+    "tagline": "Fresh Food, Smart Savings",
+    "loading": "Loading…",
+    "retry": "Try Again",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "searchPlaceholder": "Search for bags, vendors…",
+    "noResults": "No results found",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "skipToContent": "Skip to main content",
+    "currency": "₦{amount, number}",
+    "distanceKm": "{distance, number} km away",
+    "minsAgo": "{minutes, number} {minutes, plural, one {minute} other {minutes}} ago",
+    "percentOff": "{percent, number}% off"
+  },
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "orders": "Orders",
+    "wallet": "Wallet",
+    "profile": "Profile",
+    "vendorDashboard": "Dashboard",
+    "settings": "Settings",
+    "pwaHub": "PWA Hub"
+  },
+  "auth": {
+    "login": "Log In",
+    "signup": "Sign Up",
+    "logout": "Log Out",
+    "emailLabel": "Email address",
+    "phoneLabel": "Phone number",
+    "passwordLabel": "Password",
+    "otpLabel": "Verification code",
+    "otpHint": "Enter the 4-digit code sent to {destination}",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "consumer": {
+    "nearbyBags": "Nearby Bags",
+    "magicBagDrop": "Magic Bag Drop!",
+    "categories": "Categories",
+    "viewAll": "View All",
+    "pickupWindow": "Pick up {start}–{end}",
+    "preparedAt": "Prepared {time}",
+    "listedAt": "Listed {time}",
+    "freshnessVerified": "Freshness Verified",
+    "reserveBag": "Reserve This Bag",
+    "bagsLeft": "{count} left",
+    "soldOut": "Sold Out",
+    "expired": "Expired"
+  },
+  "vendor": {
+    "createListing": "Create Listing",
+    "flashList": "Flash List a Bag",
+    "bagTitle": "Bag title",
+    "bagDescription": "What's inside?",
+    "originalPrice": "Original price",
+    "discountedPrice": "Discounted price",
+    "pickupStart": "Pickup start time",
+    "pickupEnd": "Pickup end time",
+    "quantity": "Quantity available",
+    "publishListing": "Publish Listing",
+    "activeBags": "Active Bags",
+    "orderQueue": "Order Queue",
+    "todaySales": "Today's Sales",
+    "verifyPickup": "Verify Pickup",
+    "enterOtp": "Enter customer OTP"
+  },
+  "wallet": {
+    "balance": "Wallet Balance",
+    "topUp": "Top Up",
+    "transactionHistory": "Transaction History",
+    "noTransactions": "No transactions yet"
+  },
+  "orders": {
+    "myOrders": "My Orders",
+    "orderDetails": "Order Details",
+    "yourOtp": "Your Pickup Code",
+    "showAtPickup": "Show this code to the vendor",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "ready": "Ready for Pickup",
+      "pickedUp": "Picked Up",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "noOrders": "No orders yet. Start saving food!",
+    "cancelOrder": "Cancel Order",
+    "cancelConfirm": "Are you sure you want to cancel this order?"
+  },
+  "ratings": {
+    "rateBag": "Rate Your Bag",
+    "freshness": "Freshness",
+    "aroma": "Aroma",
+    "portionHonesty": "Portion Honesty",
+    "comment": "Leave a comment (optional)",
+    "submitRating": "Submit Rating"
+  },
+  "errors": {
+    "networkError": "Network error. Check your connection.",
+    "notFound": "Page not found",
+    "unauthorized": "Please log in to continue",
+    "forbidden": "You don't have permission to do this",
+    "serverError": "Server error. We're working on it."
+  },
+  "a11y": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "openSearch": "Open search (Ctrl+K)",
+    "notifications": "Notifications",
+    "newNotifications": "{count, number} new {count, plural, one {notification} other {notifications}}",
+    "toggleTheme": "Toggle dark mode",
+    "keyboardShortcuts": "Keyboard shortcuts"
+  }
+}

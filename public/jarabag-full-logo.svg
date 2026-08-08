@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 250" width="100%" height="100%" fill="none">
+  <!-- Icon Group -->
+  <g transform="translate(10, 10) scale(0.43)">
+    <!-- Bag Handles -->
+    <path d="M 192 192 V 128 C 192 92.65 220.65 64 256 64 C 291.35 64 320 92.65 320 128 V 192" stroke="#FF6B00" stroke-width="28" stroke-linecap="round" fill="none"/>
+    <!-- Bag Body -->
+    <path d="M 128 192 L 384 192 C 401.67 192 416 206.33 416 224 L 416 416 C 416 433.67 401.67 448 384 448 L 128 448 C 110.33 448 96 433.67 96 416 L 96 224 C 96 206.33 110.33 192 128 192 Z" fill="#FF6B00"/>
+    <!-- Smiling Arc -->
+    <path d="M 192 336 C 216 368 296 368 320 336" stroke="#FFD700" stroke-width="24" stroke-linecap="round" fill="none"/>
+    <!-- Floating Plus Sign -->
+    <path d="M 392 128 V 176 M 368 152 H 416" stroke="#FFD700" stroke-width="22" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Brand Name Typography -->
+  <text x="220" y="135" font-family="'Poppins', 'Montserrat', -apple-system, sans-serif" font-weight="800" font-size="92" fill="#FF6B00">Jara<tspan fill="#FFD700">Bag</tspan></text>
+  
+  <!-- Slogan -->
+  <text x="225" y="180" font-family="'Poppins', 'Montserrat', -apple-system, sans-serif" font-weight="600" font-size="26" fill="#222222" letter-spacing="3">MORE FOOD, LESS WASTE</text>
+</svg>
