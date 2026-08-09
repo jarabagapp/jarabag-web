@@ -424,9 +424,8 @@ onUnmounted(() => {
       class="backdrop-blur-md sticky top-0 z-40 transition-colors duration-500"
     >
       <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
-        <div class="flex items-center gap-3 select-none">
-          <img src="/jarabag-icon.svg" alt="Jarabag Logo" class="w-10 h-10 object-contain drop-shadow-sm" />
-          <span class="text-xl font-black tracking-tight font-display">Jarabag</span>
+        <div class="flex items-center select-none">
+          <img src="/jarabag-full-logo.svg" alt="Jarabag Logo" class="h-8 md:h-11 w-auto object-contain drop-shadow-sm" />
         </div>
 
         <!-- <nav
@@ -889,8 +888,7 @@ onUnmounted(() => {
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 feature-card-container">
-          
-          <!-- Vendor: Dynamic Radius -->
+          <!-- 1. Vendor: Dynamic Radius -->
           <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#E8621A]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#E8621A]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#E8621A]/10 text-[#E8621A] rounded-2xl flex items-center justify-center text-xl mb-6">
@@ -903,7 +901,7 @@ onUnmounted(() => {
             <span class="text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
           </div>
 
-          <!-- Consumer: Proximity Alerts -->
+          <!-- 2. Consumer: Proximity Alerts -->
           <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-2xl flex items-center justify-center text-xl mb-6">
@@ -916,20 +914,7 @@ onUnmounted(() => {
             <span class="text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Consumers</span>
           </div>
 
-          <!-- Consumer: One-Tap Reserving -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#3B82F6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#3B82F6]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-[#3B82F6]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
-            <div class="w-12 h-12 bg-[#3B82F6]/10 text-[#3B82F6] rounded-2xl flex items-center justify-center text-xl mb-6">
-              ⚡
-            </div>
-            <h3 class="text-lg font-extrabold mb-2">One-Tap Reserving</h3>
-            <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
-              See a deal you love? Tap to lock it in escrow instantly. Secure your discounted meal in seconds without fumbling through complex checkout flows.
-            </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#3B82F6]">For Consumers</span>
-          </div>
-
-          <!-- Vendor: Zero Marketing -->
+          <!-- 3. Vendor: Zero Marketing -->
           <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#E8621A]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#E8621A]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#E8621A]/10 text-[#E8621A] rounded-2xl flex items-center justify-center text-xl mb-6">
@@ -942,46 +927,20 @@ onUnmounted(() => {
             <span class="text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
           </div>
 
-          <!-- Consumer: Favoriting Stores -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#EF4444]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#EF4444]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-[#EF4444]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
-            <div class="w-12 h-12 bg-[#EF4444]/10 text-[#EF4444] rounded-2xl flex items-center justify-center text-xl mb-6">
-              ❤️
+          <!-- 4. Consumer: One-Tap Reserving -->
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#3B82F6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#3B82F6]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[#3B82F6]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+            <div class="w-12 h-12 bg-[#3B82F6]/10 text-[#3B82F6] rounded-2xl flex items-center justify-center text-xl mb-6">
+              ⚡
             </div>
-            <h3 class="text-lg font-extrabold mb-2">Favorite Your Spots</h3>
+            <h3 class="text-lg font-extrabold mb-2">One-Tap Reserving</h3>
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
-              Love a specific buka or bakery? Add them to your favorites to get priority push notifications the exact second they list a new surplus bag.
+              See a deal you love? Tap to lock it in escrow instantly. Secure your discounted meal in seconds without fumbling through complex checkout flows.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#EF4444]">For Consumers</span>
+            <span class="text-[9px] font-black uppercase tracking-widest text-[#3B82F6]">For Consumers</span>
           </div>
 
-          <!-- Consumer: Cashbacks -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#FBBF24]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#FBBF24]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-[#FBBF24]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
-            <div class="w-12 h-12 bg-[#FBBF24]/10 text-[#FBBF24] rounded-2xl flex items-center justify-center text-xl mb-6">
-              💰
-            </div>
-            <h3 class="text-lg font-extrabold mb-2">Wallet Cashbacks</h3>
-            <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
-              Every surplus bag you rescue earns you instant cashback straight into your Jarabag wallet. Save the planet while building up credits for your next free meal!
-            </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#FBBF24]">For Consumers</span>
-          </div>
-
-          <!-- Vendor: Instant Payouts -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
-            <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-2xl flex items-center justify-center text-xl mb-6">
-              💸
-            </div>
-            <h3 class="text-lg font-extrabold mb-2">Instant Wallet Payouts</h3>
-            <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
-              Funds are safely locked in escrow the second a customer reserves. Once they scan their code at pickup, your vendor wallet is credited instantly. No lost revenue.
-            </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Vendors</span>
-          </div>
-
-          <!-- Vendor: Scheduled Listing -->
+          <!-- 5. Vendor: Scheduled Listing -->
           <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#8B5CF6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#8B5CF6]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#8B5CF6]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#8B5CF6]/10 text-[#8B5CF6] rounded-2xl flex items-center justify-center text-xl mb-6">
@@ -994,7 +953,46 @@ onUnmounted(() => {
             <span class="text-[9px] font-black uppercase tracking-widest text-[#8B5CF6]">For Vendors</span>
           </div>
 
-          <!-- Vendor: Data Analytics -->
+          <!-- 6. Consumer: Favoriting Stores -->
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#EF4444]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#EF4444]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[#EF4444]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+            <div class="w-12 h-12 bg-[#EF4444]/10 text-[#EF4444] rounded-2xl flex items-center justify-center text-xl mb-6">
+              ❤️
+            </div>
+            <h3 class="text-lg font-extrabold mb-2">Favorite Your Spots</h3>
+            <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
+              Love a specific buka or bakery? Add them to your favorites to get priority push notifications the exact second they list a new surplus bag.
+            </p>
+            <span class="text-[9px] font-black uppercase tracking-widest text-[#EF4444]">For Consumers</span>
+          </div>
+
+          <!-- 7. Vendor: Instant Payouts -->
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+            <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-2xl flex items-center justify-center text-xl mb-6">
+              💸
+            </div>
+            <h3 class="text-lg font-extrabold mb-2">Instant Wallet Payouts</h3>
+            <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
+              Funds are safely locked in escrow the second a customer reserves. Once they scan their code at pickup, your vendor wallet is credited instantly. No lost revenue.
+            </p>
+            <span class="text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Vendors</span>
+          </div>
+
+          <!-- 8. Consumer: Cashbacks -->
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#FBBF24]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#FBBF24]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-[#FBBF24]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
+            <div class="w-12 h-12 bg-[#FBBF24]/10 text-[#FBBF24] rounded-2xl flex items-center justify-center text-xl mb-6">
+              💰
+            </div>
+            <h3 class="text-lg font-extrabold mb-2">Wallet Cashbacks</h3>
+            <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
+              Every surplus bag you rescue earns you instant cashback straight into your Jarabag wallet. Save the planet while building up credits for your next free meal!
+            </p>
+            <span class="text-[9px] font-black uppercase tracking-widest text-[#FBBF24]">For Consumers</span>
+          </div>
+
+          <!-- 9. Vendor: Data Analytics -->
           <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#06B6D4]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#06B6D4]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#06B6D4]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#06B6D4]/10 text-[#06B6D4] rounded-2xl flex items-center justify-center text-xl mb-6">
@@ -1098,9 +1096,8 @@ onUnmounted(() => {
       class="py-12 text-xs text-[#A09A95] transition-colors relative z-20"
     >
       <div class="max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div class="flex items-center gap-2.5 select-none">
-          <img src="/jarabag-icon.svg" alt="Jarabag Logo" class="w-7 h-7 object-contain" />
-          <span :class="isDark ? 'text-white' : 'text-neutral-900'" class="font-extrabold tracking-tight">Jarabag</span>
+        <div class="flex items-center select-none">
+          <img src="/jarabag-full-logo.svg" alt="Jarabag Logo" class="h-6 md:h-9 w-auto object-contain" />
         </div>
 
         <div class="flex gap-6 text-[#A09A95] font-bold">
