@@ -2,14 +2,15 @@ import axios from 'axios'
 
 // Dynamically detect local network IP of the host machine
 const getBaseURL = () => {
+  let url = 'http://127.0.0.1:5000'
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname
-    // If accessed via local network IP or localhost, point to the backend on the same host
     if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return `http://${hostname}:5000`
+      url = `http://${hostname}:5000`
     }
   }
-  return 'http://127.0.0.1:5000'
+  const cleanedUrl = url.replace(/\/+$/, '')
+  return cleanedUrl.endsWith('/v1') ? cleanedUrl : `${cleanedUrl}/v1`
 }
 
 export const apiClient = axios.create({
