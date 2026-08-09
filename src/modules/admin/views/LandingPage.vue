@@ -889,7 +889,7 @@ onUnmounted(() => {
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 feature-card-container">
           <!-- 1. Vendor: Dynamic Radius -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#E8621A]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#E8621A]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#E8621A]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#E8621A]/10 text-[#E8621A] rounded-2xl flex items-center justify-center text-xl mb-6">
               📡
@@ -898,11 +898,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               Vendors can expand their alert radius from a local neighborhood (2km) to city-wide reach instantly, ensuring large batches of food sell out before closing.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
           </div>
 
           <!-- 2. Consumer: Proximity Alerts -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-2xl flex items-center justify-center text-xl mb-6">
               🔔
@@ -911,11 +911,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               "Ping! Fresh bags near you." Receive an instant notification the moment new surplus bags drop, or automatically get alerted when you walk near a buka with existing available bags. Never miss a deal.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Consumers</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Consumers</span>
           </div>
 
           <!-- 3. Vendor: Zero Marketing -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#E8621A]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#E8621A]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#E8621A]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#E8621A]/10 text-[#E8621A] rounded-2xl flex items-center justify-center text-xl mb-6">
               📢
@@ -924,11 +924,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               Post a surplus bag in 10 seconds. We automatically crowd-ping thousands of hungry users in your area. Turn daily waste into instant recovered revenue.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
           </div>
 
           <!-- 4. Consumer: One-Tap Reserving -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#3B82F6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#3B82F6]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#3B82F6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#3B82F6]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#3B82F6]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#3B82F6]/10 text-[#3B82F6] rounded-2xl flex items-center justify-center text-xl mb-6">
               ⚡
@@ -937,11 +937,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               See a deal you love? Tap to lock it in escrow instantly. Secure your discounted meal in seconds without fumbling through complex checkout flows.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#3B82F6]">For Consumers</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#3B82F6]">For Consumers</span>
           </div>
 
           <!-- 5. Vendor: Scheduled Listing -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#8B5CF6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#8B5CF6]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#8B5CF6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#8B5CF6]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#8B5CF6]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#8B5CF6]/10 text-[#8B5CF6] rounded-2xl flex items-center justify-center text-xl mb-6">
               ⏰
@@ -950,11 +950,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               Too busy during the lunch rush? Pre-schedule your surplus bag drops for later in the day. Our system will automatically publish and ping users at your exact chosen time.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#8B5CF6]">For Vendors</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#8B5CF6]">For Vendors</span>
           </div>
 
           <!-- 6. Consumer: Favoriting Stores -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#EF4444]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#EF4444]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#EF4444]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#EF4444]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#EF4444]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#EF4444]/10 text-[#EF4444] rounded-2xl flex items-center justify-center text-xl mb-6">
               ❤️
@@ -963,11 +963,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               Love a specific buka or bakery? Add them to your favorites to get priority push notifications the exact second they list a new surplus bag.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#EF4444]">For Consumers</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#EF4444]">For Consumers</span>
           </div>
 
           <!-- 7. Vendor: Instant Payouts -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-2xl flex items-center justify-center text-xl mb-6">
               💸
@@ -976,11 +976,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               Funds are safely locked in escrow the second a customer reserves. Once they scan their code at pickup, your vendor wallet is credited instantly. No lost revenue.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Vendors</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Vendors</span>
           </div>
 
           <!-- 8. Consumer: Cashbacks -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#FBBF24]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#FBBF24]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#FBBF24]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#FBBF24]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#FBBF24]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#FBBF24]/10 text-[#FBBF24] rounded-2xl flex items-center justify-center text-xl mb-6">
               💰
@@ -989,11 +989,11 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               Every surplus bag you rescue earns you instant cashback straight into your Jarabag wallet. Save the planet while building up credits for your next free meal!
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#FBBF24]">For Consumers</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#FBBF24]">For Consumers</span>
           </div>
 
           <!-- 9. Vendor: Data Analytics -->
-          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#06B6D4]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#06B6D4]/40'" class="feature-super-card p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
+          <div :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#06B6D4]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#06B6D4]/40'" class="feature-super-card flex flex-col h-full p-8 border rounded-3xl transition-all duration-300 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-32 h-32 bg-[#06B6D4]/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div class="w-12 h-12 bg-[#06B6D4]/10 text-[#06B6D4] rounded-2xl flex items-center justify-center text-xl mb-6">
               📊
@@ -1002,7 +1002,7 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-xs leading-relaxed mb-4">
               Gain powerful insights into your customer demographics and peak reservation times. Use real-time data to optimize your surplus strategy and maximize recovered revenue.
             </p>
-            <span class="text-[9px] font-black uppercase tracking-widest text-[#06B6D4]">For Vendors</span>
+            <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#06B6D4]">For Vendors</span>
           </div>
 
         </div>
