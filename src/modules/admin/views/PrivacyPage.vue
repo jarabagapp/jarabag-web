@@ -35,9 +35,8 @@ onMounted(() => {
       class="backdrop-blur-md sticky top-0 z-50 transition-colors duration-500"
     >
       <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-        <router-link to="/" class="flex items-center gap-3">
-          <img src="/jarabag-icon.svg" alt="Jarabag Logo" class="w-8 h-8 object-contain drop-shadow-sm" />
-          <span :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-lg font-bold">Jarabag</span>
+        <router-link to="/" class="flex items-center">
+          <img src="/jarabag-full-logo.svg" alt="Jarabag Logo" class="h-8 md:h-11 w-auto object-contain drop-shadow-sm" />
         </router-link>
         <div class="flex items-center gap-4">
           <button
