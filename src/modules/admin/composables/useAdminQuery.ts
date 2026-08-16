@@ -139,6 +139,7 @@ export function useAdminOrders(params: () => ListParams) {
   return useQuery({
     queryKey: computed(() => adminKeys.orders(params())),
     queryFn: () => AdminService.getOrders(params()),
+    refetchInterval: 30000,
   })
 }
 

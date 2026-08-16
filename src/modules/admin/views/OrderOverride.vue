@@ -50,6 +50,40 @@ const { data, isLoading: loading, error } = useAdminOrders(() => listParams.valu
 const orders = computed(() => data.value?.orders || [])
 const total = computed(() => data.value?.total || 0)
 
+// ─── Web Audio Real-Time Order Arrival Chime ───
+function playOrderChime() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext
+    if (!AudioCtx) return
+    const ctx = new AudioCtx()
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime) // D5
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12) // A5
+    gain.gain.setValueAtTime(0.15, ctx.currentTime)
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+    osc.start()
+    osc.stop(ctx.currentTime + 0.5)
+  } catch {}
+}
+
+const previousOrderCount = ref<number | null>(null)
+watch(
+  () => orders.value.length,
+  (newCount) => {
+    if (previousOrderCount.value !== null && newCount > previousOrderCount.value) {
+      playOrderChime()
+    }
+    previousOrderCount.value = newCount
+  },
+  { immediate: true },
+)
+
 const overrideOrderStatusMutation = useOverrideOrderStatus()
 const resolveDisputeMutation = useResolveDispute()
 
