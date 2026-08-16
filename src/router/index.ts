@@ -154,22 +154,26 @@ const router = createRouter({
 // ─── Navigation Guards ───
 router.beforeEach((to) => {
   const auth = useAuthStore()
+  const normalizedPath = to.path.replace(/\/+$/, '') || '/'
+  const isAdminLogin = normalizedPath === '/admin/login'
+  const isAdminRoute = normalizedPath === '/admin' || normalizedPath.startsWith('/admin/')
 
   // Guard admin routes: user must be authenticated AND have role admin or superadmin
-  if (to.meta.requiresAdmin || (to.path.startsWith('/admin') && to.path !== '/admin/login')) {
+  if (to.meta.requiresAdmin || (isAdminRoute && !isAdminLogin)) {
     if (!auth.isAuthenticated) {
-      return { name: 'admin-login' }
+      return { name: 'admin-login', query: { redirect: to.fullPath } }
     }
     if (auth.user?.role !== 'admin' && auth.user?.role !== 'superadmin') {
       auth.logout()
-      return { name: 'admin-login' }
+      return { name: 'admin-login', query: { redirect: to.fullPath } }
     }
   }
 
   // Redirect authenticated admin users away from login
-  if (to.path === '/admin/login' && auth.isAuthenticated) {
+  if (isAdminLogin && auth.isAuthenticated) {
     if (auth.user?.role === 'admin' || auth.user?.role === 'superadmin') {
-      return { name: 'admin-dashboard' }
+      const redirectUrl = (to.query.redirect as string) || '/admin'
+      return redirectUrl.startsWith('/admin') ? redirectUrl : '/admin'
     }
   }
 })

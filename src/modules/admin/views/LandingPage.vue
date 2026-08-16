@@ -258,75 +258,86 @@ onMounted(() => {
     document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
   }
 
-  // Configure ScrollTrigger default scroller (since #app handles page scrolling)
-  ScrollTrigger.defaults({
-    scroller: '#app'
-  })
+  // Configure ScrollTrigger default scroller (if #app exists)
+  if (document.getElementById('app')) {
+    ScrollTrigger.defaults({
+      scroller: '#app'
+    })
+  }
 
   // Mouse move listener for parallax depth
   window.addEventListener('mousemove', handleMouseMove)
 
-
   // GSAP Hero Reveals
-  gsap.from('.hero-word', {
-    y: 35,
-    opacity: 0,
-    duration: 0.8,
-    stagger: 0.15,
-    ease: 'power4.out'
-  })
+  if (document.querySelector('.hero-word')) {
+    gsap.from('.hero-word', {
+      y: 35,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power4.out'
+    })
+  }
 
-  gsap.from('.hero-fade-in', {
-    opacity: 0,
-    y: 20,
-    duration: 1,
-    delay: 0.4,
-    stagger: 0.2,
-    ease: 'power3.out'
-  })
+  if (document.querySelector('.hero-fade-in')) {
+    gsap.from('.hero-fade-in', {
+      opacity: 0,
+      y: 20,
+      duration: 1,
+      delay: 0.4,
+      stagger: 0.2,
+      ease: 'power3.out'
+    })
+  }
 
   // Start autonomous float timelines
   floatingElements.value.forEach((el) => {
-    gsap.to(`#float-el-${el.id}`, {
-      y: '+=25',
-      rotation: '+=20',
-      duration: el.speed,
-      repeat: -1,
-      yoyo: true,
-      ease: 'sine.inOut',
-      delay: el.delay
-    })
+    if (document.querySelector(`#float-el-${el.id}`)) {
+      gsap.to(`#float-el-${el.id}`, {
+        y: '+=25',
+        rotation: '+=20',
+        duration: el.speed,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: el.delay
+      })
+    }
   })
 
   // ScrollTrigger - SVG Path Tracing for Lifecycle Timeline
-  gsap.fromTo('#timeline-path',
-    { strokeDashoffset: 800 },
-    {
-      strokeDashoffset: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '.lifecycle-timeline',
-        start: 'top 80%',
-        end: 'bottom 40%',
-        scrub: 1,
+  if (document.querySelector('#timeline-path') && document.querySelector('.lifecycle-timeline')) {
+    gsap.fromTo('#timeline-path',
+      { strokeDashoffset: 800 },
+      {
+        strokeDashoffset: 0,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.lifecycle-timeline',
+          start: 'top 80%',
+          end: 'bottom 40%',
+          scrub: 1,
+        }
       }
-    }
-  )
+    )
+  }
 
   // ScrollTrigger - Lifecycle Steps scaling
-  gsap.from('.lifecycle-step-node', {
-    scale: 0,
-    opacity: 0,
-    duration: 0.6,
-    stagger: 0.2,
-    ease: 'back.out(1.5)',
-    scrollTrigger: {
-      trigger: '.lifecycle-timeline',
-      start: 'top 75%',
-      end: 'bottom 35%',
-      scrub: false,
-    }
-  })
+  if (document.querySelector('.lifecycle-step-node') && document.querySelector('.lifecycle-timeline')) {
+    gsap.from('.lifecycle-step-node', {
+      scale: 0,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.2,
+      ease: 'back.out(1.5)',
+      scrollTrigger: {
+        trigger: '.lifecycle-timeline',
+        start: 'top 75%',
+        end: 'bottom 35%',
+        scrub: false,
+      }
+    })
+  }
 
   // ScrollTrigger - Count-up Stats
   const statItems = [

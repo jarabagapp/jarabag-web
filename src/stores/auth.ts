@@ -1,12 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { User, UserRole } from '@/types'
-import {
-  useRequestOtpMutation,
-  useVerifyOtpMutation,
-  useDevLoginMutation,
-  useUpdateProfileMutation,
-} from '../modules/auth/composables/useAuthQuery'
+import { AuthService } from '../modules/auth/services/auth.service'
 
 export type AuthStep = 'idle' | 'verifying-otp' | 'authenticated'
 
@@ -52,11 +47,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const requestOtpMutation = useRequestOtpMutation()
-  const verifyOtpMutation = useVerifyOtpMutation()
-  const devLoginMutation = useDevLoginMutation()
-  const updateProfileMutation = useUpdateProfileMutation()
-
   /**
    * Real login — sends OTP to phone number via backend
    */
@@ -66,7 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
     pendingRole.value = role
 
     try {
-      await requestOtpMutation.mutateAsync({ phone, role, name })
+      await AuthService.requestOtp({ phone, role, name })
       authStep.value = 'verifying-otp'
       persist()
     } catch (err) {
@@ -85,7 +75,7 @@ export const useAuthStore = defineStore('auth', () => {
     console.log('[Store Auth] Verifying OTP code:', code, 'for phone:', pendingPhone.value)
 
     try {
-      const data = await verifyOtpMutation.mutateAsync({
+      const data = await AuthService.verifyOtp({
         phone: pendingPhone.value,
         code,
       })
@@ -119,7 +109,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function devLogin(role: UserRole = 'consumer') {
     isLoading.value = true
     try {
-      const data = await devLoginMutation.mutateAsync(role)
+      const data = await AuthService.devLogin(role)
       if (data && data.accessToken) {
         if (typeof window !== 'undefined') {
           localStorage.setItem('jarabag_access_token', data.accessToken)
@@ -146,7 +136,7 @@ export const useAuthStore = defineStore('auth', () => {
     if (!user.value) return
     isLoading.value = true
     try {
-      const updatedUser = await updateProfileMutation.mutateAsync(updates)
+      const updatedUser = await AuthService.updateProfile(updates)
       user.value = updatedUser
       persist()
     } catch (err) {

@@ -1,16 +1,25 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { apiClient } from '@/services/api'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const email = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
+
+const getTargetRoute = () => {
+  const redirect = route.query.redirect
+  if (typeof redirect === 'string' && redirect.startsWith('/admin') && redirect !== '/admin/login') {
+    return redirect
+  }
+  return '/admin'
+}
 
 const handleLogin = async () => {
   if (!email.value || !password.value) {
@@ -36,7 +45,7 @@ const handleLogin = async () => {
       authStore.persist()
 
       if (payload.user.role === 'admin' || payload.user.role === 'superadmin') {
-        router.push('/admin')
+        router.push(getTargetRoute())
       } else {
         error.value = 'Access denied. You must be an administrator to log in here.'
         authStore.logout()
@@ -58,7 +67,7 @@ const handleDevLogin = async (role: 'admin' | 'superadmin') => {
   try {
     await authStore.devLogin(role)
     if (authStore.user?.role === 'admin' || authStore.user?.role === 'superadmin') {
-      router.push('/admin')
+      router.push(getTargetRoute())
     } else {
       error.value = 'Bypass role returned is not admin-level.'
       authStore.logout()
