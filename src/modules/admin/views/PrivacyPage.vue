@@ -103,7 +103,7 @@ onMounted(() => {
             1. Overview &amp; Commitment
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
-            Jarabag Technologies ("we", "our", or "us") operates the Jarabag mobile application and website (<a href="https://jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline font-semibold">jarabagapp.com</a>). We are committed to protecting your personal data, respecting your privacy rights, and maintaining complete transparency regarding how information is collected, processed, and safeguarded under the Nigeria Data Protection Regulation (NDPR) and international privacy frameworks.
+            Jarabag Technologies ("we", "our", or "us") operates the Jarabag mobile application and website (<a href="https://jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline font-semibold">jarabagapp.com</a>). We are committed to protecting your personal data, respecting your privacy rights, and maintaining complete transparency regarding how information is collected, processed, and safeguarded under the Nigeria Data Protection Regulation (NDPR) and international privacy frameworks.
           </p>
         </section>
 
@@ -228,13 +228,13 @@ onMounted(() => {
             </h3>
             <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm mb-3">
               1. Email our privacy compliance desk from your registered email address at
-              <a href="mailto:support@jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline font-bold">support@jarabagapp.com</a>
+              <a href="mailto:support@jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline font-bold">support@jarabagapp.com</a>
               with the subject line "Account Deletion Request".
             </p>
             <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm mb-3">
               2. Alternatively, go to Profile Settings &rarr; Delete Account directly inside the Jarabag mobile application.
             </p>
-            <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#544E49]'" class="text-xs sm:text-sm mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+            <p :class="isDark ? 'border-[#262321] text-[#A8A29E]' : 'border-neutral-200 text-[#544E49]'" class="text-xs sm:text-sm mt-3 pt-3 border-t">
               Upon request receipt and identity confirmation, all personal identification records will be permanently purged within 14 business days, except where mandatory financial auditing regulations require statutory record retention.
             </p>
           </div>
@@ -257,7 +257,7 @@ onMounted(() => {
             For inquiries, legal notices, or data protection subject access requests regarding this Privacy Policy, please contact our Data Protection Officer:
           </p>
           <p class="font-bold text-base mt-2">
-            Email: <a href="mailto:support@jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline">support@jarabagapp.com</a>
+            Email: <a href="mailto:support@jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline">support@jarabagapp.com</a>
           </p>
         </section>
       </div>

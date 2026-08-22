@@ -103,7 +103,7 @@ onMounted(() => {
             1. Agreement to Terms
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
-            By downloading, accessing, or utilizing the Jarabag mobile application or website (<a href="https://jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline font-semibold">jarabagapp.com</a>), you explicitly agree to be bound by these Terms of Service ("Terms"). If you do not agree to all terms stated herein, you must immediately cease accessing or using our platform.
+            By downloading, accessing, or utilizing the Jarabag mobile application or website (<a href="https://jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline font-semibold">jarabagapp.com</a>), you explicitly agree to be bound by these Terms of Service ("Terms"). If you do not agree to all terms stated herein, you must immediately cease accessing or using our platform.
           </p>
         </section>
 
@@ -216,7 +216,7 @@ onMounted(() => {
             For inquiries regarding our Terms of Service, merchant partnership agreements, or legal communications, reach out to:
           </p>
           <p class="font-bold text-base mt-2">
-            Email: <a href="mailto:support@jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline">support@jarabagapp.com</a>
+            Email: <a href="mailto:support@jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline">support@jarabagapp.com</a>
           </p>
         </section>
       </div>

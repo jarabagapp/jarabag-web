@@ -8,6 +8,10 @@ gsap.registerPlugin(ScrollTrigger)
 const isDark = ref(false)
 const showDownloadAlert = ref(false)
 const downloadStoreName = ref('')
+let statsObserver: IntersectionObserver | null = null
+const handleRefresh = () => {
+  ScrollTrigger.refresh()
+}
 
 const formatCurrency = (val: number) => {
   return new Intl.NumberFormat('en-NG', {
@@ -292,55 +296,102 @@ onMounted(() => {
   })
 
   // ScrollTrigger for Timeline Path
-  if (document.querySelector('#timeline-path') && document.querySelector('.lifecycle-timeline')) {
-    gsap.fromTo('#timeline-path',
-      { strokeDashoffset: 800 },
-      {
-        strokeDashoffset: 0,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: '.lifecycle-timeline',
-          start: 'top 85%',
-          end: 'bottom 45%',
-          scrub: 1,
+  const timelinePath = document.querySelector('#timeline-path')
+  const timelineFlow = document.querySelector('#timeline-flow')
+  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  if (timelinePath && timelineFlow) {
+    if (prefersReducedMotion) {
+      gsap.set(timelinePath, { strokeDashoffset: 0 })
+    } else {
+      gsap.fromTo(timelinePath,
+        { strokeDashoffset: 600 },
+        {
+          strokeDashoffset: 0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: '#timeline-flow',
+            start: 'top 80%',
+            end: 'bottom 50%',
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          }
         }
-      }
-    )
+      )
+    }
   }
 
   // Count-up Stats
   const statItems = [
-    { target: '#stat-bags', value: 15420, suffix: '+' },
-    { target: '#stat-savings', value: 24500000, prefix: '₦', suffix: '' },
-    { target: '#stat-co2', value: 18, suffix: ' Tons' },
-    { target: '#stat-bukas', value: 150, suffix: '+' }
+    { target: '#stat-bags', value: 15420, suffix: '+', formatted: '15,420+' },
+    { target: '#stat-savings', value: 24500000, prefix: '₦', suffix: '', formatted: '₦24,500,000' },
+    { target: '#stat-co2', value: 18, suffix: ' Tons', formatted: '18 Tons' },
+    { target: '#stat-bukas', value: 150, suffix: '+', formatted: '150+' }
   ]
 
-  statItems.forEach((item) => {
-    const el = document.querySelector(item.target)
-    if (el) {
-      const valContainer = { val: 0 }
-      gsap.to(valContainer, {
-        val: item.value,
-        duration: 1.8,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '#impact-stats',
-          start: 'top 90%',
-        },
-        onUpdate: () => {
-          let output = Math.round(valContainer.val).toLocaleString()
-          if (item.prefix) output = item.prefix + output
-          if (item.suffix) output = output + item.suffix
-          el.textContent = output
-        }
+  const animateStats = () => {
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (prefersReducedMotion) {
+      statItems.forEach((item) => {
+        const el = document.querySelector(item.target)
+        if (el) el.textContent = item.formatted
       })
+      return
     }
+
+    statItems.forEach((item) => {
+      const el = document.querySelector(item.target)
+      if (el) {
+        const valContainer = { val: 0 }
+        gsap.to(valContainer, {
+          val: item.value,
+          duration: 1.8,
+          ease: 'power3.out',
+          onUpdate: () => {
+            let output = Math.round(valContainer.val).toLocaleString()
+            if (item.prefix) output = item.prefix + output
+            if (item.suffix) output = output + item.suffix
+            el.textContent = output
+          },
+          onComplete: () => {
+            el.textContent = item.formatted
+          }
+        })
+      }
+    })
+  }
+
+  const statsSection = document.querySelector('#impact-stats')
+  if (statsSection) {
+    if ('IntersectionObserver' in window) {
+      statsObserver = new IntersectionObserver((entries) => {
+        if (entries[0]?.isIntersecting) {
+          animateStats()
+          statsObserver?.disconnect()
+          statsObserver = null
+        }
+      }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' })
+      statsObserver.observe(statsSection)
+    } else {
+      animateStats()
+    }
+  }
+
+  window.addEventListener('load', handleRefresh)
+
+  nextTick(() => {
+    setTimeout(handleRefresh, 200)
   })
 })
 
 onUnmounted(() => {
   window.removeEventListener('mousemove', handleMouseMove)
+  window.removeEventListener('load', handleRefresh)
+  if (statsObserver) {
+    statsObserver.disconnect()
+    statsObserver = null
+  }
+  ScrollTrigger.getAll().forEach(t => t.kill())
 })
 </script>
 
@@ -1038,19 +1089,19 @@ onUnmounted(() => {
         <h2 id="stats-heading" class="sr-only">Platform Impact Statistics</h2>
         <div class="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center select-none">
           <div>
-            <p id="stat-bags" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">0</p>
+            <p id="stat-bags" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">15,420+</p>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Surplus Bags Saved</p>
           </div>
           <div>
-            <p id="stat-savings" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">0</p>
+            <p id="stat-savings" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">₦24,500,000</p>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Customer Savings</p>
           </div>
           <div>
-            <p id="stat-co2" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">0</p>
+            <p id="stat-co2" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">18 Tons</p>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">CO₂ Prevented</p>
           </div>
           <div>
-            <p id="stat-bukas" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">0</p>
+            <p id="stat-bukas" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">150+</p>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Registered Kitchens</p>
           </div>
         </div>
