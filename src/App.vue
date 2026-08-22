@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
+const isDev = import.meta.env.DEV
 </script>
 
 <template>
@@ -9,8 +10,8 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
     </Transition>
   </RouterView>
 
-  <!-- TanStack Query Devtools -->
-  <VueQueryDevtools />
+  <!-- TanStack Query Devtools only in development mode -->
+  <VueQueryDevtools v-if="isDev" />
 </template>
 
 <style>

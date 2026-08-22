@@ -9,8 +9,9 @@ const routes: RouteRecordRaw[] = [
     name: 'landing',
     component: () => import('@/modules/admin/views/LandingPage.vue'),
     meta: {
-      title: 'Jarabag — Save Food, Save Money',
-      description: 'Rescue fresh surplus meals from local restaurants at 50-70% off.',
+      title: 'JaraBag — Save Fresh Surplus Food at 50–70% Off | Smart Savings & Zero Waste',
+      description: 'Rescue delicious surplus meals, groceries, and bakery goods from local restaurants and bukas at 50–70% off with Jarabag. Secure escrow payments and zero food waste in Nigeria.',
+      canonical: 'https://jarabagapp.com/',
       layout: 'none',
       scrollTop: true,
     },
@@ -20,8 +21,9 @@ const routes: RouteRecordRaw[] = [
     name: 'terms',
     component: () => import('@/modules/admin/views/TermsPage.vue'),
     meta: {
-      title: 'Terms of Service — Jarabag',
-      description: 'Read the terms of service for using the Jarabag platform.',
+      title: 'Terms of Service — JaraBag | User Agreement & Escrow Policies',
+      description: 'Read the official Terms of Service for using the Jarabag food rescue platform, including wallet escrow, pickup verification, and refund policies.',
+      canonical: 'https://jarabagapp.com/terms',
       layout: 'none',
       scrollTop: true,
     },
@@ -31,8 +33,9 @@ const routes: RouteRecordRaw[] = [
     name: 'privacy',
     component: () => import('@/modules/admin/views/PrivacyPage.vue'),
     meta: {
-      title: 'Privacy Policy — Jarabag',
-      description: 'Read our privacy policy and how we protect your location and user data.',
+      title: 'Privacy Policy — JaraBag | Data Protection & Location Privacy',
+      description: 'Learn how Jarabag protects your personal data, background location, and payment details in strict compliance with NDPR and international privacy standards.',
+      canonical: 'https://jarabagapp.com/privacy',
       layout: 'none',
       scrollTop: true,
     },
@@ -44,7 +47,7 @@ const routes: RouteRecordRaw[] = [
     name: 'admin-login',
     component: () => import('@/modules/admin/views/AdminLogin.vue'),
     meta: {
-      title: 'Admin Sign In — Jarabag',
+      title: 'Admin Sign In — Jarabag Superadmin Portal',
       description: 'Sign in to the Jarabag superadmin operator control panel.',
       layout: 'none',
       scrollTop: true,
@@ -139,7 +142,7 @@ const routes: RouteRecordRaw[] = [
     name: 'not-found',
     component: () => import('@/modules/admin/views/LandingPage.vue'),
     meta: {
-      title: 'Jarabag — Page Not Found',
+      title: 'Page Not Found — Jarabag',
       layout: 'none',
       scrollTop: true,
     },
@@ -178,37 +181,69 @@ router.beforeEach((to) => {
   }
 })
 
-// ─── Title, Meta & Scroll-to-Top ───
+// ─── Title, Meta, OpenGraph & Canonical Link Sync ───
 router.afterEach((to) => {
+  if (typeof document === 'undefined') return
+
   if (to.path.startsWith('/admin')) {
     document.body.classList.add('admin-mode')
   } else {
     document.body.classList.remove('admin-mode')
   }
 
-  const title = (to.meta.title as string) ?? 'JaraBag — Fresh Food, Smart Savings'
-  const description = (to.meta.description as string) ?? ''
+  const title = (to.meta.title as string) ?? 'JaraBag — Save Fresh Surplus Food at 50–70% Off'
+  const description = (to.meta.description as string) ?? 'Rescue fresh surplus meals from local restaurants and bukas at 50-70% off with Jarabag.'
+  const canonicalUrl = (to.meta.canonical as string) ?? `https://jarabagapp.com${to.path}`
 
   document.title = title
 
-  const metaDesc = document.querySelector('meta[name="description"]')
-  if (metaDesc && description) {
-    metaDesc.setAttribute('content', description)
+  const setMeta = (selector: string, attr: string, value: string) => {
+    let el = document.querySelector(selector)
+    if (!el) {
+      el = document.createElement('meta')
+      if (selector.startsWith('meta[name=')) {
+        const name = selector.match(/name="([^"]+)"/)?.[1]
+        if (name) el.setAttribute('name', name)
+      } else if (selector.startsWith('meta[property=')) {
+        const prop = selector.match(/property="([^"]+)"/)?.[1]
+        if (prop) el.setAttribute('property', prop)
+      }
+      document.head.appendChild(el)
+    }
+    el.setAttribute(attr, value)
   }
 
-  // Scroll-to-top: since html/body use overflow:hidden and #app handles scrolling,
-  // Vue Router's native scrollBehavior doesn't work. We manually scroll #app instead.
-  // Routes with scrollTop: false (e.g. Map) preserve their scroll/view state.
-  // We use nextTick + rAF to ensure the new route component has rendered after the transition.
+  // Meta Description & Title
+  setMeta('meta[name="description"]', 'content', description)
+  setMeta('meta[name="title"]', 'content', title)
+
+  // Open Graph
+  setMeta('meta[property="og:title"]', 'content', title)
+  setMeta('meta[property="og:description"]', 'content', description)
+  setMeta('meta[property="og:url"]', 'content', canonicalUrl)
+
+  // Twitter Card
+  setMeta('meta[name="twitter:title"]', 'content', title)
+  setMeta('meta[name="twitter:description"]', 'content', description)
+  setMeta('meta[name="twitter:url"]', 'content', canonicalUrl)
+
+  // Canonical Tag
+  let canonicalEl = document.querySelector('link[rel="canonical"]')
+  if (!canonicalEl) {
+    canonicalEl = document.createElement('link')
+    canonicalEl.setAttribute('rel', 'canonical')
+    document.head.appendChild(canonicalEl)
+  }
+  canonicalEl.setAttribute('href', canonicalUrl)
+
+  // Scroll-to-top: scroll container and document
   if (to.meta.scrollTop !== false) {
     nextTick(() => {
       requestAnimationFrame(() => {
-        // Primary: scroll the #app container (used for iOS safe-area layout)
         const appContainer = document.getElementById('app')
         if (appContainer) {
           appContainer.scrollTop = 0
         }
-        // Fallback: also scroll window and documentElement in case layout changes
         window.scrollTo(0, 0)
         document.documentElement.scrollTop = 0
         document.body.scrollTop = 0

@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -28,7 +27,7 @@ export default defineConfig({
         name: 'JaraBag — Surplus Food Rescue',
         short_name: 'JaraBag',
         description: 'Rescue fresh surplus food and save money.',
-        theme_color: '#10B981',
+        theme_color: '#e8621a',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
@@ -38,30 +37,46 @@ export default defineConfig({
           {
             src: 'favicon.ico',
             sizes: '48x48',
-            type: 'image/x-icon'
+            type: 'image/x-icon',
           },
           {
             src: 'jarabag-full-logo.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'jarabag-full-logo.png',
             sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
+            type: 'image/png',
+          },
+        ],
       },
       devOptions: {
         enabled: true,
         type: 'module',
-        navigateFallback: 'index.html'
-      }
-    })
+        navigateFallback: 'index.html',
+      },
+    }),
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  build: {
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('quill')) return 'quill-vendor'
+            if (id.includes('leaflet')) return 'leaflet-vendor'
+            if (id.includes('gsap')) return 'gsap-vendor'
+            if (id.includes('@tanstack')) return 'tanstack-vendor'
+            if (id.includes('reka-ui')) return 'reka-vendor'
+          }
+        },
+      },
     },
   },
 })

@@ -26,32 +26,49 @@ onMounted(() => {
 
 <template>
   <div
-    :class="isDark ? 'bg-[#090807] text-[#FAF8F6]' : 'bg-[#FAF8F6] text-[#1E1A17]'"
-    class="min-h-screen font-sans transition-colors duration-500 pb-24"
+    :class="isDark ? 'bg-[#090807] text-[#FAF8F6]' : 'bg-[#FAF8F6] text-[#26201B]'"
+    class="min-h-screen font-sans transition-colors duration-500 pb-16"
   >
-    <!-- Header -->
+    <!-- Skip to main content link for keyboard accessibility -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#E8621A] focus:text-white focus:font-bold focus:rounded-lg focus:shadow-lg focus:outline-none"
+    >
+      Skip to main content
+    </a>
+
+    <!-- Header Landmark -->
     <header
-      :class="isDark ? 'border-b border-[#1A1816] bg-[#090807]/80' : 'border-b border-[#E7E3DF] bg-[#FAF8F6]/80'"
+      role="banner"
+      :class="isDark ? 'border-b border-[#1A1816] bg-[#090807]/90' : 'border-b border-[#E7E3DF] bg-[#FAF8F6]/90'"
       class="backdrop-blur-md sticky top-0 z-50 transition-colors duration-500"
     >
       <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-        <router-link to="/" class="flex items-center">
-          <img src="/jarabag-full-logo.svg" alt="Jarabag Logo" class="h-8 md:h-11 w-auto object-contain drop-shadow-sm" />
+        <router-link to="/" class="flex items-center" aria-label="Jarabag Home">
+          <img
+            src="/jarabag-full-logo.svg"
+            alt="Jarabag Logo"
+            width="168"
+            height="44"
+            class="h-8 md:h-11 w-auto object-contain drop-shadow-sm"
+          />
         </router-link>
         <div class="flex items-center gap-4">
           <button
+            type="button"
             @click="toggleMode"
-            :class="isDark ? 'border-[#262321] hover:bg-[#1C1A18] text-[#FAF8F6]' : 'border-[#E7E3DF] hover:bg-[#EAE6E1] text-[#1E1A17]'"
-            class="p-2 border rounded-xl transition-all cursor-pointer shadow-sm flex items-center justify-center w-9 h-9"
-            title="Toggle theme mode"
+            :class="isDark ? 'border-[#262321] hover:bg-[#1C1A18] text-[#FAF8F6]' : 'border-[#E7E3DF] hover:bg-[#EAE6E1] text-[#26201B]'"
+            class="p-2 border rounded-xl transition-all cursor-pointer shadow-sm flex items-center justify-center w-10 h-10 min-w-[40px] min-h-[40px]"
+            :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            :aria-pressed="isDark"
           >
-            <span v-if="isDark" class="text-sm">☀️</span>
-            <span v-else class="text-sm">🌙</span>
+            <span v-if="isDark" aria-hidden="true" class="text-sm">☀️</span>
+            <span v-else aria-hidden="true" class="text-sm">🌙</span>
           </button>
           <router-link
             to="/"
-            :class="isDark ? 'text-[#A09A95] hover:text-white' : 'text-[#6C6661] hover:text-neutral-900'"
-            class="text-sm font-medium transition-colors"
+            :class="isDark ? 'text-[#D1CBC7] hover:text-white' : 'text-[#544E49] hover:text-[#110E0D]'"
+            class="text-sm font-semibold transition-colors px-2 py-1"
           >
             Back to Home
           </router-link>
@@ -59,141 +76,231 @@ onMounted(() => {
       </div>
     </header>
 
-    <!-- Content -->
-    <main class="max-w-4xl mx-auto px-6 pt-16">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8621A]/10 border border-[#E8621A]/20 text-[#E8621A] text-xs font-semibold mb-4">
-        <span>🛡️ Legal & Data Protection</span>
+    <!-- Main Content Landmark -->
+    <main id="main-content" role="main" class="max-w-4xl mx-auto px-6 pt-16">
+      <div
+        :class="isDark ? 'bg-[#E8621A]/15 border-[#E8621A]/30 text-[#FFA666]' : 'bg-[#FFF7ED] border-[#FDBA74] text-[#9A3412]'"
+        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-bold mb-4"
+      >
+        <span aria-hidden="true">🛡️</span>
+        <span>Legal &amp; Data Protection</span>
       </div>
-      <h1 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-4xl font-extrabold font-display mb-2">Privacy Policy</h1>
-      <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-sm mb-10">Last updated: August 6, 2026 • Effective Date: August 6, 2026</p>
+
+      <h1 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-4xl sm:text-5xl font-extrabold font-display mb-2">
+        Privacy Policy
+      </h1>
+      <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm font-medium mb-10">
+        Last updated: August 18, 2026 • Effective Date: August 18, 2026
+      </p>
 
       <div class="space-y-10 leading-relaxed">
         <section
           :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-          class="border rounded-2xl p-6 shadow-sm transition-colors duration-500"
+          class="border rounded-2xl p-6 sm:p-8 shadow-sm transition-colors duration-500"
+          aria-labelledby="heading-overview"
         >
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-3 flex items-center gap-2">
-            <span>1. Overview & Commitment</span>
+          <h2 id="heading-overview" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-3">
+            1. Overview &amp; Commitment
           </h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm leading-relaxed">
-            Jarabag ("we", "our", or "us") operates the Jarabag mobile application and website. We are committed to protecting your personal data, respecting your privacy rights, and maintaining transparency regarding how information is collected, processed, and safeguarded under applicable data protection regulations.
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
+            Jarabag Technologies ("we", "our", or "us") operates the Jarabag mobile application and website (<a href="https://jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline font-semibold">jarabagapp.com</a>). We are committed to protecting your personal data, respecting your privacy rights, and maintaining complete transparency regarding how information is collected, processed, and safeguarded under the Nigeria Data Protection Regulation (NDPR) and international privacy frameworks.
           </p>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">2. Information We Collect</h2>
-          <div class="space-y-4 text-sm">
+        <section aria-labelledby="heading-collected-info">
+          <h2 id="heading-collected-info" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            2. Information We Collect
+          </h2>
+          <div class="space-y-4 text-sm sm:text-base">
             <div
-              :class="isDark ? 'bg-[#12110F]/60 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl shadow-sm transition-colors"
+              :class="isDark ? 'bg-[#12110F]/80 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl shadow-sm transition-colors"
             >
-              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-semibold mb-1">A. Personal Identification Data</h3>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Name, email address, phone number, role preference (consumer or vendor), and encrypted credentials (hashed passwords and auth tokens).</p>
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-base mb-1.5">
+                A. Personal Identification Data
+              </h3>
+              <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'">
+                Name, email address, verified phone number, role preference (consumer or vendor), and secure credentials (hashed tokens and bcrypt-encrypted passwords).
+              </p>
             </div>
             <div
-              :class="isDark ? 'bg-[#12110F]/60 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl shadow-sm transition-colors"
+              :class="isDark ? 'bg-[#12110F]/80 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl shadow-sm transition-colors"
             >
-              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-semibold mb-1">B. Location & Geofencing Data</h3>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Foreground GPS location data (to show nearby surplus food listings) and background location data (to dispatch proximity notifications when surplus food bags become available near your location).</p>
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-base mb-1.5">
+                B. Location &amp; Geofencing Data
+              </h3>
+              <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'">
+                Foreground GPS coordinates (to display geolocated food bags near your location) and background location access (to dispatch vicinity notifications when surplus bags drop in your target radius).
+              </p>
             </div>
             <div
-              :class="isDark ? 'bg-[#12110F]/60 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl shadow-sm transition-colors"
+              :class="isDark ? 'bg-[#12110F]/80 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl shadow-sm transition-colors"
             >
-              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-semibold mb-1">C. Financial & Transaction Data</h3>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Wallet balances, transaction history, deposit references, bank account verification details (account number, bank code), and Paystack payment gateway metadata.</p>
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-base mb-1.5">
+                C. Financial &amp; Transaction Data
+              </h3>
+              <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'">
+                In-app wallet balances, ledger transaction logs, payment references, bank account verification details (NUBAN account numbers and bank codes), and PCI-DSS payment partner logs.
+              </p>
             </div>
             <div
-              :class="isDark ? 'bg-[#12110F]/60 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl shadow-sm transition-colors"
+              :class="isDark ? 'bg-[#12110F]/80 border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl shadow-sm transition-colors"
             >
-              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-semibold mb-1">D. Device & Usage Technical Data</h3>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Push notification tokens (Expo tokens), device IP addresses, browser user agents, operating system version, and app interaction logs.</p>
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-base mb-1.5">
+                D. Device &amp; Usage Technical Data
+              </h3>
+              <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'">
+                Push notification tokens (Expo / Firebase tokens), device IP addresses, browser user agent strings, operating system versions, and app diagnostic interaction logs.
+              </p>
             </div>
           </div>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">3. Background Location Access & Usage</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm mb-4">
-            Jarabag requires background location access to provide our core surplus food rescue feature: alerting consumers about nearby discounted food bags that are nearing expiry before they go to waste.
+        <section aria-labelledby="heading-bg-location">
+          <h2 id="heading-bg-location" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            3. Background Location Access &amp; Usage
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base mb-4 leading-relaxed">
+            Jarabag requires location permissions to deliver our essential surplus food rescue feature: alerting consumers when nearby partner kitchens have surplus bags available before closing hours.
           </p>
-          <ul :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="list-disc list-inside space-y-2 text-sm pl-2">
-            <li>Location data is used solely to compute distance to nearby vendors and trigger vicinity alerts.</li>
-            <li>We do not track continuous movement history or sell location data to third-party advertisers.</li>
-            <li>You can adjust or revoke location permissions at any time via your mobile device settings.</li>
+          <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-2 text-sm sm:text-base pl-2">
+            <li>Location data is utilized exclusively to compute distances to verified vendor listings and dispatch proximity push alerts.</li>
+            <li>We do not record continuous historical location trails, nor do we sell location coordinates to third-party ad networks.</li>
+            <li>You can adjust or revoke location permissions at any time via your mobile operating system settings.</li>
           </ul>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">4. Data Sharing & Third Parties</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm mb-4">
-            We do not sell, rent, or trade your personal data. Data is shared strictly with trusted service providers required to operate Jarabag:
+        <section aria-labelledby="heading-data-sharing">
+          <h2 id="heading-data-sharing" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            4. Data Sharing &amp; Third Parties
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base mb-4">
+            We never sell, rent, or monetize your personal information. Data is shared exclusively with certified infrastructure partners necessary to operate the Jarabag platform:
           </p>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl transition-colors"
+              class="p-5 border rounded-xl transition-colors shadow-sm"
             >
-              <span class="font-bold text-[#E8621A] block mb-1">Paystack</span>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Processes card deposits, wallet funding, and bank verification in compliance with PCI-DSS standards.</p>
+              <h3 class="font-bold text-[#E8621A] text-sm sm:text-base mb-1.5">Paystack</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">Processes card deposits, wallet funding, and bank verification in strict compliance with PCI-DSS Level 1 standards.</p>
             </div>
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl transition-colors"
+              class="p-5 border rounded-xl transition-colors shadow-sm"
             >
-              <span class="font-bold text-[#E8621A] block mb-1">Expo / Firebase</span>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Dispatches push notifications and vicinity alert messages to your mobile device.</p>
+              <h3 class="font-bold text-[#E8621A] text-sm sm:text-base mb-1.5">Expo / Firebase</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">Dispatches push notifications, order status changes, and vicinity alert messages directly to your mobile device.</p>
             </div>
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl transition-colors"
+              class="p-5 border rounded-xl transition-colors shadow-sm"
             >
-              <span class="font-bold text-[#E8621A] block mb-1">Cloudinary</span>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Hosts food listing photos and profile images uploaded by vendors and consumers.</p>
+              <h3 class="font-bold text-[#E8621A] text-sm sm:text-base mb-1.5">Cloudinary</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">Securely stores food listing photos and store profile imagery uploaded by vendors and food creators.</p>
             </div>
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl transition-colors"
+              class="p-5 border rounded-xl transition-colors shadow-sm"
             >
-              <span class="font-bold text-[#E8621A] block mb-1">Food Vendors & Consumers</span>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Order pickup details (OTP code and order ID) are shared between buyer and seller to verify pickup.</p>
+              <h3 class="font-bold text-[#E8621A] text-sm sm:text-base mb-1.5">Vendors &amp; Consumers</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">Pickup details (order code and 4-digit claim OTP) are securely shared between buyer and seller to authorize handover.</p>
             </div>
           </div>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">5. Data Retention & Account Deletion</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm mb-4">
-            We retain your data for as long as your account remains active. You have the right to request full account deletion and personal data purging at any time:
+        <section aria-labelledby="heading-retention">
+          <h2 id="heading-retention" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            5. Data Retention &amp; Account Deletion
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base mb-4 leading-relaxed">
+            We retain account data for as long as your Jarabag account remains active. You possess the legal right to request full account deletion and personal data erasure at any time:
           </p>
           <div
             :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-            class="p-5 border rounded-xl text-sm transition-colors"
+            class="p-6 border rounded-xl text-sm sm:text-base transition-colors shadow-sm"
           >
-            <p :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-semibold mb-2">How to Request Account Deletion:</p>
-            <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-xs mb-3">1. Send an email from your registered email address to <a href="mailto:support@jarabagapp.com" class="text-[#E8621A] underline">support@jarabagapp.com</a> with the subject "Account Deletion Request".</p>
-            <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-xs">2. Alternatively, navigate to Profile Settings → Delete Account inside the Jarabag mobile application.</p>
-            <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-[11px] mt-3">Upon verification, your personal data and wallet records will be permanently purged within 14 business days, except where financial retention laws require mandatory audit archiving.</p>
+            <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-base mb-2">
+              How to Request Account &amp; Data Deletion:
+            </h3>
+            <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm mb-3">
+              1. Email our privacy compliance desk from your registered email address at
+              <a href="mailto:support@jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline font-bold">support@jarabagapp.com</a>
+              with the subject line "Account Deletion Request".
+            </p>
+            <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm mb-3">
+              2. Alternatively, go to Profile Settings &rarr; Delete Account directly inside the Jarabag mobile application.
+            </p>
+            <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#544E49]'" class="text-xs sm:text-sm mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+              Upon request receipt and identity confirmation, all personal identification records will be permanently purged within 14 business days, except where mandatory financial auditing regulations require statutory record retention.
+            </p>
           </div>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">6. Security Safeguards</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm">
-            All data transmissions are encrypted using SSL/TLS 1.3 encryption. Passwords and sensitive authentication tokens are hashed using bcrypt and stored in encrypted storage hardware (iOS Keychain & Android Keystore).
+        <section aria-labelledby="heading-security">
+          <h2 id="heading-security" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            6. Security Safeguards
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
+            All data in transit is encrypted using modern TLS 1.3 cryptographic protocols. User authentication tokens and passwords are salted and hashed using industry-standard bcrypt. On mobile clients, sensitive session keys are stored in encrypted hardware keystores (iOS Keychain &amp; Android KeyStore).
           </p>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">7. Contact Us</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm">
-            If you have questions, concerns, or data protection inquiries regarding this Privacy Policy, please contact our Data Protection Officer at:
+        <section aria-labelledby="heading-contact">
+          <h2 id="heading-contact" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            7. Contact Our Data Protection Team
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base">
+            For inquiries, legal notices, or data protection subject access requests regarding this Privacy Policy, please contact our Data Protection Officer:
           </p>
-          <p class="text-[#E8621A] font-semibold text-sm mt-2">Email: support@jarabagapp.com</p>
+          <p class="font-bold text-base mt-2">
+            Email: <a href="mailto:support@jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline">support@jarabagapp.com</a>
+          </p>
         </section>
       </div>
     </main>
+
+    <!-- Footer Landmark -->
+    <footer
+      role="contentinfo"
+      :class="isDark ? 'border-t border-[#1C1A18] bg-[#090807]/90' : 'border-t border-[#E7E3DF] bg-[#FAF8F6]/90'"
+      class="mt-20 py-12 text-sm transition-colors"
+    >
+      <div class="max-w-4xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <router-link to="/" class="flex items-center" aria-label="Jarabag Home">
+          <img
+            src="/jarabag-full-logo.svg"
+            alt="Jarabag Logo"
+            width="140"
+            height="36"
+            class="h-7 md:h-9 w-auto object-contain"
+          />
+        </router-link>
+
+        <nav aria-label="Footer Legal Navigation" class="flex gap-6 font-semibold">
+          <router-link
+            to="/privacy"
+            :class="isDark ? 'text-white font-bold' : 'text-[#110E0D] font-bold'"
+            class="transition-colors underline"
+          >
+            Privacy Policy
+          </router-link>
+          <router-link
+            to="/terms"
+            :class="isDark ? 'text-[#D1CBC7] hover:text-white' : 'text-[#544E49] hover:text-[#110E0D]'"
+            class="transition-colors"
+          >
+            Terms of Service
+          </router-link>
+        </nav>
+
+        <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#544E49]'" class="text-xs">
+          &copy; 2026 Jarabag. All rights reserved.
+        </p>
+      </div>
+    </footer>
   </div>
 </template>

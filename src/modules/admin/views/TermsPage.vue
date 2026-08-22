@@ -26,32 +26,49 @@ onMounted(() => {
 
 <template>
   <div
-    :class="isDark ? 'bg-[#090807] text-[#FAF8F6]' : 'bg-[#FAF8F6] text-[#1E1A17]'"
-    class="min-h-screen font-sans transition-colors duration-500 pb-24"
+    :class="isDark ? 'bg-[#090807] text-[#FAF8F6]' : 'bg-[#FAF8F6] text-[#26201B]'"
+    class="min-h-screen font-sans transition-colors duration-500 pb-16"
   >
-    <!-- Header -->
+    <!-- Skip link for keyboard accessibility -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-[#E8621A] focus:text-white focus:font-bold focus:rounded-lg focus:shadow-lg focus:outline-none"
+    >
+      Skip to main content
+    </a>
+
+    <!-- Header Landmark -->
     <header
-      :class="isDark ? 'border-b border-[#1A1816] bg-[#090807]/80' : 'border-b border-[#E7E3DF] bg-[#FAF8F6]/80'"
+      role="banner"
+      :class="isDark ? 'border-b border-[#1A1816] bg-[#090807]/90' : 'border-b border-[#E7E3DF] bg-[#FAF8F6]/90'"
       class="backdrop-blur-md sticky top-0 z-50 transition-colors duration-500"
     >
       <div class="max-w-4xl mx-auto px-6 h-20 flex items-center justify-between">
-        <router-link to="/" class="flex items-center">
-          <img src="/jarabag-full-logo.svg" alt="Jarabag Logo" class="h-8 md:h-11 w-auto object-contain drop-shadow-sm" />
+        <router-link to="/" class="flex items-center" aria-label="Jarabag Home">
+          <img
+            src="/jarabag-full-logo.svg"
+            alt="Jarabag Logo"
+            width="168"
+            height="44"
+            class="h-8 md:h-11 w-auto object-contain drop-shadow-sm"
+          />
         </router-link>
         <div class="flex items-center gap-4">
           <button
+            type="button"
             @click="toggleMode"
-            :class="isDark ? 'border-[#262321] hover:bg-[#1C1A18] text-[#FAF8F6]' : 'border-[#E7E3DF] hover:bg-[#EAE6E1] text-[#1E1A17]'"
-            class="p-2 border rounded-xl transition-all cursor-pointer shadow-sm flex items-center justify-center w-9 h-9"
-            title="Toggle theme mode"
+            :class="isDark ? 'border-[#262321] hover:bg-[#1C1A18] text-[#FAF8F6]' : 'border-[#E7E3DF] hover:bg-[#EAE6E1] text-[#26201B]'"
+            class="p-2 border rounded-xl transition-all cursor-pointer shadow-sm flex items-center justify-center w-10 h-10 min-w-[40px] min-h-[40px]"
+            :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            :aria-pressed="isDark"
           >
-            <span v-if="isDark" class="text-sm">☀️</span>
-            <span v-else class="text-sm">🌙</span>
+            <span v-if="isDark" aria-hidden="true" class="text-sm">☀️</span>
+            <span v-else aria-hidden="true" class="text-sm">🌙</span>
           </button>
           <router-link
             to="/"
-            :class="isDark ? 'text-[#A09A95] hover:text-white' : 'text-[#6C6661] hover:text-neutral-900'"
-            class="text-sm font-medium transition-colors"
+            :class="isDark ? 'text-[#D1CBC7] hover:text-white' : 'text-[#544E49] hover:text-[#110E0D]'"
+            class="text-sm font-semibold transition-colors px-2 py-1"
           >
             Back to Home
           </router-link>
@@ -59,105 +76,190 @@ onMounted(() => {
       </div>
     </header>
 
-    <!-- Content -->
-    <main class="max-w-4xl mx-auto px-6 pt-16">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E8621A]/10 border border-[#E8621A]/20 text-[#E8621A] text-xs font-semibold mb-4">
-        <span>📜 Terms & Service Agreement</span>
+    <!-- Main Content Landmark -->
+    <main id="main-content" role="main" class="max-w-4xl mx-auto px-6 pt-16">
+      <div
+        :class="isDark ? 'bg-[#E8621A]/15 border-[#E8621A]/30 text-[#FFA666]' : 'bg-[#FFF7ED] border-[#FDBA74] text-[#9A3412]'"
+        class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-xs font-bold mb-4"
+      >
+        <span aria-hidden="true">📜</span>
+        <span>Terms &amp; Service Agreement</span>
       </div>
-      <h1 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-4xl font-extrabold font-display mb-2">Terms of Service</h1>
-      <p :class="isDark ? 'text-[#A09A95]' : 'text-[#6C6661]'" class="text-sm mb-10">Last updated: August 6, 2026 • Effective Date: August 6, 2026</p>
+
+      <h1 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-4xl sm:text-5xl font-extrabold font-display mb-2">
+        Terms of Service
+      </h1>
+      <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm font-medium mb-10">
+        Last updated: August 18, 2026 • Effective Date: August 18, 2026
+      </p>
 
       <div class="space-y-10 leading-relaxed">
         <section
           :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-          class="border rounded-2xl p-6 shadow-sm transition-colors duration-500"
+          class="border rounded-2xl p-6 sm:p-8 shadow-sm transition-colors duration-500"
+          aria-labelledby="heading-agreement"
         >
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-3">1. Agreement to Terms</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm leading-relaxed">
-            By accessing or using the Jarabag mobile application or website, you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must immediately cease accessing or using our services.
+          <h2 id="heading-agreement" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-3">
+            1. Agreement to Terms
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
+            By downloading, accessing, or utilizing the Jarabag mobile application or website (<a href="https://jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline font-semibold">jarabagapp.com</a>), you explicitly agree to be bound by these Terms of Service ("Terms"). If you do not agree to all terms stated herein, you must immediately cease accessing or using our platform.
           </p>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">2. Description of Marketplace Service</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm leading-relaxed mb-4">
-            Jarabag operates a surplus food rescue marketplace connecting verified food vendors (restaurants, bakeries, bukas, supermarkets) selling surplus food items at discounted prices with consumers interested in purchasing them before expiry.
+        <section aria-labelledby="heading-marketplace">
+          <h2 id="heading-marketplace" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            2. Description of Marketplace Service
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed mb-4">
+            Jarabag operates a specialized surplus food recovery marketplace connecting verified food vendors (restaurants, bakeries, bukas, and supermarkets) offering delicious surplus food items at 50% to 70% discounts with consumers seeking affordable food solutions.
           </p>
-          <ul :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="list-disc list-inside space-y-2 text-sm pl-2">
-            <li>Jarabag acts as an intermediary marketplace facilitator, providing digital ordering, location discovery, escrow settlement, and dispute handling.</li>
-            <li>Vendors remain independent sellers responsible for preparing wholesome, safe, and accurately labeled surplus food bags.</li>
+          <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-2 text-sm sm:text-base pl-2">
+            <li>Jarabag acts as an intermediary technology platform facilitating listing discovery, digital orders, cryptographic escrow settlement, and customer support.</li>
+            <li>Partner vendors operate as independent food businesses and retain full responsibility for preparing wholesome, safe, and hygienic food packages.</li>
           </ul>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">3. User Accounts & Responsibilities</h2>
-          <div :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="space-y-3 text-sm">
-            <p>• You must be at least 18 years old or possess legal parental/guardian consent to create an account.</p>
-            <p>• You are responsible for keeping your account login credentials, OTP codes, and wallet access pins secure.</p>
-            <p>• Vendors must maintain active business verification, accurate store addresses, and valid health/hygiene standards.</p>
+        <section aria-labelledby="heading-user-accounts">
+          <h2 id="heading-user-accounts" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            3. User Accounts &amp; Platform Responsibilities
+          </h2>
+          <div :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="space-y-3 text-sm sm:text-base">
+            <p>&bull; Users must be at least 18 years of age or possess legal guardian consent to register an account.</p>
+            <p>&bull; You are strictly responsible for maintaining confidentiality over your wallet PINs, login credentials, and 4-digit pickup OTP codes.</p>
+            <p>&bull; Registered vendors must maintain accurate physical store addresses, adhere to state hygiene regulations, and update surplus inventory truthfully.</p>
           </div>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">4. Wallet, Payments & Escrow Settlement</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm leading-relaxed mb-4">
-            Financial transactions on Jarabag are processed via integrated payment partners (Paystack):
+        <section aria-labelledby="heading-escrow">
+          <h2 id="heading-escrow" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            4. Wallet, Payments &amp; Escrow Settlement
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed mb-4">
+            All financial operations on Jarabag are protected by our automated platform escrow framework:
           </p>
           <div
             :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-            class="p-5 border rounded-xl space-y-3 text-xs shadow-sm transition-colors"
+            class="p-6 border rounded-xl space-y-4 text-xs sm:text-sm shadow-sm transition-colors"
           >
-            <p><strong class="text-[#E8621A]">Escrow Hold:</strong> When a consumer reserves a surplus food bag, the funds are debited from their wallet and held in secure platform escrow.</p>
-            <p><strong class="text-[#E8621A]">OTP Release:</strong> Funds are released from escrow to the vendor's wallet only after the consumer presents their 4-digit pickup OTP to the vendor at pickup.</p>
-            <p><strong class="text-[#E8621A]">Withdrawals:</strong> Vendors can request wallet payouts to verified bank accounts at any time, subject to standard banking processing windows.</p>
+            <p>
+              <strong class="text-[#E8621A] text-sm block mb-1">1. Automated Escrow Hold:</strong>
+              When a consumer reserves a surplus food bag, the payment amount is debited from their wallet and locked securely in the escrow pool.
+            </p>
+            <p>
+              <strong class="text-[#E8621A] text-sm block mb-1">2. Cryptographic OTP Handover:</strong>
+              Funds are only released from escrow to the vendor's wallet balance after the consumer physically presents the rolling 4-digit verification code at pickup.
+            </p>
+            <p>
+              <strong class="text-[#E8621A] text-sm block mb-1">3. Vendor Payouts:</strong>
+              Vendors can withdraw their verified balances to local Nigerian commercial bank accounts at any time, processed via accredited payment partners.
+            </p>
           </div>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">5. Cancellation & No-Show Policy</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm mb-4">
-            To ensure fairness for both buyers and sellers, Jarabag enforces standard cancellation & no-show policies:
+        <section aria-labelledby="heading-cancellation">
+          <h2 id="heading-cancellation" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            5. Cancellation &amp; No-Show Policy
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base mb-4">
+            To guarantee fairness and prevent unnecessary food spoilage, Jarabag enforces standard dispute and cancellation rules:
           </p>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl transition-colors shadow-sm"
+              class="p-5 border rounded-xl transition-colors shadow-sm"
             >
-              <span :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold block mb-1">Consumer Cancellations</span>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">Cancellations made well before the pickup window start time receive a full wallet refund. Late cancellations incur a standard split fee.</p>
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base mb-1.5">
+                Consumer Cancellations
+              </h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">
+                Cancellations made before the vendor's preparation cutoff time receive a full 100% wallet refund. Late cancellations after packaging may incur standard split compensation.
+              </p>
             </div>
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-4 border rounded-xl transition-colors shadow-sm"
+              class="p-5 border rounded-xl transition-colors shadow-sm"
             >
-              <span :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold block mb-1">No-Show & Forfeitures</span>
-              <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'">If a consumer fails to pick up their reserved bag during the pickup window, the escrow is processed according to first vs repeat no-show policy rules.</p>
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base mb-1.5">
+                No-Show &amp; Forfeitures
+              </h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">
+                If a consumer fails to collect a reserved bag during the agreed pickup window without prior notice, escrow is settled according to our platform no-show policy.
+              </p>
             </div>
           </div>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">6. Disputes & Refund Claims</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm leading-relaxed mb-4">
-            If a bag is missing, severely compromised, or the vendor is closed during pickup, the consumer can raise a dispute in the app. Jarabag superadmin team will investigate and issue wallet refunds where vendor fault is verified.
+        <section aria-labelledby="heading-disputes">
+          <h2 id="heading-disputes" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            6. Disputes &amp; Quality Resolution
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
+            If a food bag is unavailable, substantially mismatched, or the merchant is closed during the official pickup window, consumers can submit a one-tap dispute via the mobile application. Our support team investigates within 2 hours and issues instant wallet credits upon vendor fault confirmation.
           </p>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">7. Limitation of Liability</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm leading-relaxed">
-            Jarabag provides the marketplace platform on an "as-is" basis. Vendors are solely responsible for food preparation, hygiene standards, and item freshness. To the maximum extent permitted by law, Jarabag shall not be liable for indirect, incidental, or consequential damages.
+        <section aria-labelledby="heading-liability">
+          <h2 id="heading-liability" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            7. Limitation of Liability
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
+            Jarabag provides marketplace matching services on an "as is" and "as available" basis. While we verify partner merchants, food preparation and health standards remain the sole responsibility of individual kitchen operators. To the extent permissible by applicable law, Jarabag disclaims liability for indirect damages.
           </p>
         </section>
 
-        <section>
-          <h2 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">8. Contact Information</h2>
-          <p :class="isDark ? 'text-[#C5BEB9]' : 'text-[#5C5753]'" class="text-sm">
-            For questions regarding these Terms of Service or legal inquiries, please contact:
+        <section aria-labelledby="heading-contact-terms">
+          <h2 id="heading-contact-terms" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            8. Contact &amp; Legal Notices
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base">
+            For inquiries regarding our Terms of Service, merchant partnership agreements, or legal communications, reach out to:
           </p>
-          <p class="text-[#E8621A] font-semibold text-sm mt-2">Email: support@jarabagapp.com</p>
+          <p class="font-bold text-base mt-2">
+            Email: <a href="mailto:support@jarabagapp.com" class="text-[#C2410C] dark:text-[#FFA666] underline">support@jarabagapp.com</a>
+          </p>
         </section>
       </div>
     </main>
+
+    <!-- Footer Landmark -->
+    <footer
+      role="contentinfo"
+      :class="isDark ? 'border-t border-[#1C1A18] bg-[#090807]/90' : 'border-t border-[#E7E3DF] bg-[#FAF8F6]/90'"
+      class="mt-20 py-12 text-sm transition-colors"
+    >
+      <div class="max-w-4xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <router-link to="/" class="flex items-center" aria-label="Jarabag Home">
+          <img
+            src="/jarabag-full-logo.svg"
+            alt="Jarabag Logo"
+            width="140"
+            height="36"
+            class="h-7 md:h-9 w-auto object-contain"
+          />
+        </router-link>
+
+        <nav aria-label="Footer Legal Navigation" class="flex gap-6 font-semibold">
+          <router-link
+            to="/privacy"
+            :class="isDark ? 'text-[#D1CBC7] hover:text-white' : 'text-[#544E49] hover:text-[#110E0D]'"
+            class="transition-colors"
+          >
+            Privacy Policy
+          </router-link>
+          <router-link
+            to="/terms"
+            :class="isDark ? 'text-white font-bold' : 'text-[#110E0D] font-bold'"
+            class="transition-colors underline"
+          >
+            Terms of Service
+          </router-link>
+        </nav>
+
+        <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#544E49]'" class="text-xs">
+          &copy; 2026 Jarabag. All rights reserved.
+        </p>
+      </div>
+    </footer>
   </div>
 </template>
