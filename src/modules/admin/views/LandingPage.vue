@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -211,6 +211,138 @@ const handleResetSimulator = () => {
   runStepTransition(1)
 }
 
+// Vendor Fast Broadcast Showcase State
+interface BroadcastPreset {
+  id: string
+  name: string
+  icon: string
+  storeName: string
+  location: string
+  itemTitle: string
+  originalPrice: number
+  discountPrice: number
+  discountPercent: number
+  quantity: number
+  soldMinutes: number
+  radiusKm: number
+  audienceCount: number
+  notificationTitle: string
+  notificationBody: string
+  badgeText: string
+}
+
+const broadcastPresets: BroadcastPreset[] = [
+  {
+    id: 'fresh-batch',
+    name: 'Fresh Batch Flash',
+    icon: '🥐',
+    storeName: 'Golden Crust Artisan Bakery',
+    location: 'Yaba / Sabo, Lagos',
+    itemTitle: 'Hot Oven Meat Pies & Warm Croissants',
+    originalPrice: 8000,
+    discountPrice: 4960,
+    discountPercent: 38,
+    quantity: 15,
+    soldMinutes: 9,
+    radiusKm: 2.5,
+    audienceCount: 380,
+    notificationTitle: '🔥 Fresh Batch Alert: Golden Crust',
+    notificationBody: '15 boxes of hot meat pies & warm croissants just out of the oven at 38% off. Fast pickup in Sabo!',
+    badgeText: 'Fresh Batch'
+  },
+  {
+    id: 'off-peak',
+    name: 'Off-Peak Rush',
+    icon: '🍲',
+    storeName: 'Buka Prime Kitchen',
+    location: 'Victoria Island, Lagos',
+    itemTitle: 'Midday Smoky Jollof + Grilled Asun Mega Box',
+    originalPrice: 12000,
+    discountPrice: 6960,
+    discountPercent: 42,
+    quantity: 25,
+    soldMinutes: 14,
+    radiusKm: 3.5,
+    audienceCount: 520,
+    notificationTitle: '⚡ Flash Deal: Buka Prime Kitchen',
+    notificationBody: '25 mega boxes of midday smoky Jollof & grilled Asun ready now at 42% off in VI. Grab yours before 2:30 PM!',
+    badgeText: 'Off-Peak Rush'
+  },
+  {
+    id: 'surplus-clearance',
+    name: 'Surplus Clearance',
+    icon: '🛍️',
+    storeName: 'Mama Cass Family Eatery',
+    location: 'Ikeja City, Lagos',
+    itemTitle: 'Chef Special Mystery Box',
+    originalPrice: 10000,
+    discountPrice: 3500,
+    discountPercent: 65,
+    quantity: 10,
+    soldMinutes: 11,
+    radiusKm: 4.5,
+    audienceCount: 640,
+    notificationTitle: '🌙 Surplus Rescue: Mama Cass',
+    notificationBody: '10 Chef Special Mystery Bags available at 65% off in Ikeja. Save delicious food tonight!',
+    badgeText: 'Surplus Clearance'
+  }
+]
+
+const activePresetIndex = ref(0)
+const isBroadcasting = ref(false)
+const broadcastStockLeft = ref(15)
+const isBroadcastSoldOut = ref(false)
+let broadcastTimer: ReturnType<typeof setInterval> | null = null
+
+const activePreset = computed<BroadcastPreset>(() => {
+  return broadcastPresets[activePresetIndex.value] ?? broadcastPresets[0]!
+})
+
+const selectBroadcastPreset = (idx: number) => {
+  if (broadcastTimer) {
+    clearInterval(broadcastTimer)
+    broadcastTimer = null
+  }
+  activePresetIndex.value = idx
+  isBroadcasting.value = false
+  isBroadcastSoldOut.value = false
+  const target = broadcastPresets[idx]
+  if (target) {
+    broadcastStockLeft.value = target.quantity
+  }
+}
+
+const triggerBroadcastDemo = () => {
+  if (broadcastTimer) {
+    clearInterval(broadcastTimer)
+    broadcastTimer = null
+  }
+  const preset = broadcastPresets[activePresetIndex.value] ?? broadcastPresets[0]
+  if (!preset) return
+  broadcastStockLeft.value = preset.quantity
+  isBroadcastSoldOut.value = false
+  isBroadcasting.value = true
+
+  const totalSteps = preset.quantity
+  let currentStock = preset.quantity
+  const intervalMs = Math.max(70, Math.floor(1800 / totalSteps))
+
+  broadcastTimer = setInterval(() => {
+    currentStock -= 1
+    if (currentStock <= 0) {
+      broadcastStockLeft.value = 0
+      isBroadcastSoldOut.value = true
+      isBroadcasting.value = false
+      if (broadcastTimer) {
+        clearInterval(broadcastTimer)
+        broadcastTimer = null
+      }
+    } else {
+      broadcastStockLeft.value = currentStock
+    }
+  }, intervalMs)
+}
+
 // Background Floating Parallax Config
 const floatingElements = ref([
   { id: 1, x: '8%', y: '18%', size: 44, rotation: 12, delay: 0, speed: 5, label: '🍲', type: 'emoji' },
@@ -385,6 +517,10 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (broadcastTimer) {
+    clearInterval(broadcastTimer)
+    broadcastTimer = null
+  }
   window.removeEventListener('mousemove', handleMouseMove)
   window.removeEventListener('load', handleRefresh)
   if (statsObserver) {
@@ -868,6 +1004,336 @@ onUnmounted(() => {
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
                     Merchant enters the OTP on terminal, releases escrow balance, and handles fresh pickup!
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Instant Sales Velocity & Geo-Broadcast Section -->
+      <!-- Instant Sales Velocity & Geo-Broadcast Section -->
+      <section
+        id="broadcast-showcase"
+        :class="isDark ? 'border-t border-[#1C1A18] bg-[#090807]/95 backdrop-blur-sm' : 'border-t border-[#E7E3DF] bg-[#FAF8F6]/95 backdrop-blur-sm'"
+        class="py-20 md:py-24 relative z-20 transition-colors duration-500"
+        aria-labelledby="broadcast-heading"
+      >
+        <div class="max-w-5xl mx-auto px-6">
+          <!-- Section Header -->
+          <div class="text-center max-w-2xl mx-auto mb-14">
+            <div
+              :class="isDark ? 'bg-[#E8621A]/15 border-[#E8621A]/30 text-[#FFA666]' : 'bg-[#FFF7ED] border-[#FDBA74] text-[#9A3412]'"
+              class="inline-flex items-center gap-2 px-3.5 py-1.5 border rounded-full text-xs font-bold tracking-widest uppercase mb-4"
+            >
+              <span aria-hidden="true">📡</span>
+              <span>1-Tap Neighborhood Broadcast</span>
+            </div>
+            <h2
+              id="broadcast-heading"
+              class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight font-display mb-3"
+            >
+              Sell Out Fresh Batches &amp; Specials in Minutes.
+            </h2>
+            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base leading-relaxed">
+              Got hot trays fresh from the oven, lunch specials, or extra portions? Send a 1-tap broadcast to hungry neighbors within your radius and watch them buy and pick up in minutes.
+            </p>
+          </div>
+
+          <!-- 2-Column Showcase Grid -->
+          <div class="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            <!-- Left Column: Interactive Scenario Switcher & Live Preview -->
+            <div class="lg:col-span-7 space-y-5">
+              <!-- Scenario Tab Switcher -->
+              <div
+                role="tablist"
+                aria-label="Broadcast Scenario Selection"
+                :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+                class="p-1.5 border rounded-2xl flex flex-wrap sm:flex-nowrap gap-1.5 shadow-sm"
+              >
+                <button
+                  v-for="(preset, idx) in broadcastPresets"
+                  :key="preset.id"
+                  type="button"
+                  role="tab"
+                  :id="`broadcast-tab-${preset.id}`"
+                  :aria-controls="`broadcast-panel-${preset.id}`"
+                  :aria-selected="activePresetIndex === idx"
+                  @click="selectBroadcastPreset(idx)"
+                  :class="[
+                    activePresetIndex === idx
+                      ? 'bg-[#E8621A] text-white shadow-md font-bold'
+                      : (isDark ? 'text-[#D1CBC7] hover:text-white hover:bg-[#1C1A18]' : 'text-[#544E49] hover:text-[#1E1A17] hover:bg-[#F5F2EE]')
+                  ]"
+                  class="flex-1 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer select-none text-center"
+                >
+                  <span class="text-base" aria-hidden="true">{{ preset.icon }}</span>
+                  <span class="truncate">{{ preset.name }}</span>
+                </button>
+              </div>
+
+              <!-- Live Preview Card -->
+              <div
+                :id="`broadcast-panel-${activePreset.id}`"
+                role="tabpanel"
+                :aria-labelledby="`broadcast-tab-${activePreset.id}`"
+                :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+                class="border rounded-3xl p-5 sm:p-7 shadow-xl space-y-5 transition-all duration-300"
+              >
+                <!-- Card Header -->
+                <div
+                  class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b pb-4"
+                  :class="isDark ? 'border-[#262321]' : 'border-[#E7E3DF]'"
+                >
+                  <div class="space-y-0.5 text-left">
+                    <div class="flex items-center gap-2">
+                      <span class="text-lg" aria-hidden="true">{{ activePreset.icon }}</span>
+                      <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-base sm:text-lg">
+                        {{ activePreset.storeName }}
+                      </h3>
+                    </div>
+                    <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#756C64]'" class="text-xs flex items-center gap-1.5">
+                      <span aria-hidden="true">📍</span>
+                      <span>{{ activePreset.location }}</span>
+                    </p>
+                  </div>
+
+                  <!-- Radius Pill -->
+                  <div
+                    :class="isDark ? 'bg-[#181614] border-[#262321]' : 'bg-[#FAF8F6] border-[#E7E3DF]'"
+                    class="border rounded-xl px-3 py-1.5 flex items-center gap-2.5 self-start sm:self-auto"
+                  >
+                    <div class="relative flex h-2.5 w-2.5 items-center justify-center">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E8621A] opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-[#E8621A]"></span>
+                    </div>
+                    <div class="text-left">
+                      <span class="text-[11px] font-bold text-[#E8621A]">
+                        {{ activePreset.radiusKm }} km Radius
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Product Deal Preview -->
+                <div
+                  :class="isDark ? 'bg-[#0E0D0C] border-[#262321]' : 'bg-[#FAF8F6] border-[#E7E3DF]'"
+                  class="border rounded-2xl p-4 sm:p-5 space-y-3.5 text-left"
+                >
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <span
+                        :class="isDark ? 'bg-[#E8621A]/15 text-[#FFA666] border-[#E8621A]/30' : 'bg-[#FFF7ED] text-[#9A3412] border-[#FDBA74]'"
+                        class="inline-block text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 border rounded-full mb-1"
+                      >
+                        {{ activePreset.badgeText }}
+                      </span>
+                      <h4 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base">
+                        {{ activePreset.itemTitle }}
+                      </h4>
+                    </div>
+
+                    <!-- Dynamic Stock Pill -->
+                    <div class="shrink-0">
+                      <span
+                        v-if="isBroadcastSoldOut"
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-rose-500/15 border border-rose-500/30 text-rose-500"
+                      >
+                        <span aria-hidden="true">🎉</span>
+                        <span>100% Sold Out</span>
+                      </span>
+                      <span
+                        v-else
+                        :class="isDark ? 'bg-[#10B981]/15 text-[#34D399] border-[#10B981]/30' : 'bg-emerald-50 text-emerald-800 border-emerald-200'"
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black border"
+                      >
+                        <span class="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" aria-hidden="true"></span>
+                        <span>{{ broadcastStockLeft }} / {{ activePreset.quantity }} Available</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Formatted Currency & Sellout Speed -->
+                  <div class="flex items-center justify-between pt-2 border-t" :class="isDark ? 'border-[#1C1A18]' : 'border-[#E7E3DF]'">
+                    <div class="flex items-baseline gap-2.5">
+                      <span class="text-xl sm:text-2xl font-black font-mono text-[#E8621A]">
+                        {{ formatCurrency(activePreset.discountPrice) }}
+                      </span>
+                      <span :class="isDark ? 'text-[#8A827C]' : 'text-[#756C64]'" class="text-xs font-mono line-through">
+                        {{ formatCurrency(activePreset.originalPrice) }}
+                      </span>
+                      <span class="text-xs font-black text-[#10B981] bg-[#10B981]/10 px-2 py-0.5 rounded-md">
+                        -{{ activePreset.discountPercent }}%
+                      </span>
+                    </div>
+
+                    <div :class="isDark ? 'text-[#A8A29E]' : 'text-[#756C64]'" class="text-xs font-medium text-right">
+                      ⚡ Clears in <strong class="text-[#E8621A]">{{ activePreset.soldMinutes }} mins</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Phone Push Alert Preview -->
+                <div class="space-y-2 text-left">
+                  <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider" :class="isDark ? 'text-[#A8A29E]' : 'text-[#756C64]'">
+                    <span>📲 What hungry neighbors see:</span>
+                    <span class="text-[#10B981]">Instant Notification</span>
+                  </div>
+
+                  <div
+                    :class="isDark ? 'bg-[#181614] border-[#2E2A27] text-white shadow-xl' : 'bg-white border-[#E2DAD0] text-[#1E1A17] shadow-md'"
+                    class="border rounded-2xl p-4 flex items-start gap-3 relative overflow-hidden"
+                  >
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#E8621A]"></div>
+
+                    <div class="w-9 h-9 rounded-xl bg-[#E8621A] text-white flex items-center justify-center text-lg font-bold shrink-0 shadow-md">
+                      🛍️
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#E8621A]">Jarabag • Just now</span>
+                        <span :class="isDark ? 'text-[#8A827C]' : 'text-[#756C64]'" class="text-[10px]">within {{ activePreset.radiusKm }}km</span>
+                      </div>
+                      <p class="font-bold text-xs sm:text-sm mt-0.5 truncate" :class="isDark ? 'text-white' : 'text-[#1E1A17]'">
+                        {{ activePreset.notificationTitle }}
+                      </p>
+                      <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-0.5 leading-snug">
+                        {{ activePreset.notificationBody }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer: Local Buyers Count & Trigger Blast Button -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t" :class="isDark ? 'border-[#262321]' : 'border-[#E7E3DF]'">
+                  <div class="text-left">
+                    <p class="text-xs font-bold" :class="isDark ? 'text-white' : 'text-[#1E1A17]'">
+                      {{ activePreset.audienceCount }} hungry locals alerted nearby
+                    </p>
+                    <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#756C64]'" class="text-[11px]">
+                      Average sellout time: <strong class="text-[#E8621A]">{{ activePreset.soldMinutes }} minutes</strong>
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    @click="triggerBroadcastDemo"
+                    :disabled="isBroadcasting"
+                    :class="[
+                      isBroadcasting
+                        ? 'opacity-70 cursor-not-allowed bg-[#E8621A]'
+                        : 'bg-[#E8621A] hover:bg-[#CF5112] active:scale-98 cursor-pointer'
+                    ]"
+                    class="px-5 py-2.5 rounded-xl text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md transition-all select-none min-h-[42px]"
+                  >
+                    <span v-if="isBroadcasting" class="animate-spin text-sm" aria-hidden="true">⟳</span>
+                    <span v-else class="text-sm" aria-hidden="true">↻</span>
+                    <span>{{ isBroadcasting ? 'Broadcasting Batch...' : '↻ Replay Blast' }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: 3 Clear Benefits & App Download Card -->
+            <div class="lg:col-span-5 space-y-5 text-left">
+              <!-- Benefit 1 -->
+              <div
+                :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+                class="p-5 border rounded-2xl space-y-2 shadow-sm transition-all"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-[#E8621A]/10 text-[#E8621A] flex items-center justify-center text-lg font-bold" aria-hidden="true">
+                    ⚡
+                  </div>
+                  <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm sm:text-base">
+                    On-Demand Sales Spikes
+                  </h3>
+                </div>
+                <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
+                  Turn slow hours into instant revenue bursts. Launch a flash broadcast the moment a fresh batch leaves the oven or during midday lulls to clear entire trays in minutes.
+                </p>
+              </div>
+
+              <!-- Benefit 2 -->
+              <div
+                :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+                class="p-5 border rounded-2xl space-y-2 shadow-sm transition-all"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-[#3B82F6]/10 text-[#3B82F6] flex items-center justify-center text-lg font-bold" aria-hidden="true">
+                    📲
+                  </div>
+                  <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm sm:text-base">
+                    Direct Lock-Screen Reach
+                  </h3>
+                </div>
+                <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
+                  Bypass social media algorithms and crowded feeds. Send high-priority, hyper-local push notifications straight to customers within 2–5km who are hungry and ready to buy right now.
+                </p>
+              </div>
+
+              <!-- Benefit 3 -->
+              <div
+                :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+                class="p-5 border rounded-2xl space-y-2 shadow-sm transition-all"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-[#10B981]/10 text-[#10B981] flex items-center justify-center text-lg font-bold" aria-hidden="true">
+                    🛡️
+                  </div>
+                  <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm sm:text-base">
+                    Guaranteed Escrow Pre-Payment
+                  </h3>
+                </div>
+                <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
+                  Zero wasted food and zero unpaid no-shows. Every broadcast claim is locked and pre-paid into cryptographic escrow before the customer even walks through your door.
+                </p>
+              </div>
+
+              <!-- Clean App Download Card -->
+              <div
+                :class="isDark ? 'bg-gradient-to-br from-[#1C1A18] to-[#12110F] border-[#E8621A]/40 shadow-orange-950/20' : 'bg-gradient-to-br from-[#FFF7ED] to-[#FFF] border-[#FDBA74] shadow-orange-100'"
+                class="p-6 border-2 rounded-3xl shadow-xl space-y-4 relative overflow-hidden"
+              >
+                <div class="space-y-1.5">
+                  <span
+                    class="inline-block text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-[#E8621A] text-white"
+                  >
+                    Sell Fast • Save More
+                  </span>
+                  <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-base sm:text-lg font-extrabold font-display leading-tight">
+                    Ready to broadcast specials or catch hot deals?
+                  </h3>
+                  <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
+                    Get the Jarabag app on iOS and Android to start posting instant food drops or discover delicious meals nearby.
+                  </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3 pt-1">
+                  <button
+                    type="button"
+                    @click="triggerDownload('google')"
+                    aria-label="Download Jarabag on Google Play"
+                    class="flex-1 inline-flex items-center justify-center gap-2 bg-[#E8621A] hover:bg-[#CF5112] text-white py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-orange-600/30 transition-all select-none cursor-pointer min-h-[44px]"
+                  >
+                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M5,3.14L15.31,13.43L5,23.71C4.42,23.14 4.09,22.28 4.09,21.14V5.71C4.09,4.57 4.42,3.71 5,3.14M20.25,12.56L16.73,14.56L16.03,13.86L20.25,12.56M17.44,11.89L21.43,9.89C22.18,9.5 22.18,8.5 21.43,8.11L17.44,6.11C16.89,5.83 16.27,6.17 16.27,6.78V11.22C16.27,11.83 16.89,12.17 17.44,11.89M5.71,2.43L15.31,12L5.71,21.57C6.28,22.14 7.14,22.47 8.29,22.47C9.14,22.47 10.09,22.09 11.23,21.43L19.29,16.86L15.31,12L11.23,7.14L19.29,2.57L11.23,2C10.09,1.33 9.14,1 8.29,1C7.14,1 6.28,1.33 5.71,1.9M8.29,1.9H8.3C8.42,1.9 8.54,1.93 8.66,2L14.6,5.34L7.66,12.28L6.43,11.05C6.07,10.69 5.86,10.14 5.86,9.57C5.86,9 6.07,8.45 6.43,8.09L8.29,1.9Z" />
+                    </svg>
+                    <span>Google Play</span>
+                  </button>
+                  <button
+                    type="button"
+                    @click="triggerDownload('apple')"
+                    aria-label="Download Jarabag on App Store"
+                    :class="isDark ? 'bg-[#262321] text-white hover:bg-[#332E2A]' : 'bg-[#1E1A17] text-white hover:bg-black'"
+                    class="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-wider shadow-md transition-all select-none cursor-pointer min-h-[44px]"
+                  >
+                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M18.71,19.5C17.88,20.74 17,21.95 15.66,22C14.32,22 13.89,21.18 12.37,21.18C10.84,21.18 10.37,21.95 9.1,22C7.79,22.05 6.8,20.68 5.96,19.47C4.25,17 2.94,12.45 4.7,9.39C5.57,7.87 7.13,6.91 8.82,6.88C10.1,6.86 11.32,7.75 12.11,7.75C12.89,7.75 14.37,6.68 15.92,6.84C16.57,6.87 18.39,7.1 19.56,8.82C19.47,8.88 17.39,10.1 17.41,12.63C17.44,15.65 20.06,16.66 20.1,16.67C20.08,16.74 19.67,18.11 18.71,19.5M15.97,4.17C16.63,3.37 17.07,2.28 16.95,1C16,1.04 14.9,1.6 14.24,2.38C13.68,3.04 13.19,4.14 13.34,5.39C14.39,5.47 15.4,4.88 15.97,4.17Z" />
+                    </svg>
+                    <span>App Store</span>
+                  </button>
                 </div>
               </div>
             </div>
