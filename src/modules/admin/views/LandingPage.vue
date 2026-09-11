@@ -1342,7 +1342,7 @@ onUnmounted(() => {
                   >
                     <span v-if="isBroadcasting" class="animate-spin text-sm" aria-hidden="true">⟳</span>
                     <span v-else class="text-sm" aria-hidden="true">↻</span>
-                    <span>{{ isBroadcasting ? 'Broadcasting Batch...' : '↻ Replay Blast' }}</span>
+                    <span>{{ isBroadcasting ? 'Broadcasting Batch...' : 'Replay Blast' }}</span>
                   </button>
                 </div>
               </div>
