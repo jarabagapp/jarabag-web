@@ -9,8 +9,8 @@ const routes: RouteRecordRaw[] = [
     name: 'landing',
     component: () => import('@/modules/admin/views/LandingPage.vue'),
     meta: {
-      title: 'JaraBag — Save Fresh Surplus Food at 50–70% Off | Smart Savings & Zero Waste',
-      description: 'Rescue delicious surplus meals, groceries, and bakery goods from local restaurants and bukas at 50–70% off with Jarabag. Secure escrow payments and zero food waste in Nigeria.',
+      title: 'JaraBag — Cheap Food Near You | Sell Fast, No Ads Needed',
+      description: 'Discover discounted meals from local sellers near you — or list your own food and sell out in minutes. Secure payments, no ads needed.',
       canonical: 'https://jarabagapp.com/',
       layout: 'none',
       scrollTop: true,
@@ -21,8 +21,8 @@ const routes: RouteRecordRaw[] = [
     name: 'terms',
     component: () => import('@/modules/admin/views/TermsPage.vue'),
     meta: {
-      title: 'Terms of Service — JaraBag | User Agreement & Escrow Policies',
-      description: 'Read the official Terms of Service for using the Jarabag food rescue platform, including wallet escrow, pickup verification, and refund policies.',
+      title: 'Terms of Service — JaraBag | User Agreement & Payment Policies',
+      description: 'Read the official Terms of Service for using the Jarabag food marketplace, including wallet escrow, pickup verification, and refund policies.',
       canonical: 'https://jarabagapp.com/terms',
       layout: 'none',
       scrollTop: true,
@@ -34,7 +34,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/modules/admin/views/PrivacyPage.vue'),
     meta: {
       title: 'Privacy Policy — JaraBag | Data Protection & Location Privacy',
-      description: 'Learn how Jarabag protects your personal data, background location, and payment details in strict compliance with NDPR and international privacy standards.',
+      description: 'Learn how Jarabag protects your personal data, location, and payment details in compliance with NDPR and international privacy standards.',
       canonical: 'https://jarabagapp.com/privacy',
       layout: 'none',
       scrollTop: true,
@@ -191,8 +191,8 @@ router.afterEach((to) => {
     document.body.classList.remove('admin-mode')
   }
 
-  const title = (to.meta.title as string) ?? 'JaraBag — Save Fresh Surplus Food at 50–70% Off'
-  const description = (to.meta.description as string) ?? 'Rescue fresh surplus meals from local restaurants and bukas at 50-70% off with Jarabag.'
+  const title = (to.meta.title as string) ?? 'JaraBag — Cheap Food Near You | Sell Fast, No Ads Needed'
+  const description = (to.meta.description as string) ?? 'Discover discounted meals nearby or sell your food fast with Jarabag. Secure payments, zero ad spend.'
   const canonicalUrl = (to.meta.canonical as string) ?? `https://jarabagapp.com${to.path}`
 
   document.title = title

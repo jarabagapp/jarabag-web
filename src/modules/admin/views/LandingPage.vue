@@ -28,7 +28,9 @@ import {
   PhMagnifyingGlass,
   PhPackage,
   PhSun,
-  PhMoon
+  PhMoon,
+  PhGraduationCap,
+  PhTimer
 } from '@phosphor-icons/vue'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -261,30 +263,48 @@ interface BroadcastPreset {
 
 const broadcastPresets: BroadcastPreset[] = [
   {
-    id: 'fresh-batch',
-    name: 'Fresh Batch Flash',
-    iconComponent: PhBread,
-    storeName: 'Golden Crust Artisan Bakery',
+    id: 'home-cook',
+    name: 'Home Cook Special',
+    iconComponent: PhCookingPot,
+    storeName: "Mama Ada's Kitchen",
     location: 'Yaba / Sabo, Lagos',
-    itemTitle: 'Hot Oven Meat Pies & Warm Croissants',
-    originalPrice: 8000,
-    discountPrice: 4960,
-    discountPercent: 38,
-    quantity: 15,
-    soldMinutes: 9,
-    radiusKm: 2.5,
-    audienceCount: 380,
-    notificationTitle: 'Fresh Batch Alert: Golden Crust',
-    notificationBody: '15 boxes of hot meat pies & warm croissants just out of the oven at 38% off. Fast pickup in Sabo!',
-    badgeText: 'Fresh Batch'
+    itemTitle: 'Homemade Jollof Rice & Fried Plantain',
+    originalPrice: 5000,
+    discountPrice: 3500,
+    discountPercent: 30,
+    quantity: 12,
+    soldMinutes: 8,
+    radiusKm: 2.0,
+    audienceCount: 280,
+    notificationTitle: "Mama Ada's Kitchen — Fresh Jollof!",
+    notificationBody: '12 plates of homemade Jollof & Fried Plantain at 30% off. Ready for pickup in Sabo!',
+    badgeText: 'Home Cook'
   },
   {
-    id: 'off-peak',
-    name: 'Off-Peak Rush',
-    iconComponent: PhCookingPot,
+    id: 'student-chef',
+    name: 'Campus Quick Bite',
+    iconComponent: PhBread,
+    storeName: 'Chef Tunde (Student)',
+    location: 'UNILAG Campus, Lagos',
+    itemTitle: 'Indomie & Egg Combo Packs',
+    originalPrice: 3000,
+    discountPrice: 1800,
+    discountPercent: 40,
+    quantity: 20,
+    soldMinutes: 6,
+    radiusKm: 1.5,
+    audienceCount: 340,
+    notificationTitle: 'Campus Deal: Chef Tunde',
+    notificationBody: '20 Indomie & Egg combo packs at 40% off on UNILAG campus. Grab one before class!',
+    badgeText: 'Student Chef'
+  },
+  {
+    id: 'restaurant-flash',
+    name: 'Restaurant Flash Deal',
+    iconComponent: PhStorefront,
     storeName: 'Buka Prime Kitchen',
     location: 'Victoria Island, Lagos',
-    itemTitle: 'Midday Smoky Jollof + Grilled Asun Mega Box',
+    itemTitle: 'Smoky Jollof + Grilled Asun Mega Box',
     originalPrice: 12000,
     discountPrice: 6960,
     discountPercent: 42,
@@ -293,32 +313,14 @@ const broadcastPresets: BroadcastPreset[] = [
     radiusKm: 3.5,
     audienceCount: 520,
     notificationTitle: 'Flash Deal: Buka Prime Kitchen',
-    notificationBody: '25 mega boxes of midday smoky Jollof & grilled Asun ready now at 42% off in VI. Grab yours before 2:30 PM!',
-    badgeText: 'Off-Peak Rush'
-  },
-  {
-    id: 'surplus-clearance',
-    name: 'Surplus Clearance',
-    iconComponent: PhShoppingBag,
-    storeName: 'Mama Cass Family Eatery',
-    location: 'Ikeja City, Lagos',
-    itemTitle: 'Chef Special Mystery Box',
-    originalPrice: 10000,
-    discountPrice: 3500,
-    discountPercent: 65,
-    quantity: 10,
-    soldMinutes: 11,
-    radiusKm: 4.5,
-    audienceCount: 640,
-    notificationTitle: 'Surplus Rescue: Mama Cass',
-    notificationBody: '10 Chef Special Mystery Bags available at 65% off in Ikeja. Save delicious food tonight!',
-    badgeText: 'Surplus Clearance'
+    notificationBody: '25 mega boxes of Smoky Jollof & Grilled Asun at 42% off in VI. Grab yours!',
+    badgeText: 'Flash Deal'
   }
 ]
 
 const activePresetIndex = ref(0)
 const isBroadcasting = ref(false)
-const broadcastStockLeft = ref(15)
+const broadcastStockLeft = ref(broadcastPresets[0]?.quantity ?? 12)
 const isBroadcastSoldOut = ref(false)
 let broadcastTimer: ReturnType<typeof setInterval> | null = null
 
@@ -468,38 +470,12 @@ onMounted(() => {
     }
   })
 
-  // ScrollTrigger for Timeline Path
-  const timelinePath = document.querySelector('#timeline-path')
-  const timelineFlow = document.querySelector('#timeline-flow')
-  const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-  if (timelinePath && timelineFlow) {
-    if (prefersReducedMotion) {
-      gsap.set(timelinePath, { strokeDashoffset: 0 })
-    } else {
-      gsap.fromTo(timelinePath,
-        { strokeDashoffset: 600 },
-        {
-          strokeDashoffset: 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: '#timeline-flow',
-            start: 'top 80%',
-            end: 'bottom 50%',
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-          }
-        }
-      )
-    }
-  }
-
   // Count-up Stats
   const statItems = [
-    { target: '#stat-bags', value: 15420, suffix: '+', formatted: '15,420+' },
+    { target: '#stat-meals', value: 15420, suffix: '+', formatted: '15,420+' },
     { target: '#stat-savings', value: 24500000, prefix: '₦', suffix: '', formatted: '₦24,500,000' },
-    { target: '#stat-co2', value: 18, suffix: ' Tons', formatted: '18 Tons' },
-    { target: '#stat-bukas', value: 150, suffix: '+', formatted: '150+' }
+    { target: '#stat-sellers', value: 150, suffix: '+', formatted: '150+' },
+    { target: '#stat-speed', value: 12, prefix: '~', suffix: ' Mins', formatted: '~12 Mins' }
   ]
 
   const animateStats = () => {
@@ -686,25 +662,26 @@ onUnmounted(() => {
               :class="isDark ? 'bg-[#E8621A]/15 border-[#E8621A]/30 text-[#FFA666]' : 'bg-[#FFF7ED] border-[#FDBA74] text-[#9A3412]'"
               class="inline-flex items-center gap-2 px-3.5 py-1.5 border rounded-full text-xs font-bold tracking-widest uppercase mb-6 hero-fade-in"
             >
-              <PhLeaf weight="duotone" class="w-4 h-4 text-emerald-500" aria-hidden="true" />
-              <span>Smart Food Rescue Mechanics</span>
+              <PhLightning weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
+              <span>Cheap Eats, Fast Sales</span>
             </div>
 
             <h1 id="hero-title" class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] mb-6 overflow-hidden">
-              <span class="inline-block hero-word mr-3">Rescue</span>
-              <span class="inline-block hero-word mr-3">fresh</span>
-              <span class="inline-block hero-word mr-3 text-[#E8621A]">surplus.</span>
+              <span class="inline-block hero-word mr-3">Sell</span>
+              <span class="inline-block hero-word mr-3">out</span>
+              <span class="inline-block hero-word mr-3 text-[#E8621A]">cheap</span>
+              <span class="inline-block hero-word text-[#E8621A]">food</span>
               <br />
-              <span class="inline-block hero-word mr-3">Save</span>
-              <span class="inline-block hero-word mr-3">funds.</span>
-              <span class="inline-block hero-word text-[#E8621A]">Protect.</span>
+              <span class="inline-block hero-word mr-3">near</span>
+              <span class="inline-block hero-word mr-3">you</span>
+              <span class="inline-block hero-word text-[#E8621A]">fast.</span>
             </h1>
 
             <p
               :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'"
               class="text-base sm:text-lg leading-relaxed mb-8 max-w-lg hero-fade-in transition-colors"
             >
-              Jarabag matches you with top-rated local eateries, bukas, and kitchens. Collect delicious surplus food boxes before closing and play your part in reducing landfill waste via our secure verification system.
+              Discover discounted meals from local sellers — or list your own and sell out in minutes. No ads needed.
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto hero-fade-in">
@@ -751,17 +728,78 @@ onUnmounted(() => {
               <div class="w-16 h-16 bg-[#E8621A]/10 rounded-2xl flex items-center justify-center select-none" aria-hidden="true">
                 <PhSparkle weight="duotone" class="w-8 h-8 text-[#E8621A]" />
               </div>
-              <h2 class="text-base font-extrabold mt-4">Simulate Our Safe Flow</h2>
+              <h2 class="text-base font-extrabold mt-4">See How It Works</h2>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-2.5 leading-relaxed px-2">
-                Jarabag guards your transaction securely. Experience the automated lock-escrow and OTP release protocol below!
+                Your payment is protected until you pick up your food. Try it below!
               </p>
               <a
                 href="#simulator"
                 @click="scrollToSection('simulator', $event)"
                 class="mt-6 px-6 py-3 bg-[#E8621A] hover:bg-[#CF5112] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-colors inline-block select-none cursor-pointer"
               >
-                Start Live Simulator
+                Try It Out
               </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Who Sells on Jarabag? Section -->
+      <section
+        id="who-sells"
+        :class="isDark ? 'border-t border-[#1C1A18] bg-[#0E0D0C]' : 'border-t border-[#E7E3DF] bg-white'"
+        class="py-20 relative z-20"
+        aria-labelledby="who-sells-heading"
+      >
+        <div class="max-w-5xl mx-auto px-6">
+          <div class="text-center max-w-lg mx-auto mb-12">
+            <h2 id="who-sells-heading" class="text-2xl sm:text-3xl font-extrabold tracking-tight font-display mb-3">Who sells on Jarabag?</h2>
+            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base">Anyone with food to sell — at any scale.</p>
+          </div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#E8621A]/40'"
+              class="p-5 sm:p-6 border rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 shadow-sm"
+            >
+              <div class="w-12 h-12 bg-[#E8621A]/10 text-[#E8621A] rounded-2xl flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <PhCookingPot weight="duotone" class="w-6 h-6" />
+              </div>
+              <h3 class="font-extrabold text-sm mb-1">Home Cooks</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs leading-relaxed">Sell homemade meals to your neighborhood</p>
+            </div>
+
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#3B82F6]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#3B82F6]/40'"
+              class="p-5 sm:p-6 border rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 shadow-sm"
+            >
+              <div class="w-12 h-12 bg-[#3B82F6]/10 text-[#3B82F6] rounded-2xl flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <PhGraduationCap weight="duotone" class="w-6 h-6" />
+              </div>
+              <h3 class="font-extrabold text-sm mb-1">Student Chefs</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs leading-relaxed">Make money cooking for your campus</p>
+            </div>
+
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#10B981]/40'"
+              class="p-5 sm:p-6 border rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 shadow-sm"
+            >
+              <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-2xl flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <PhStorefront weight="duotone" class="w-6 h-6" />
+              </div>
+              <h3 class="font-extrabold text-sm mb-1">Restaurants & Bukas</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs leading-relaxed">Clear trays fast during slow hours</p>
+            </div>
+
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#F59E0B]/40' : 'bg-[#FAF8F6] border-[#E7E3DF] hover:border-[#F59E0B]/40'"
+              class="p-5 sm:p-6 border rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 shadow-sm"
+            >
+              <div class="w-12 h-12 bg-[#F59E0B]/10 text-[#F59E0B] rounded-2xl flex items-center justify-center mx-auto mb-3" aria-hidden="true">
+                <PhBread weight="duotone" class="w-6 h-6" />
+              </div>
+              <h3 class="font-extrabold text-sm mb-1">Bakeries & Big Kitchens</h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs leading-relaxed">Move fresh batches before they go stale</p>
             </div>
           </div>
         </div>
@@ -777,10 +815,10 @@ onUnmounted(() => {
         <div class="max-w-5xl mx-auto px-6">
           <div class="text-center max-w-lg mx-auto mb-20">
             <h2 id="simulator-heading" class="text-3xl font-extrabold tracking-tight font-display mb-3 text-[#E8621A]">
-              Live Escrow Simulator
+              Your money is safe
             </h2>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base">
-              Click the interactive buttons inside the phone mockup below to test our cryptographic protection flow.
+              We hold your payment until you pick up. Simple.
             </p>
           </div>
 
@@ -814,7 +852,7 @@ onUnmounted(() => {
                   <div v-if="activeStep === 1" class="flex-1 flex flex-col justify-between">
                     <div>
                       <div class="flex items-center justify-between mb-4 border-b border-[#262321]/30 pb-2.5">
-                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">Rescue Map</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">Food Map</span>
                         <span class="text-[11px] font-mono font-bold text-[#E8621A]">{{ formatCurrency(walletBalance) }}</span>
                       </div>
 
@@ -848,10 +886,10 @@ onUnmounted(() => {
                       <div class="mt-5 text-left">
                         <h3 class="font-extrabold text-sm flex items-center gap-1.5">
                           <PhMapPin weight="duotone" class="w-3.5 h-3.5 inline text-[#E8621A] shrink-0" aria-hidden="true" />
-                          <span>Mama Titi Kitchen (Surplus)</span>
+                          <span>Mama Titi Kitchen (Deal)</span>
                         </h3>
                         <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-[10px] mt-1.5 leading-relaxed">
-                          Click the active orange pin on the radar map above to inspect listing details!
+                          Tap the orange pin on the map to see the deal!
                         </p>
                       </div>
                     </div>
@@ -861,7 +899,7 @@ onUnmounted(() => {
                       @click="runStepTransition(2)"
                       class="w-full bg-[#E8621A] hover:bg-[#CF5112] text-white rounded-xl py-3 text-center text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer select-none flex items-center justify-center gap-1.5"
                     >
-                      <span>View Food Box details</span>
+                      <span>View Deal</span>
                     </button>
                   </div>
 
@@ -869,7 +907,7 @@ onUnmounted(() => {
                   <div v-else-if="activeStep === 2" class="flex-1 flex flex-col justify-between">
                     <div>
                       <div class="flex items-center justify-between mb-4 border-b border-[#262321]/30 pb-2.5">
-                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">Escrow Lock</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">Secure Payment</span>
                         <span class="text-[11px] font-mono font-bold text-red-500">{{ formatCurrency(walletBalance) }}</span>
                       </div>
 
@@ -882,10 +920,10 @@ onUnmounted(() => {
                           <h3 class="font-extrabold text-sm">Party Jollof & Charcoal Chicken</h3>
                           <p class="text-xs font-bold text-[#E8621A] mt-1.5 flex items-center gap-1">
                             <PhShieldCheck weight="duotone" class="w-3.5 h-3.5 inline text-emerald-500 shrink-0" aria-hidden="true" />
-                            <span>₦1,500 held in secure escrow</span>
+                            <span>₦1,500 held securely until pickup</span>
                           </p>
                           <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-[10.5px] mt-2 leading-relaxed">
-                            Your money is held in the platform escrow pool. The vendor receives no payment until you present the unique OTP upon delivery.
+                            Your money stays protected. The seller only gets paid when you confirm pickup with your code.
                           </p>
                         </div>
                       </div>
@@ -904,14 +942,14 @@ onUnmounted(() => {
                   <div v-else-if="activeStep === 3" class="flex-1 flex flex-col justify-between">
                     <div>
                       <div class="flex items-center justify-between mb-4 border-b border-[#262321]/30 pb-2.5">
-                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">OTP Verification</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">Pickup Code</span>
                         <span class="text-[11px] font-mono font-bold">{{ formatCurrency(walletBalance) }}</span>
                       </div>
 
                       <div class="space-y-5 text-center">
                         <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-[10.5px] leading-relaxed flex items-center justify-center gap-1">
                           <PhClock weight="duotone" class="w-3.5 h-3.5 inline text-amber-500 shrink-0" aria-hidden="true" />
-                          <span>Show this rolling OTP code to the merchant at the pickup counter.</span>
+                          <span>Show this code to the seller when you pick up your food.</span>
                         </p>
 
                         <div class="py-5 bg-[#E8621A]/10 border border-[#E8621A]/25 rounded-2xl relative overflow-hidden flex items-center justify-center gap-2">
@@ -927,11 +965,11 @@ onUnmounted(() => {
                         <div class="text-left text-[10px] space-y-2 border-t border-[#262321]/30 pt-4">
                           <h3 class="font-extrabold uppercase tracking-wider text-[#E8621A] text-[10px] flex items-center gap-1">
                             <PhShieldCheck weight="duotone" class="w-3.5 h-3.5 inline text-emerald-500 shrink-0" aria-hidden="true" />
-                            <span>Pickup Instructions</span>
+                            <span>Pickup Steps</span>
                           </h3>
-                          <p>1. Arrive at Mama Titi's within pickup times.</p>
-                          <p>2. Share the 4-digit code with the clerk.</p>
-                          <p>3. Wait for database verification confirm.</p>
+                          <p>1. Go to Mama Titi's at pickup time.</p>
+                          <p>2. Show the 4-digit code to the seller.</p>
+                          <p>3. Collect your food — done!</p>
                         </div>
                       </div>
                     </div>
@@ -941,7 +979,7 @@ onUnmounted(() => {
                       @click="runStepTransition(4)"
                       class="w-full bg-[#181614] hover:bg-[#252220] border border-[#262321] text-white rounded-xl py-3 text-center text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer select-none"
                     >
-                      Simulate Vendor input
+                      Confirm Pickup
                     </button>
                   </div>
 
@@ -952,9 +990,9 @@ onUnmounted(() => {
                         <PhCheckCircle weight="duotone" class="w-8 h-8 text-[#10B981]" />
                       </div>
                       <div>
-                        <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm">Verification Success</h3>
+                        <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm">Pickup Confirmed!</h3>
                         <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-[10.5px] mt-2 px-3 leading-relaxed">
-                          Funds released! ₦1,425 has been credited to the vendor wallet (5% platform commission deducted).
+                          Payment released! ₦1,425 sent to the seller (5% platform fee deducted).
                         </p>
                       </div>
                     </div>
@@ -965,7 +1003,7 @@ onUnmounted(() => {
                     >
                       <p class="text-[9px] uppercase tracking-wider font-extrabold opacity-70 flex items-center gap-1">
                         <PhWallet weight="duotone" class="w-3.5 h-3.5 inline text-[#E8621A] shrink-0" aria-hidden="true" />
-                        <span>Vendor Ledger Balance</span>
+                        <span>Seller Earnings</span>
                       </p>
                       <p class="text-xl font-mono font-black text-[#10B981] mt-1">{{ formatCurrency(merchantEarnings) }}</p>
                     </div>
@@ -984,9 +1022,9 @@ onUnmounted(() => {
 
             <!-- Steps Sidebar -->
             <div class="lg:col-span-6 space-y-5 text-left">
-              <h3 class="text-2xl font-bold font-display leading-tight">Escrow-backed trust loop</h3>
+              <h3 class="text-2xl font-bold font-display leading-tight">How payment works</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base leading-relaxed mb-6">
-                Jarabag completely eliminates payment fraud by using safe automated locks. Funds move between users only after scanning the OTP code at the counter.
+                Jarabag protects both buyers and sellers. Funds only move after pickup is confirmed.
               </p>
 
               <div class="space-y-3.5">
@@ -1003,12 +1041,12 @@ onUnmounted(() => {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <PhMagnifyingGlass weight="duotone" class="w-5 h-5 shrink-0 text-[#E8621A]" aria-hidden="true" />
-                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Step 1 — Discover Deal</p>
+                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Find a deal</p>
                     </div>
                     <PhLightning v-if="activeStep === 1" weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
                   </div>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
-                    Browse geolocated listings on the interactive food map near your target coordinates.
+                    Browse food deals on the map near you.
                   </p>
                 </div>
 
@@ -1025,12 +1063,12 @@ onUnmounted(() => {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <PhLockKey weight="duotone" class="w-5 h-5 shrink-0 text-[#E8621A]" aria-hidden="true" />
-                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Step 2 — Lock Escrow</p>
+                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Pay securely</p>
                     </div>
                     <PhLightning v-if="activeStep === 2" weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
                   </div>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
-                    Funds are secured safely in the platform escrow pool until handover code verification.
+                    Your payment is held safely until you pick up your food.
                   </p>
                 </div>
 
@@ -1047,12 +1085,12 @@ onUnmounted(() => {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <PhQrCode weight="duotone" class="w-5 h-5 shrink-0 text-[#E8621A]" aria-hidden="true" />
-                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Step 3 — Retrieve Rolling OTP</p>
+                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Get your code</p>
                     </div>
                     <PhLightning v-if="activeStep === 3" weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
                   </div>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
-                    A unique, secure claim verification OTP code rolls onto your device.
+                    A unique pickup code appears on your phone. Show it to collect your food.
                   </p>
                 </div>
 
@@ -1069,12 +1107,12 @@ onUnmounted(() => {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <PhConfetti weight="duotone" class="w-5 h-5 shrink-0 text-[#E8621A]" aria-hidden="true" />
-                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Step 4 — Release &amp; Verified</p>
+                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Pick up &amp; done</p>
                     </div>
                     <PhLightning v-if="activeStep === 4" weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
                   </div>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
-                    Merchant enters the OTP on terminal, releases escrow balance, and handles fresh pickup!
+                    Seller confirms the code, gets paid instantly, and you enjoy your meal!
                   </p>
                 </div>
               </div>
@@ -1098,16 +1136,16 @@ onUnmounted(() => {
               class="inline-flex items-center gap-2 px-3.5 py-1.5 border rounded-full text-xs font-bold tracking-widest uppercase mb-4"
             >
               <PhBroadcast weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
-              <span>1-Tap Neighborhood Broadcast</span>
+              <span>1-Tap Instant Broadcast</span>
             </div>
             <h2
               id="broadcast-heading"
               class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight font-display mb-3"
             >
-              Sell Out Fresh Batches &amp; Specials in Minutes.
+              List it. Broadcast it. Sell out.
             </h2>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base leading-relaxed">
-              Got hot trays fresh from the oven, lunch specials, or extra portions? Send a 1-tap broadcast to hungry neighbors within your radius and watch them buy and pick up in minutes.
+              Got food ready to sell? Send a 1-tap broadcast to hungry people nearby and watch them buy in minutes. No ads, no social media — just fast sales.
             </p>
           </div>
 
@@ -1250,7 +1288,7 @@ onUnmounted(() => {
                   <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider" :class="isDark ? 'text-[#A8A29E]' : 'text-[#756C64]'">
                     <span class="flex items-center gap-1">
                       <PhDeviceMobile weight="duotone" class="w-4 h-4 text-[#3B82F6]" aria-hidden="true" />
-                      <span>What hungry neighbors see:</span>
+                      <span>What nearby buyers see:</span>
                     </span>
                     <span class="text-[#10B981]">Instant Notification</span>
                   </div>
@@ -1284,7 +1322,7 @@ onUnmounted(() => {
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 border-t" :class="isDark ? 'border-[#262321]' : 'border-[#E7E3DF]'">
                   <div class="text-left">
                     <p class="text-xs font-bold" :class="isDark ? 'text-white' : 'text-[#1E1A17]'">
-                      {{ activePreset.audienceCount }} hungry locals alerted nearby
+                      {{ activePreset.audienceCount }} nearby buyers notified
                     </p>
                     <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#756C64]'" class="text-[11px]">
                       Average sellout time: <strong class="text-[#E8621A]">{{ activePreset.soldMinutes }} minutes</strong>
@@ -1322,11 +1360,11 @@ onUnmounted(() => {
                     <PhLightning weight="duotone" class="w-5 h-5 text-[#E8621A]" />
                   </div>
                   <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm sm:text-base">
-                    On-Demand Sales Spikes
+                    Instant Sales, No Ads
                   </h3>
                 </div>
                 <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                  Turn slow hours into instant revenue bursts. Launch a flash broadcast the moment a fresh batch leaves the oven or during midday lulls to clear entire trays in minutes.
+                  Broadcast to nearby buyers and sell out fast — no ad spend, no social media posting needed.
                 </p>
               </div>
 
@@ -1340,11 +1378,11 @@ onUnmounted(() => {
                     <PhDeviceMobile weight="duotone" class="w-5 h-5 text-[#3B82F6]" />
                   </div>
                   <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm sm:text-base">
-                    Direct Lock-Screen Reach
+                    Straight to Their Phone
                   </h3>
                 </div>
                 <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                  Bypass social media algorithms and crowded feeds. Send high-priority, hyper-local push notifications straight to customers within 2–5km who are hungry and ready to buy right now.
+                  Push notifications go directly to nearby buyers' phones — no algorithms, no crowded feeds.
                 </p>
               </div>
 
@@ -1358,11 +1396,11 @@ onUnmounted(() => {
                     <PhShieldCheck weight="duotone" class="w-5 h-5 text-[#10B981]" />
                   </div>
                   <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm sm:text-base">
-                    Guaranteed Escrow Pre-Payment
+                    Pre-paid, No No-shows
                   </h3>
                 </div>
                 <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                  Zero wasted food and zero unpaid no-shows. Every broadcast claim is locked and pre-paid into cryptographic escrow before the customer even walks through your door.
+                  Every order is pre-paid. No wasted food, no unpaid pickups.
                 </p>
               </div>
 
@@ -1378,10 +1416,10 @@ onUnmounted(() => {
                     Sell Fast • Save More
                   </span>
                   <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-base sm:text-lg font-extrabold font-display leading-tight">
-                    Ready to broadcast specials or catch hot deals?
+                    Ready to sell fast or find cheap food?
                   </h3>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                    Get the Jarabag app on iOS and Android to start posting instant food drops or discover delicious meals nearby.
+                    Get the Jarabag app to start selling or discover discounted meals nearby.
                   </p>
                 </div>
 
@@ -1416,66 +1454,6 @@ onUnmounted(() => {
         </div>
       </section>
 
-      <!-- Lifecycle Trace Map -->
-      <section
-        id="timeline-flow"
-        :class="isDark ? 'border-t border-[#1C1A18] bg-[#0E0D0C]' : 'border-t border-[#E7E3DF] bg-white'"
-        class="py-24 relative z-20"
-        aria-labelledby="lifecycle-heading"
-      >
-        <div class="max-w-5xl mx-auto px-6">
-          <div class="text-center max-w-lg mx-auto mb-16">
-            <h2 id="lifecycle-heading" class="text-3xl font-extrabold tracking-tight font-display mb-3">The Saved-Food Lifecycle</h2>
-            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base">Trace the path of a meal package from listing to escrow payoff.</p>
-          </div>
-
-          <div class="lifecycle-timeline relative w-full overflow-x-auto pb-8 scrollbar-hide">
-            <div class="min-w-[700px] max-w-full relative h-36 flex flex-col justify-between">
-              <div class="absolute inset-0 top-10 pointer-events-none select-none" aria-hidden="true">
-                <svg class="w-full h-10 overflow-visible" viewBox="0 0 700 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M 50,20 L 650,20" :stroke="isDark ? '#262321' : '#E7E3DF'" stroke-width="4" stroke-linecap="round" />
-                  <path id="timeline-path" d="M 50,20 L 650,20" stroke="#E8621A" stroke-width="4" stroke-linecap="round" stroke-dasharray="600" stroke-dashoffset="600" />
-                </svg>
-              </div>
-
-              <div class="flex justify-between items-center z-10 px-12 relative top-2">
-                <div class="lifecycle-step-node flex flex-col items-center w-24 text-center">
-                  <div :class="isDark ? 'bg-[#181614] border-[#262321] text-white shadow-xl' : 'bg-[#FAF8F6] border-[#E7E3DF] text-[#1E1A17] shadow-md'" class="w-16 h-16 rounded-full border flex items-center justify-center text-xl font-bold font-display select-none" aria-hidden="true">
-                    <PhStorefront weight="duotone" class="w-6 h-6 text-[#E8621A]" />
-                  </div>
-                  <p class="text-[10px] font-black uppercase tracking-wider mt-3">1. Listing</p>
-                  <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-[9px] mt-0.5 leading-snug">Kitchen posts excess</p>
-                </div>
-
-                <div class="lifecycle-step-node flex flex-col items-center w-24 text-center">
-                  <div :class="isDark ? 'bg-[#181614] border-[#262321] text-white shadow-xl' : 'bg-[#FAF8F6] border-[#E7E3DF] text-[#1E1A17] shadow-md'" class="w-16 h-16 rounded-full border flex items-center justify-center text-xl font-bold font-display select-none" aria-hidden="true">
-                    <PhLockKey weight="duotone" class="w-6 h-6 text-[#E8621A]" />
-                  </div>
-                  <p class="text-[10px] font-black uppercase tracking-wider mt-3">2. Lock</p>
-                  <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-[9px] mt-0.5 leading-snug">Escrow hold funds</p>
-                </div>
-
-                <div class="lifecycle-step-node flex flex-col items-center w-24 text-center">
-                  <div :class="isDark ? 'bg-[#181614] border-[#262321] text-white shadow-xl' : 'bg-[#FAF8F6] border-[#E7E3DF] text-[#1E1A17] shadow-md'" class="w-16 h-16 rounded-full border flex items-center justify-center text-xl font-bold font-display select-none" aria-hidden="true">
-                    <PhQrCode weight="duotone" class="w-6 h-6 text-[#E8621A]" />
-                  </div>
-                  <p class="text-[10px] font-black uppercase tracking-wider mt-3">3. Code</p>
-                  <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-[9px] mt-0.5 leading-snug">Pickup OTP rolls</p>
-                </div>
-
-                <div class="lifecycle-step-node flex flex-col items-center w-24 text-center">
-                  <div :class="isDark ? 'bg-[#181614] border-[#262321] text-white shadow-xl' : 'bg-[#FAF8F6] border-[#E7E3DF] text-[#1E1A17] shadow-md'" class="w-16 h-16 rounded-full border flex items-center justify-center text-xl font-bold font-display select-none" aria-hidden="true">
-                    <PhCheckCircle weight="duotone" class="w-6 h-6 text-[#10B981]" />
-                  </div>
-                  <p class="text-[10px] font-black uppercase tracking-wider mt-3">4. Release</p>
-                  <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-[9px] mt-0.5 leading-snug">Payoff releases</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- App Features Section -->
       <section
         id="app-features"
@@ -1496,7 +1474,7 @@ onUnmounted(() => {
               Smart tools for both sides of the counter.
             </h2>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base">
-              We built powerful features into the Jarabag app that make recovering surplus food entirely effortless.
+              We built powerful features into the Jarabag app that make buying and selling discounted food completely effortless.
             </p>
           </div>
 
@@ -1506,11 +1484,11 @@ onUnmounted(() => {
               <div class="w-12 h-12 bg-[#E8621A]/10 text-[#E8621A] rounded-2xl flex items-center justify-center text-xl mb-6" aria-hidden="true">
                 <PhMapPin weight="duotone" class="w-6 h-6 text-[#E8621A]" />
               </div>
-              <h3 class="text-lg font-extrabold mb-2">Dynamic Push Radius</h3>
+              <h3 class="text-lg font-extrabold mb-2">Broadcast Radius Control</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                Vendors can expand their alert radius from a local neighborhood (2km) to city-wide reach instantly, ensuring large batches of food sell out before closing.
+                Expand your alert radius from 2km to city-wide reach instantly, ensuring your food sells out fast.
               </p>
-              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
+              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Sellers</span>
             </div>
 
             <!-- 2 -->
@@ -1518,11 +1496,11 @@ onUnmounted(() => {
               <div class="w-12 h-12 bg-[#10B981]/10 text-[#10B981] rounded-2xl flex items-center justify-center text-xl mb-6" aria-hidden="true">
                 <PhLockKey weight="duotone" class="w-6 h-6 text-emerald-500" />
               </div>
-              <h3 class="text-lg font-extrabold mb-2">Proximity Alerts</h3>
+              <h3 class="text-lg font-extrabold mb-2">Deal Alerts Near You</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                "Ping! Fresh bags near you." Receive instant notifications the moment new surplus bags drop nearby, or when walking near a buka with available bags.
+                Get notified the moment cheap food drops near you, or when walking near your favorite kitchen.
               </p>
-              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Consumers</span>
+              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#10B981]">For Buyers</span>
             </div>
 
             <!-- 3 -->
@@ -1530,11 +1508,11 @@ onUnmounted(() => {
               <div class="w-12 h-12 bg-[#E8621A]/10 text-[#E8621A] rounded-2xl flex items-center justify-center text-xl mb-6" aria-hidden="true">
                 <PhWallet weight="duotone" class="w-6 h-6 text-[#E8621A]" />
               </div>
-              <h3 class="text-lg font-extrabold mb-2">Zero Marketing Effort</h3>
+              <h3 class="text-lg font-extrabold mb-2">Zero Ad Spend</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                Post a surplus bag in 10 seconds. We automatically crowd-ping hungry users in your area. Turn daily kitchen surplus into instant recovered revenue.
+                Post food in 10 seconds. We automatically ping hungry buyers in your area. No paid ads required.
               </p>
-              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Vendors</span>
+              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#E8621A]">For Sellers</span>
             </div>
 
             <!-- 4 -->
@@ -1544,9 +1522,9 @@ onUnmounted(() => {
               </div>
               <h3 class="text-lg font-extrabold mb-2">One-Tap Reserving</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                See a meal you love? Tap to lock it in escrow instantly. Secure your discounted meal in seconds without complex checkout steps.
+                See a meal you love? Tap to lock it in escrow instantly. Secure your meal in seconds without hassle.
               </p>
-              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#3B82F6]">For Consumers</span>
+              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#3B82F6]">For Buyers</span>
             </div>
 
             <!-- 5 -->
@@ -1556,9 +1534,9 @@ onUnmounted(() => {
               </div>
               <h3 class="text-lg font-extrabold mb-2">Scheduled Listings</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                Too busy during rush hours? Pre-schedule your surplus drops for evening pickup. Our system automatically notifies nearby customers at your chosen time.
+                Busy during peak hours? Pre-schedule your meal drops. Our system notifies nearby customers at your chosen time.
               </p>
-              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#8B5CF6]">For Vendors</span>
+              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#8B5CF6]">For Sellers</span>
             </div>
 
             <!-- 6 -->
@@ -1566,11 +1544,11 @@ onUnmounted(() => {
               <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center text-xl mb-6" aria-hidden="true">
                 <PhBank weight="duotone" class="w-6 h-6 text-emerald-500" />
               </div>
-              <h3 class="text-lg font-extrabold mb-2">Instant Vendor Payouts</h3>
+              <h3 class="text-lg font-extrabold mb-2">Instant Seller Payouts</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                No delayed cycles or net-30 payouts. Earnings release directly into your verified bank account the moment pickup OTP verification confirms.
+                No delayed cycles. Earnings release directly into your verified bank account the moment pickup code is confirmed.
               </p>
-              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-emerald-500">For Vendors</span>
+              <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-emerald-500">For Sellers</span>
             </div>
           </div>
         </div>
@@ -1585,22 +1563,22 @@ onUnmounted(() => {
       >
         <div class="max-w-5xl mx-auto px-6">
           <div class="text-center max-w-lg mx-auto mb-16">
-            <h2 id="principles-heading" class="text-3xl font-extrabold tracking-tight font-display mb-3 text-[#E8621A]">Core Platform Principles</h2>
-            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base">We combine sustainable food economics with modern security.</p>
+            <h2 id="principles-heading" class="text-3xl font-extrabold tracking-tight font-display mb-3 text-[#E8621A]">Why Jarabag</h2>
+            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base">Built for speed, safety, and everyday savings.</p>
           </div>
 
           <div class="grid md:grid-cols-3 gap-8">
             <div
-              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/30' : 'bg-white border-[#E7E3DF] hover:border-[#E8621A]/30'"
+              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#10B981]/30' : 'bg-white border-[#E7E3DF] hover:border-[#10B981]/30'"
               class="p-8 border rounded-3xl transition-all duration-300 hover:-translate-y-1.5 shadow-md flex flex-col justify-between"
             >
               <div>
                 <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5" aria-hidden="true">
-                  <PhLeaf weight="duotone" class="w-6 h-6 text-emerald-500" />
+                  <PhShieldCheck weight="duotone" class="w-6 h-6 text-emerald-500" />
                 </div>
-                <h3 class="text-base font-extrabold mb-2.5">Zero Food Waste</h3>
+                <h3 class="text-base font-extrabold mb-2.5">Secure Payments</h3>
                 <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                  Clear fresh surplus inventory from local kitchens daily. Provide safe, warm portions at massive savings.
+                  Escrow holds funds safely until pickup is confirmed with your unique code. Zero fraud, zero worries.
                 </p>
               </div>
             </div>
@@ -1611,26 +1589,26 @@ onUnmounted(() => {
             >
               <div>
                 <div class="w-12 h-12 rounded-2xl bg-[#E8621A]/10 flex items-center justify-center mb-5" aria-hidden="true">
-                  <PhUsersThree weight="duotone" class="w-6 h-6 text-[#E8621A]" />
+                  <PhLightning weight="duotone" class="w-6 h-6 text-[#E8621A]" />
                 </div>
-                <h3 class="text-base font-extrabold mb-2.5">Community Escrow</h3>
+                <h3 class="text-base font-extrabold mb-2.5">Sell Instantly</h3>
                 <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                  Payments are held inside the platform lock pool. Escrow releases balance exclusively when claim code matches database.
+                  One tap broadcasts your meals to hungry nearby buyers in seconds. No ads, no social media hassles.
                 </p>
               </div>
             </div>
 
             <div
-              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-[#E8621A]/30' : 'bg-white border-[#E7E3DF] hover:border-[#E8621A]/30'"
+              :class="isDark ? 'bg-[#12110F] border-[#262321] hover:border-teal-500/30' : 'bg-white border-[#E7E3DF] hover:border-teal-500/30'"
               class="p-8 border rounded-3xl transition-all duration-300 hover:-translate-y-1.5 shadow-md flex flex-col justify-between"
             >
               <div>
-                <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-5" aria-hidden="true">
-                  <PhGlobe weight="duotone" class="w-6 h-6 text-blue-500" />
+                <div class="w-12 h-12 rounded-2xl bg-teal-500/10 flex items-center justify-center mb-5" aria-hidden="true">
+                  <PhLeaf weight="duotone" class="w-6 h-6 text-teal-500" />
                 </div>
-                <h3 class="text-base font-extrabold mb-2.5">Environmental Recovery</h3>
+                <h3 class="text-base font-extrabold mb-2.5">Less Waste, More Value</h3>
                 <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                  Stop organic inventory from decomposing inside local landfills, dramatically lowering methane emissions.
+                  Good food gets enjoyed, not wasted. Great discounts for customers, recovered revenue for sellers.
                 </p>
               </div>
             </div>
@@ -1651,8 +1629,8 @@ onUnmounted(() => {
             <div class="w-10 h-10 rounded-xl bg-[#E8621A]/10 flex items-center justify-center mb-3" aria-hidden="true">
               <PhShoppingBag weight="duotone" class="w-5 h-5 text-[#E8621A]" />
             </div>
-            <p id="stat-bags" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">15,420+</p>
-            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Surplus Bags Saved</p>
+            <p id="stat-meals" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">15,420+</p>
+            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Meals Sold</p>
           </div>
           <div class="flex flex-col items-center">
             <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-3" aria-hidden="true">
@@ -1662,18 +1640,18 @@ onUnmounted(() => {
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Customer Savings</p>
           </div>
           <div class="flex flex-col items-center">
-            <div class="w-10 h-10 rounded-xl bg-teal-500/10 flex items-center justify-center mb-3" aria-hidden="true">
-              <PhLeaf weight="duotone" class="w-5 h-5 text-teal-500" />
-            </div>
-            <p id="stat-co2" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">18 Tons</p>
-            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">CO₂ Prevented</p>
-          </div>
-          <div class="flex flex-col items-center">
             <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3" aria-hidden="true">
               <PhStorefront weight="duotone" class="w-5 h-5 text-amber-500" />
             </div>
-            <p id="stat-bukas" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">150+</p>
-            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Registered Kitchens</p>
+            <p id="stat-sellers" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">150+</p>
+            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Active Sellers</p>
+          </div>
+          <div class="flex flex-col items-center">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center mb-3" aria-hidden="true">
+              <PhTimer weight="duotone" class="w-5 h-5 text-blue-500" />
+            </div>
+            <p id="stat-speed" class="text-4xl md:text-5xl font-black text-[#E8621A] font-display">~12 Mins</p>
+            <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs uppercase tracking-widest mt-2.5 font-bold">Avg. Sellout Time</p>
           </div>
         </div>
       </section>

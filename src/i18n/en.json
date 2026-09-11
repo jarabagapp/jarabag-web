@@ -1,7 +1,7 @@
 {
   "common": {
     "appName": "JaraBag",
-    "tagline": "Fresh Food, Smart Savings",
+    "tagline": "Cheap Food, Fast Sales",
     "loading": "Loading…",
     "retry": "Try Again",
     "cancel": "Cancel",
@@ -13,7 +13,7 @@
     "back": "Back",
     "next": "Next",
     "search": "Search",
-    "searchPlaceholder": "Search for bags, vendors…",
+    "searchPlaceholder": "Search for deals, sellers…",
     "noResults": "No results found",
     "errorGeneric": "Something went wrong. Please try again.",
     "skipToContent": "Skip to main content",
@@ -46,8 +46,8 @@
     "hasAccount": "Already have an account?"
   },
   "consumer": {
-    "nearbyBags": "Nearby Bags",
-    "magicBagDrop": "Magic Bag Drop!",
+    "nearbyBags": "Nearby Deals",
+    "magicBagDrop": "New Deal Alert!",
     "categories": "Categories",
     "viewAll": "View All",
     "pickupWindow": "Pick up {start}–{end}",
@@ -95,7 +95,7 @@
       "cancelled": "Cancelled",
       "refunded": "Refunded"
     },
-    "noOrders": "No orders yet. Start saving food!",
+    "noOrders": "No orders yet. Find a deal!",
     "cancelOrder": "Cancel Order",
     "cancelConfirm": "Are you sure you want to cancel this order?"
   },

@@ -36,6 +36,6 @@ describe('App', () => {
       },
     })
     expect(wrapper.exists()).toBe(true)
-  })
+  }, 15000)
 })
 

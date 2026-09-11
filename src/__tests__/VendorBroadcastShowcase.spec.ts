@@ -39,12 +39,12 @@ describe('VendorBroadcastShowcase Component integration', () => {
 
     const heading = wrapper.find('#broadcast-heading')
     expect(heading.exists()).toBe(true)
-    expect(heading.text()).toContain('Sell Out Fresh Batches & Specials in Minutes.')
+    expect(heading.text()).toContain('List it. Broadcast it. Sell out.')
 
     // Commercial value driver pillars
-    expect(wrapper.text()).toContain('On-Demand Sales Spikes')
-    expect(wrapper.text()).toContain('Direct Lock-Screen Reach')
-    expect(wrapper.text()).toContain('Guaranteed Escrow Pre-Payment')
+    expect(wrapper.text()).toContain('Instant Sales, No Ads')
+    expect(wrapper.text()).toContain('Straight to Their Phone')
+    expect(wrapper.text()).toContain('Pre-paid, No No-shows')
   })
 
   it('renders all 3 scenario tabs with role="tab" and correct initial aria-selected attributes', () => {
@@ -64,11 +64,11 @@ describe('VendorBroadcastShowcase Component integration', () => {
     expect(tabs[1]?.attributes('aria-selected')).toBe('false')
     expect(tabs[2]?.attributes('aria-selected')).toBe('false')
 
-    // Initial preset content (Golden Crust Artisan Bakery)
-    expect(wrapper.text()).toContain('Golden Crust Artisan Bakery')
-    expect(wrapper.text()).toContain('Hot Oven Meat Pies & Warm Croissants')
-    expect(wrapper.text()).toContain('4,960')
-    expect(wrapper.text()).toContain('15 / 15 Available')
+    // Initial preset content (Mama Ada's Kitchen)
+    expect(wrapper.text()).toContain("Mama Ada's Kitchen")
+    expect(wrapper.text()).toContain('Homemade Jollof Rice & Fried Plantain')
+    expect(wrapper.text()).toContain('3,500')
+    expect(wrapper.text()).toContain('12 / 12 Available')
   })
 
   it('updates the active tab, aria-selected attributes, and displays updated store name, product title, and discount price on click', async () => {
@@ -83,31 +83,31 @@ describe('VendorBroadcastShowcase Component integration', () => {
     const tabs = wrapper.findAll('#broadcast-showcase [role="tab"]')
     expect(tabs.length).toBe(3)
 
-    // Switch to Scenario 2: Off-Peak Rush (Buka Prime Kitchen)
+    // Switch to Scenario 2: Campus Quick Bite (Chef Tunde)
     await tabs[1]?.trigger('click')
 
     expect(tabs[0]?.attributes('aria-selected')).toBe('false')
     expect(tabs[1]?.attributes('aria-selected')).toBe('true')
     expect(tabs[2]?.attributes('aria-selected')).toBe('false')
 
-    expect(wrapper.text()).toContain('Buka Prime Kitchen')
-    expect(wrapper.text()).toContain('Midday Smoky Jollof + Grilled Asun Mega Box')
-    expect(wrapper.text()).toContain('6,960')
-    expect(wrapper.text()).toContain('Flash Deal: Buka Prime Kitchen')
-    expect(wrapper.text()).toContain('25 / 25 Available')
+    expect(wrapper.text()).toContain('Chef Tunde (Student)')
+    expect(wrapper.text()).toContain('Indomie & Egg Combo Packs')
+    expect(wrapper.text()).toContain('1,800')
+    expect(wrapper.text()).toContain('Campus Deal: Chef Tunde')
+    expect(wrapper.text()).toContain('20 / 20 Available')
 
-    // Switch to Scenario 3: Surplus Clearance (Mama Cass Family Eatery)
+    // Switch to Scenario 3: Restaurant Flash Deal (Buka Prime Kitchen)
     await tabs[2]?.trigger('click')
 
     expect(tabs[0]?.attributes('aria-selected')).toBe('false')
     expect(tabs[1]?.attributes('aria-selected')).toBe('false')
     expect(tabs[2]?.attributes('aria-selected')).toBe('true')
 
-    expect(wrapper.text()).toContain('Mama Cass Family Eatery')
-    expect(wrapper.text()).toContain('Chef Special Mystery Box')
-    expect(wrapper.text()).toContain('3,500')
-    expect(wrapper.text()).toContain('Surplus Rescue: Mama Cass')
-    expect(wrapper.text()).toContain('10 / 10 Available')
+    expect(wrapper.text()).toContain('Buka Prime Kitchen')
+    expect(wrapper.text()).toContain('Smoky Jollof + Grilled Asun Mega Box')
+    expect(wrapper.text()).toContain('6,960')
+    expect(wrapper.text()).toContain('Flash Deal: Buka Prime Kitchen')
+    expect(wrapper.text()).toContain('25 / 25 Available')
   })
 
   it('triggers the broadcast demo and updates inventory countdown when replay blast button is clicked', async () => {
