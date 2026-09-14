@@ -103,7 +103,7 @@ onMounted(() => {
             1. Overview &amp; Commitment
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
-            Jarabag Technologies ("we", "our", or "us") operates the Jarabag mobile application and website (<a href="https://jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline font-semibold">jarabagapp.com</a>). We are committed to protecting your personal data, respecting your privacy rights, and maintaining complete transparency regarding how information is collected, processed, and safeguarded under the Nigeria Data Protection Regulation (NDPR) and international privacy frameworks.
+            Jarabag Technologies Limited ("we", "our", or "us") operates the Jarabag mobile application and website (<a href="https://jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline font-semibold">jarabagapp.com</a>). We are committed to protecting your personal data, respecting your privacy rights, and maintaining complete transparency regarding how information is collected, processed, and safeguarded under the Nigeria Data Protection Regulation (NDPR) and international privacy frameworks.
           </p>
         </section>
 
@@ -131,7 +131,7 @@ onMounted(() => {
                 B. Location &amp; Geofencing Data
               </h3>
               <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'">
-                Foreground GPS coordinates (to display geolocated food bags near your location) and background location access (to dispatch vicinity notifications when surplus bags drop in your target radius).
+                Foreground GPS coordinates (to display geolocated food deals near your location) and background location access (to dispatch vicinity notifications when food deals drop in your target radius).
               </p>
             </div>
             <div
@@ -257,6 +257,9 @@ onMounted(() => {
             For inquiries, legal notices, or data protection subject access requests regarding this Privacy Policy, please contact our Data Protection Officer:
           </p>
           <p class="font-bold text-base mt-2">
+            Jarabag Technologies Limited
+          </p>
+          <p class="font-bold text-base mt-1">
             Email: <a href="mailto:support@jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline">support@jarabagapp.com</a>
           </p>
         </section>
@@ -298,7 +301,7 @@ onMounted(() => {
         </nav>
 
         <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#544E49]'" class="text-xs">
-          &copy; 2026 Jarabag. All rights reserved.
+          &copy; 2026 Jarabag Technologies Limited. All rights reserved.
         </p>
       </div>
     </footer>

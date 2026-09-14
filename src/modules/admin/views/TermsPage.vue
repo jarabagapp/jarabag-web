@@ -103,7 +103,7 @@ onMounted(() => {
             1. Agreement to Terms
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
-            By downloading, accessing, or utilizing the Jarabag mobile application or website (<a href="https://jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline font-semibold">jarabagapp.com</a>), you explicitly agree to be bound by these Terms of Service ("Terms"). If you do not agree to all terms stated herein, you must immediately cease accessing or using our platform.
+            By downloading, accessing, or utilizing the Jarabag mobile application or website (<a href="https://jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline font-semibold">jarabagapp.com</a>), operated by Jarabag Technologies Limited ("Company", "we", "our", or "us"), you explicitly agree to be bound by these Terms of Service ("Terms"). If you do not agree to all terms stated herein, you must immediately cease accessing or using our platform.
           </p>
         </section>
 
@@ -112,10 +112,10 @@ onMounted(() => {
             2. Description of Marketplace Service
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed mb-4">
-            Jarabag operates a specialized surplus food recovery marketplace connecting verified food vendors (restaurants, bakeries, bukas, and supermarkets) offering delicious surplus food items at 50% to 70% discounts with consumers seeking affordable food solutions.
+            Jarabag Technologies Limited operates a digital food marketplace connecting food sellers (home cooks, student chefs, restaurants, bakeries, and bukas) offering meals and food deals at discounted rates with consumers seeking affordable food solutions.
           </p>
           <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-2 text-sm sm:text-base pl-2">
-            <li>Jarabag acts as an intermediary technology platform facilitating listing discovery, digital orders, cryptographic escrow settlement, and customer support.</li>
+            <li>Jarabag Technologies Limited acts as an intermediary technology platform facilitating listing discovery, digital orders, cryptographic escrow settlement, and customer support.</li>
             <li>Partner vendors operate as independent food businesses and retain full responsibility for preparing wholesome, safe, and hygienic food packages.</li>
           </ul>
         </section>
@@ -127,7 +127,7 @@ onMounted(() => {
           <div :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="space-y-3 text-sm sm:text-base">
             <p>&bull; Users must be at least 18 years of age or possess legal guardian consent to register an account.</p>
             <p>&bull; You are strictly responsible for maintaining confidentiality over your wallet PINs, login credentials, and 4-digit pickup OTP codes.</p>
-            <p>&bull; Registered vendors must maintain accurate physical store addresses, adhere to state hygiene regulations, and update surplus inventory truthfully.</p>
+            <p>&bull; Registered vendors must maintain accurate physical store addresses, adhere to state hygiene regulations, and update food deal inventory truthfully.</p>
           </div>
         </section>
 
@@ -144,7 +144,7 @@ onMounted(() => {
           >
             <p>
               <strong class="text-[#E8621A] text-sm block mb-1">1. Automated Escrow Hold:</strong>
-              When a consumer reserves a surplus food bag, the payment amount is debited from their wallet and locked securely in the escrow pool.
+              When a consumer reserves a food deal, the payment amount is debited from their wallet and locked securely in the escrow pool.
             </p>
             <p>
               <strong class="text-[#E8621A] text-sm block mb-1">2. Cryptographic OTP Handover:</strong>
@@ -162,7 +162,7 @@ onMounted(() => {
             5. Cancellation &amp; No-Show Policy
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base mb-4">
-            To guarantee fairness and prevent unnecessary food spoilage, Jarabag enforces standard dispute and cancellation rules:
+            To guarantee fairness and prevent operational disruptions, Jarabag enforces standard dispute and cancellation rules:
           </p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
             <div
@@ -184,7 +184,7 @@ onMounted(() => {
                 No-Show &amp; Forfeitures
               </h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">
-                If a consumer fails to collect a reserved bag during the agreed pickup window without prior notice, escrow is settled according to our platform no-show policy.
+                If a consumer fails to collect a reserved deal during the agreed pickup window without prior notice, escrow is settled according to our platform no-show policy.
               </p>
             </div>
           </div>
@@ -195,7 +195,7 @@ onMounted(() => {
             6. Disputes &amp; Quality Resolution
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
-            If a food bag is unavailable, substantially mismatched, or the merchant is closed during the official pickup window, consumers can submit a one-tap dispute via the mobile application. Our support team investigates within 2 hours and issues instant wallet credits upon vendor fault confirmation.
+            If a food deal is unavailable, substantially mismatched, or the merchant is closed during the official pickup window, consumers can submit a one-tap dispute via the mobile application. Our support team investigates within 2 hours and issues instant wallet credits upon vendor fault confirmation.
           </p>
         </section>
 
@@ -204,7 +204,7 @@ onMounted(() => {
             7. Limitation of Liability
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
-            Jarabag provides marketplace matching services on an "as is" and "as available" basis. While we verify partner merchants, food preparation and health standards remain the sole responsibility of individual kitchen operators. To the extent permissible by applicable law, Jarabag disclaims liability for indirect damages.
+            Jarabag Technologies Limited provides marketplace matching services on an "as is" and "as available" basis. While we verify partner merchants, food preparation and health standards remain the sole responsibility of individual kitchen operators. To the extent permissible by applicable law, Jarabag Technologies Limited disclaims liability for indirect damages.
           </p>
         </section>
 
@@ -216,6 +216,9 @@ onMounted(() => {
             For inquiries regarding our Terms of Service, merchant partnership agreements, or legal communications, reach out to:
           </p>
           <p class="font-bold text-base mt-2">
+            Jarabag Technologies Limited
+          </p>
+          <p class="font-bold text-base mt-1">
             Email: <a href="mailto:support@jarabagapp.com" :class="isDark ? 'text-[#FFA666]' : 'text-[#C2410C]'" class="underline">support@jarabagapp.com</a>
           </p>
         </section>
@@ -257,7 +260,7 @@ onMounted(() => {
         </nav>
 
         <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#544E49]'" class="text-xs">
-          &copy; 2026 Jarabag. All rights reserved.
+          &copy; 2026 Jarabag Technologies Limited. All rights reserved.
         </p>
       </div>
     </footer>

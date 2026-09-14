@@ -1692,7 +1692,7 @@ onUnmounted(() => {
         </nav>
 
         <p :class="isDark ? 'text-[#A8A29E]' : 'text-[#544E49]'" class="text-xs">
-          &copy; 2026 Jarabag. All rights reserved.
+          &copy; 2026 Jarabag Technologies Limited. All rights reserved.
         </p>
       </div>
     </footer>
