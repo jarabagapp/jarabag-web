@@ -730,7 +730,7 @@ onUnmounted(() => {
               </div>
               <h2 class="text-base font-extrabold mt-4">See How It Works</h2>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-2.5 leading-relaxed px-2">
-                Your payment is protected until you pick up your food. Try it below!
+                Pre-order discounted meals in seconds and verify collection with your 4-digit pickup code. Try it below!
               </p>
               <a
                 href="#simulator"
@@ -815,10 +815,10 @@ onUnmounted(() => {
         <div class="max-w-5xl mx-auto px-6">
           <div class="text-center max-w-lg mx-auto mb-20">
             <h2 id="simulator-heading" class="text-3xl font-extrabold tracking-tight font-display mb-3 text-[#E8621A]">
-              Your money is safe
+              Fast, verified pickup
             </h2>
             <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base">
-              We hold your payment until you pick up. Simple.
+              Reserve your meal ahead and verify collection with your 4-digit pickup code. Simple.
             </p>
           </div>
 
@@ -839,12 +839,12 @@ onUnmounted(() => {
                   :class="isDark ? 'bg-[#0E0D0C] text-[#FAF8F6]' : 'bg-white text-[#1E1A17]'"
                   class="sim-screen p-5 pt-8 h-full flex flex-col justify-between transition-colors relative"
                 >
-                  <!-- Lock notification banner -->
+                  <!-- Reservation notification banner -->
                   <div v-if="activeStep === 2" class="push-notif absolute top-9 left-4 right-4 bg-[#E8621A] p-3 rounded-2xl shadow-xl z-30 flex items-center gap-3">
                     <PhSparkle weight="duotone" class="w-5 h-5 text-white shrink-0" aria-hidden="true" />
                     <div class="text-left text-white leading-tight">
                       <p class="text-[9px] font-bold uppercase tracking-wider opacity-90">Instant Reservation</p>
-                      <p class="text-[11px] font-extrabold mt-0.5">Escrow Lock Confirmed!</p>
+                      <p class="text-[11px] font-extrabold mt-0.5">Order Reservation Confirmed!</p>
                     </div>
                   </div>
 
@@ -903,11 +903,11 @@ onUnmounted(() => {
                     </button>
                   </div>
 
-                  <!-- SCREEN 2: LOCK ESCROW -->
+                  <!-- SCREEN 2: INSTANT RESERVATION -->
                   <div v-else-if="activeStep === 2" class="flex-1 flex flex-col justify-between">
                     <div>
                       <div class="flex items-center justify-between mb-4 border-b border-[#262321]/30 pb-2.5">
-                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">Secure Payment</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest opacity-70">Order Reserved</span>
                         <span class="text-[11px] font-mono font-bold text-red-500">{{ formatCurrency(walletBalance) }}</span>
                       </div>
 
@@ -920,10 +920,10 @@ onUnmounted(() => {
                           <h3 class="font-extrabold text-sm">Party Jollof & Charcoal Chicken</h3>
                           <p class="text-xs font-bold text-[#E8621A] mt-1.5 flex items-center gap-1">
                             <PhShieldCheck weight="duotone" class="w-3.5 h-3.5 inline text-emerald-500 shrink-0" aria-hidden="true" />
-                            <span>₦1,500 held securely until pickup</span>
+                            <span>₦1,500 paid — Meal reserved for pickup</span>
                           </p>
                           <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-[10.5px] mt-2 leading-relaxed">
-                            Your money stays protected. The seller only gets paid when you confirm pickup with your code.
+                            Your meal portion is reserved. Present your 4-digit pickup code at the store to collect your order and complete instant vendor settlement.
                           </p>
                         </div>
                       </div>
@@ -934,7 +934,7 @@ onUnmounted(() => {
                       @click="runStepTransition(3)"
                       class="w-full bg-[#E8621A] hover:bg-[#CF5112] text-white rounded-xl py-3 text-center text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer select-none"
                     >
-                      Generate Claim OTP
+                      View Pickup Code
                     </button>
                   </div>
 
@@ -992,7 +992,7 @@ onUnmounted(() => {
                       <div>
                         <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-extrabold text-sm">Pickup Confirmed!</h3>
                         <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-[10.5px] mt-2 px-3 leading-relaxed">
-                          Payment released! ₦1,425 sent to the seller (5% platform fee deducted).
+                          Order fulfilled! ₦1,425 automatically settled to the seller (5% platform fee deducted).
                         </p>
                       </div>
                     </div>
@@ -1022,9 +1022,9 @@ onUnmounted(() => {
 
             <!-- Steps Sidebar -->
             <div class="lg:col-span-6 space-y-5 text-left">
-              <h3 class="text-2xl font-bold font-display leading-tight">How payment works</h3>
+              <h3 class="text-2xl font-bold font-display leading-tight">How ordering &amp; settlement work</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-sm sm:text-base leading-relaxed mb-6">
-                Jarabag protects both buyers and sellers. Funds only move after pickup is confirmed.
+                Seamless pre-ordering for buyers and automatic, immediate settlement for sellers upon pickup code verification.
               </p>
 
               <div class="space-y-3.5">
@@ -1063,12 +1063,12 @@ onUnmounted(() => {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <PhLockKey weight="duotone" class="w-5 h-5 shrink-0 text-[#E8621A]" aria-hidden="true" />
-                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Pay securely</p>
+                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Pay &amp; reserve</p>
                     </div>
                     <PhLightning v-if="activeStep === 2" weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
                   </div>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
-                    Your payment is held safely until you pick up your food.
+                    Pay online to instantly reserve your meal portion for the stipulated pickup window.
                   </p>
                 </div>
 
@@ -1090,7 +1090,7 @@ onUnmounted(() => {
                     <PhLightning v-if="activeStep === 3" weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
                   </div>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
-                    A unique pickup code appears on your phone. Show it to collect your food.
+                    A unique 4-digit pickup code appears on your phone. Show it at the store to collect your food.
                   </p>
                 </div>
 
@@ -1107,12 +1107,12 @@ onUnmounted(() => {
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                       <PhConfetti weight="duotone" class="w-5 h-5 shrink-0 text-[#E8621A]" aria-hidden="true" />
-                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Pick up &amp; done</p>
+                      <p class="text-xs font-black text-[#E8621A] uppercase tracking-widest">Pick up &amp; automatic settlement</p>
                     </div>
                     <PhLightning v-if="activeStep === 4" weight="duotone" class="w-4 h-4 text-[#E8621A]" aria-hidden="true" />
                   </div>
                   <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs mt-1.5 leading-relaxed">
-                    Seller confirms the code, gets paid instantly, and you enjoy your meal!
+                    Seller verifies your code, earnings are automatically settled immediately, and you enjoy your meal!
                   </p>
                 </div>
               </div>
@@ -1522,7 +1522,7 @@ onUnmounted(() => {
               </div>
               <h3 class="text-lg font-extrabold mb-2">One-Tap Reserving</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                See a meal you love? Tap to lock it in escrow instantly. Secure your meal in seconds without hassle.
+                See a meal you love? Tap to pre-order and reserve your portion instantly in seconds without hassle.
               </p>
               <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-[#3B82F6]">For Buyers</span>
             </div>
@@ -1544,9 +1544,9 @@ onUnmounted(() => {
               <div class="w-12 h-12 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center text-xl mb-6" aria-hidden="true">
                 <PhBank weight="duotone" class="w-6 h-6 text-emerald-500" />
               </div>
-              <h3 class="text-lg font-extrabold mb-2">Instant Seller Payouts</h3>
+              <h3 class="text-lg font-extrabold mb-2">Automatic Seller Settlement</h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed mb-4">
-                No delayed cycles. Earnings release directly into your verified bank account the moment pickup code is confirmed.
+                No manual delays. Order earnings are automatically settled to the seller immediately upon 4-digit pickup code verification, with direct bank transfers.
               </p>
               <span class="mt-auto block text-[9px] font-black uppercase tracking-widest text-emerald-500">For Sellers</span>
             </div>
@@ -1576,9 +1576,9 @@ onUnmounted(() => {
                 <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5" aria-hidden="true">
                   <PhShieldCheck weight="duotone" class="w-6 h-6 text-emerald-500" />
                 </div>
-                <h3 class="text-base font-extrabold mb-2.5">Secure Payments</h3>
+                <h3 class="text-base font-extrabold mb-2.5">Verified Pickup &amp; Settlement</h3>
                 <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'" class="text-xs sm:text-sm leading-relaxed">
-                  Escrow holds funds safely until pickup is confirmed with your unique code. Zero fraud, zero worries.
+                  Every order generates a unique 4-digit pickup code so the right customer collects the right meal and sellers are settled automatically.
                 </p>
               </div>
             </div>

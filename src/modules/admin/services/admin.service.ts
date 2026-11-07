@@ -10,6 +10,13 @@ export interface ListParams {
   search?: string
 }
 
+export interface ResolveDisputePayload {
+  action: 'full_refund' | 'partial_refund' | 'dismiss'
+  partialRefundAmount?: number
+  adminNotes: string
+  applyVendorStrike?: boolean
+}
+
 export class AdminService {
   // Stats
   static async getStats(): Promise<any> {
@@ -119,8 +126,11 @@ export class AdminService {
     return data.data || data
   }
 
-  static async resolveDispute(id: string, resolution: 'refund' | 'dismiss'): Promise<any> {
-    const { data } = await apiClient.put(`/admin/orders/${id}/resolve-dispute`, { resolution })
+  static async resolveDispute(
+    id: string,
+    payload: ResolveDisputePayload
+  ): Promise<any> {
+    const { data } = await apiClient.put(`/admin/orders/${id}/resolve-dispute`, payload)
     return data.data || data
   }
 
@@ -182,3 +192,6 @@ export class AdminService {
     return data.data || data
   }
 }
+
+export const adminService = AdminService
+

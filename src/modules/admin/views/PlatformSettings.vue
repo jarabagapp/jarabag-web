@@ -15,7 +15,7 @@ const form = reactive({
 
 const maxListingDuration = ref(24)
 const description = ref('')
-const inconvenienceAmount = ref(200)
+const inconvenienceAmount = ref(50)
 const commissionPercentage = ref(5)
 const maxCommissionAmount = ref(0)
 const noShowFirstConsumerRefundPercentage = ref(50)
@@ -29,7 +29,7 @@ const lateCancelVendorSharePercentage = ref(40)
 const lateCancelPlatformSharePercentage = ref(10)
 
 const notifyUsers = ref(false)
-const minVendorListingBalance = ref(2000)
+const minVendorListingBalance = ref(0)
 
 const localError = ref('')
 const success = ref('')
@@ -46,7 +46,7 @@ watch(settings, (val) => {
   if (val) {
     maxListingDuration.value = val.maxListingDurationHours || val.maxListingDuration || 24
     description.value = val.description || ''
-    inconvenienceAmount.value = val.inconvenienceAmount !== undefined ? val.inconvenienceAmount : 200
+    inconvenienceAmount.value = val.inconvenienceAmount !== undefined ? val.inconvenienceAmount : 50
     commissionPercentage.value = val.commissionPercentage !== undefined ? val.commissionPercentage : 5
     maxCommissionAmount.value = val.maxCommissionAmount !== undefined ? val.maxCommissionAmount : 0
     noShowFirstConsumerRefundPercentage.value = val.noShowFirstConsumerRefundPercentage !== undefined ? val.noShowFirstConsumerRefundPercentage : 50
@@ -58,7 +58,7 @@ watch(settings, (val) => {
     lateCancelConsumerRefundPercentage.value = val.lateCancelConsumerRefundPercentage !== undefined ? val.lateCancelConsumerRefundPercentage : 50
     lateCancelVendorSharePercentage.value = val.lateCancelVendorSharePercentage !== undefined ? val.lateCancelVendorSharePercentage : 40
     lateCancelPlatformSharePercentage.value = val.lateCancelPlatformSharePercentage !== undefined ? val.lateCancelPlatformSharePercentage : 10
-    minVendorListingBalance.value = val.minVendorListingBalance !== undefined ? val.minVendorListingBalance : 2000
+    minVendorListingBalance.value = val.minVendorListingBalance !== undefined ? val.minVendorListingBalance : 0
 
     form.standardCashbackRate = val.standardCashbackRate ?? 2.5
     form.vipCashbackRate = val.vipCashbackRate ?? 5.0
@@ -173,7 +173,7 @@ const handleSaveSettings = async () => {
             <div class="bg-surface-raised border border-border-subtle rounded-2xl p-6 shadow-xl space-y-6">
               <div>
                 <h3 class="text-lg font-black text-text-main font-display flex items-center gap-2">
-                  <span>💰</span> Platform Revenue &amp; Escrow Fees
+                  <span>💰</span> Platform Revenue &amp; Settlement Fees
                 </h3>
                 <p class="text-xs text-text-muted mt-1">Configure Jarabag's primary commission rates and operational caps.</p>
               </div>
@@ -198,7 +198,7 @@ const handleSaveSettings = async () => {
                     <span class="absolute right-4 text-sm font-bold text-text-muted">%</span>
                   </div>
                   <p class="text-[10px] text-text-muted leading-relaxed">
-                    The percentage fee deducted from the total order value when releasing escrow to vendors.
+                    The percentage fee deducted from the total order value when settling order payments to vendors.
                   </p>
                 </div>
 
@@ -223,10 +223,10 @@ const handleSaveSettings = async () => {
                   </p>
                 </div>
 
-                <!-- Inconvenience amount -->
+                <!-- Inconvenience amount (Jara Coins Goodwill Bonus) -->
                 <div class="md:col-span-2 space-y-2">
                   <label for="inconvenienceAmount" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
-                    Vendor Cancellation Penalty (₦)
+                    Vendor-Fault Consumer Goodwill Bonus (Jara Coins)
                   </label>
                   <div class="relative flex items-center">
                     <input
@@ -235,12 +235,12 @@ const handleSaveSettings = async () => {
                       type="number"
                       min="0"
                       required
-                      class="w-full bg-surface-base border border-border-strong rounded-xl pl-4 pr-12 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold"
+                      class="w-full bg-surface-base border border-border-strong rounded-xl pl-4 pr-16 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold"
                     />
-                    <span class="absolute right-4 text-sm font-bold text-text-muted">₦</span>
+                    <span class="absolute right-4 text-xs font-bold text-text-muted">Coins</span>
                   </div>
                   <p class="text-[10px] text-text-muted leading-relaxed">
-                    Penalty charged <strong>directly to the vendor's balance</strong> (which can go negative) and paid to the consumer as inconvenience credit if the vendor fails to prepare/deliver the order.
+                    Non-withdrawable Jara Coins credited to the consumer as a goodwill discount bonus when a vendor cancels or fails to prepare an order (vendors receive a fulfillment strike rather than a cash deduction).
                   </p>
                 </div>
               </div>

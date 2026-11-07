@@ -17,12 +17,23 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/bag/:id',
+    name: 'bag-deal-preview',
+    component: () => import('@/modules/admin/views/BagDealPreviewPage.vue'),
+    meta: {
+      title: 'Food Deal on JaraBag — Reserve Before It Sells Out',
+      description: 'View this discounted food deal on JaraBag. Reserve online and verify collection with your 4-digit pickup code.',
+      layout: 'none',
+      scrollTop: true,
+    },
+  },
+  {
     path: '/terms',
     name: 'terms',
     component: () => import('@/modules/admin/views/TermsPage.vue'),
     meta: {
       title: 'Terms of Service — JaraBag | User Agreement & Payment Policies',
-      description: 'Read the official Terms of Service for using the Jarabag food marketplace, including wallet escrow, pickup verification, and refund policies.',
+      description: 'Read the official Terms of Service for using the Jarabag food marketplace, including order payments, pickup verification, vendor settlement, and refund policies.',
       canonical: 'https://jarabagapp.com/terms',
       layout: 'none',
       scrollTop: true,
@@ -112,6 +123,17 @@ const routes: RouteRecordRaw[] = [
     meta: {
       title: 'Order Overrides — Jarabag Admin',
       requiresAdmin: true,
+      scrollTop: true,
+    },
+  },
+  {
+    path: '/admin/disputes',
+    name: 'admin-disputes',
+    component: () => import('@/modules/admin/views/DisputesManagement.vue'),
+    meta: {
+      title: 'Disputes Management — Jarabag Admin',
+      requiresAdmin: true,
+      requiresAuth: true,
       scrollTop: true,
     },
   },

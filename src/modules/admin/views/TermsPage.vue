@@ -115,7 +115,7 @@ onMounted(() => {
             Jarabag Technologies Limited operates a digital food marketplace connecting food sellers (home cooks, student chefs, restaurants, bakeries, and bukas) offering meals and food deals at discounted rates with consumers seeking affordable food solutions.
           </p>
           <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-2 text-sm sm:text-base pl-2">
-            <li>Jarabag Technologies Limited acts as an intermediary technology platform facilitating listing discovery, digital orders, cryptographic escrow settlement, and customer support.</li>
+            <li>Jarabag Technologies Limited acts as an intermediary technology platform facilitating listing discovery, digital meal reservations, 4-digit pickup code verification, automated vendor settlement, and customer support.</li>
             <li>Partner vendors operate as independent food businesses and retain full responsibility for preparing wholesome, safe, and hygienic food packages.</li>
           </ul>
         </section>
@@ -131,77 +131,165 @@ onMounted(() => {
           </div>
         </section>
 
-        <section aria-labelledby="heading-escrow">
-          <h2 id="heading-escrow" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
-            4. Wallet, Payments &amp; Escrow Settlement
+        <section aria-labelledby="heading-settlement">
+          <h2 id="heading-settlement" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            4. Order Payments, Pickup Verification &amp; Vendor Settlement
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed mb-4">
-            All financial operations on Jarabag are protected by our automated platform escrow framework:
+            All order transactions and vendor settlements on Jarabag operate through a direct, automated settlement workflow:
           </p>
           <div
             :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
             class="p-6 border rounded-xl space-y-4 text-xs sm:text-sm shadow-sm transition-colors"
           >
             <p>
-              <strong class="text-[#E8621A] text-sm block mb-1">1. Automated Escrow Hold:</strong>
-              When a consumer reserves a food deal, the payment amount is debited from their wallet and locked securely in the escrow pool.
+              <strong class="text-[#E8621A] text-sm block mb-1">1. Pre-Paid Order Reservation:</strong>
+              When a consumer reserves a food deal, payment is processed upfront via Paystack or their in-app wallet (and optional Jara Coins rewards, where 1 Jara Coin = ₦1) to confirm the meal reservation for the stipulated pickup window.
             </p>
             <p>
-              <strong class="text-[#E8621A] text-sm block mb-1">2. Cryptographic OTP Handover:</strong>
-              Funds are only released from escrow to the vendor's wallet balance after the consumer physically presents the rolling 4-digit verification code at pickup.
+              <strong class="text-[#E8621A] text-sm block mb-1">2. 4-Digit Pickup Verification &amp; Immediate 95% Vendor Settlement:</strong>
+              Upon arriving at the vendor's store during the pickup window, the consumer presents their 4-digit pickup verification code to confirm collection. Immediately upon code verification, <strong>95% of the order amount</strong> is automatically credited to the vendor's balance in real time (with a <strong>5% platform commission</strong> deducted), with no additional conditions or settlement delay.
             </p>
             <p>
-              <strong class="text-[#E8621A] text-sm block mb-1">3. Vendor Payouts:</strong>
-              Vendors can withdraw their verified balances to local Nigerian commercial bank accounts at any time, processed via accredited payment partners.
+              <strong class="text-[#E8621A] text-sm block mb-1">3. Consumer Cashback Rewards (Jara Coins):</strong>
+              On every completed pickup, consumers automatically earn <strong>2.5% cashback</strong> in Jara Coins (minimum 5 coins, capped at ₦250 per order), or <strong>5.0% cashback</strong> (minimum 10 coins, capped at ₦1,000 per order) for active Jara Pass VIP subscribers.
+            </p>
+            <p>
+              <strong class="text-[#E8621A] text-sm block mb-1">4. Direct Bank Payouts:</strong>
+              Vendors can initiate automated bank transfers of their full settled earnings directly to their verified Nigerian commercial bank accounts at any time via Paystack Transfers (standard Paystack transfer fees apply: ₦10 for transfers &le; ₦5,000; ₦25 for ₦5,001–₦50,000; ₦50 above ₦50,000), with no minimum balance lock or holding period.
             </p>
           </div>
         </section>
 
         <section aria-labelledby="heading-cancellation">
           <h2 id="heading-cancellation" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
-            5. Cancellation &amp; No-Show Policy
+            5. Cancellation, No-Show &amp; Compensation Policy
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base mb-4">
-            To guarantee fairness and prevent operational disruptions, Jarabag enforces standard dispute and cancellation rules:
+            Because listings on Jarabag are perishable prepared meals with fixed pickup windows, our platform automatically executes the following refund and compensation splits so that no order payment ever remains unsettled:
           </p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-5 border rounded-xl transition-colors shadow-sm"
+              class="p-5 border rounded-xl transition-colors shadow-sm space-y-2"
             >
-              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base mb-1.5">
-                Consumer Cancellations
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base">
+                A. Early Consumer Cancellation (&gt; 30 Mins Before Window)
               </h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">
-                Cancellations made before the vendor's preparation cutoff time receive a full 100% wallet refund. Late cancellations after packaging may incur standard split compensation.
+                If a consumer cancels more than 30 minutes before the pickup window starts:
               </p>
+              <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-1">
+                <li><strong>Consumer Refund:</strong> <strong>100% full refund</strong> of cash and Jara Coins credited automatically.</li>
+                <li><strong>Vendor Impact:</strong> Meal portion is automatically restored to available inventory. No penalty to either party.</li>
+              </ul>
             </div>
+
             <div
               :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
-              class="p-5 border rounded-xl transition-colors shadow-sm"
+              class="p-5 border rounded-xl transition-colors shadow-sm space-y-2"
             >
-              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base mb-1.5">
-                No-Show &amp; Forfeitures
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base">
+                B. Late Consumer Cancellation (0–30 Mins Before Window)
               </h3>
               <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">
-                If a consumer fails to collect a reserved deal during the agreed pickup window without prior notice, escrow is settled according to our platform no-show policy.
+                If a consumer cancels within 30 minutes of the pickup window start (after meal packaging has begun):
               </p>
+              <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-1">
+                <li><strong>Consumer Refund:</strong> <strong>50%</strong> automatic refund (cash and Jara Coins).</li>
+                <li><strong>Vendor Compensation:</strong> <strong>40%</strong> settled automatically to the vendor for packaging/preparation costs.</li>
+                <li><strong>Platform Fee:</strong> <strong>10%</strong> processing share.</li>
+              </ul>
+            </div>
+
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl transition-colors shadow-sm space-y-2"
+            >
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base">
+                C. Consumer No-Show or Uncollected Order
+              </h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">
+                If a consumer cancels after the pickup window opens, or fails to show up / provide the 4-digit pickup code within the pickup window (plus a <strong>15-minute grace period</strong>) for a prepared order:
+              </p>
+              <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-1">
+                <li><strong>First-Time No-Show (Forgiveness Split):</strong> <strong>50%</strong> refunded to consumer, <strong>40%</strong> settled to vendor, <strong>10%</strong> platform fee.</li>
+                <li><strong>Repeat No-Shows (within 30 days):</strong> <strong>70%</strong> settled automatically to the vendor, <strong>5%</strong> refunded to consumer, <strong>25%</strong> platform fee.</li>
+              </ul>
+            </div>
+
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl transition-colors shadow-sm space-y-2"
+            >
+              <h3 :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="font-bold text-sm sm:text-base">
+                D. Vendor Cancellation or Failure to Fulfill
+              </h3>
+              <p :class="isDark ? 'text-[#D1CBC7]' : 'text-[#544E49]'">
+                If a vendor cancels a confirmed order, fails to prepare the order before the pickup window ends, or is closed during pickup:
+              </p>
+              <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-1">
+                <li><strong>Consumer Refund:</strong> <strong>100% full refund</strong> of the order amount (cash and Jara Coins).</li>
+                <li><strong>Consumer Goodwill Bonus:</strong> Additional <strong>50 non-withdrawable Jara Coins</strong> automatically credited to the consumer's loyalty balance for use as a discount on their next order.</li>
+                <li><strong>Pre-Order Batch Exception:</strong> If a crowdfunded batch listing does not reach its minimum order goal by pickup start, consumers receive a <strong>100% refund</strong> with <strong>zero vendor penalty</strong>.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section aria-labelledby="heading-penalties">
+          <h2 id="heading-penalties" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
+            6. Platform Accountability &amp; Penalty Policy
+          </h2>
+          <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base mb-4">
+            To protect both buyers and sellers from repeated no-shows or unfulfilled orders, Jarabag enforces automated strike and suspension rules over a rolling 30-day period:
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl transition-colors shadow-sm space-y-2"
+            >
+              <h3 class="font-bold text-[#E8621A] text-sm sm:text-base">
+                Consumer Penalties (No-Show Strikes)
+              </h3>
+              <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-1.5">
+                <li><strong>Reliability Score Reduction:</strong> Each no-show deducts <strong>20 points</strong> from the consumer's reliability score and records <strong>1 no-show strike</strong>.</li>
+                <li><strong>2nd No-Show Strike (within 30 days):</strong> Automatic <strong>24-hour suspension</strong> from making new meal reservations.</li>
+                <li><strong>3rd+ No-Show Strike (within 30 days):</strong> Automatic <strong>7-day suspension</strong> from making new meal reservations.</li>
+                <li><strong>OTP Lockout Protection:</strong> 5 consecutive incorrect 4-digit pickup code attempts lock pickup verification for <strong>15 minutes</strong>.</li>
+                <li><strong>Monthly Reset:</strong> Consumer no-show strikes reset automatically after <strong>30 days</strong>.</li>
+              </ul>
+            </div>
+
+            <div
+              :class="isDark ? 'bg-[#12110F] border-[#262321]' : 'bg-white border-[#E7E3DF]'"
+              class="p-5 border rounded-xl transition-colors shadow-sm space-y-2"
+            >
+              <h3 class="font-bold text-[#E8621A] text-sm sm:text-base">
+                Vendor Penalties (Fulfillment Strikes)
+              </h3>
+              <ul :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="list-disc list-inside space-y-1.5">
+                <li><strong>Strike &amp; Fulfillment Rate Impact:</strong> Each vendor-fault cancellation or unfulfilled order adds <strong>1 vendor strike</strong> and lowers the store's fulfillment rate and search visibility (no cash deduction is charged to the vendor's balance).</li>
+                <li><strong>3 Vendor Strikes (within 30 days) or 3 Fault Reports (within 24 hours):</strong> Automatic <strong>3-day store suspension</strong> from publishing or selling listings.</li>
+                <li><strong>5 Vendor Strikes (within 30 days):</strong> Automatic <strong>30-day store suspension</strong>.</li>
+                <li><strong>Monthly Reset:</strong> Vendor strikes reset automatically after <strong>30 days</strong>.</li>
+              </ul>
             </div>
           </div>
         </section>
 
         <section aria-labelledby="heading-disputes">
           <h2 id="heading-disputes" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
-            6. Disputes &amp; Quality Resolution
+            7. Disputes &amp; Quality Resolution
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
-            If a food deal is unavailable, substantially mismatched, or the merchant is closed during the official pickup window, consumers can submit a one-tap dispute via the mobile application. Our support team investigates within 2 hours and issues instant wallet credits upon vendor fault confirmation.
+            If a food deal is unavailable, substantially mismatched, or the merchant is closed during the official pickup window, consumers can report a vendor fault or reject pickup on-site (verified via GPS proximity within 200–300m of the vendor location) or submit a dispute within <strong>24 hours</strong> of pickup with photo evidence for food quality or missing item claims. Verified vendor-fault claims receive an immediate <strong>100% refund</strong> (plus the 50 non-withdrawable Jara Coins goodwill bonus where applicable), while suspicious or repeated unfounded rejections are flagged for admin review and may result in partial settlement to the vendor (80% of the unrefunded portion to the vendor, 20% to the platform).
           </p>
         </section>
 
         <section aria-labelledby="heading-liability">
           <h2 id="heading-liability" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
-            7. Limitation of Liability
+            8. Limitation of Liability
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base leading-relaxed">
             Jarabag Technologies Limited provides marketplace matching services on an "as is" and "as available" basis. While we verify partner merchants, food preparation and health standards remain the sole responsibility of individual kitchen operators. To the extent permissible by applicable law, Jarabag Technologies Limited disclaims liability for indirect damages.
@@ -210,7 +298,7 @@ onMounted(() => {
 
         <section aria-labelledby="heading-contact-terms">
           <h2 id="heading-contact-terms" :class="isDark ? 'text-white' : 'text-[#1E1A17]'" class="text-xl font-bold mb-4">
-            8. Contact &amp; Legal Notices
+            9. Contact &amp; Legal Notices
           </h2>
           <p :class="isDark ? 'text-[#E5E0DC]' : 'text-[#3D3834]'" class="text-sm sm:text-base">
             For inquiries regarding our Terms of Service, merchant partnership agreements, or legal communications, reach out to:

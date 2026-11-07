@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import { refDebounced } from '@vueuse/core'
 import AdminLayout from '../components/AdminLayout.vue'
-import { useAdminOrders, useOverrideOrderStatus, useResolveDispute } from '../composables/useAdminQuery'
+import { useAdminOrders, useOverrideOrderStatus } from '../composables/useAdminQuery'
 
 interface OrderRecord {
   id: string
@@ -85,7 +85,6 @@ watch(
 )
 
 const overrideOrderStatusMutation = useOverrideOrderStatus()
-const resolveDisputeMutation = useResolveDispute()
 
 watch([filterStatus, filterDisputed, debouncedSearchQuery], () => {
   page.value = 1
@@ -104,18 +103,6 @@ const handleStatusOverride = async (order: OrderRecord, newStatus: string) => {
     await overrideOrderStatusMutation.mutateAsync({ id: order.id, status: newStatus })
   } catch (err: any) {
     alert(err.message || 'Failed to override order status.')
-  }
-}
-
-const handleResolveDispute = async (order: OrderRecord, resolution: 'refund' | 'dismiss') => {
-  if (!confirm(`Are you sure you want to resolve this dispute by executing a "${resolution}"?`)) {
-    return
-  }
-
-  try {
-    await resolveDisputeMutation.mutateAsync({ id: order.id, resolution })
-  } catch (err: any) {
-    alert(err.message || 'Failed to resolve order dispute.')
   }
 }
 
@@ -275,18 +262,12 @@ const formatCurrency = (amount: number) => {
                 <td class="py-4 px-6 text-right space-y-1.5">
                   <!-- Dispute Actions -->
                   <div v-if="o.isDisputed" class="flex flex-col items-end gap-1.5">
-                    <button
-                      @click="handleResolveDispute(o, 'refund')"
-                      class="text-[10px] bg-red-600 hover:bg-red-500 text-white font-bold py-1 px-2.5 rounded-md cursor-pointer"
+                    <router-link
+                      :to="`/admin/disputes?orderId=${o.id}`"
+                      class="text-xs bg-red-600 hover:bg-red-500 text-white font-bold py-1.5 px-3 rounded-lg flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
                     >
-                      Execute Refund
-                    </button>
-                    <button
-                      @click="handleResolveDispute(o, 'dismiss')"
-                      class="text-[10px] bg-surface-base hover:bg-surface-raised border border-border-strong text-text-sub hover:text-text-main font-bold py-1 px-2.5 rounded-md cursor-pointer"
-                    >
-                      Dismiss Dispute
-                    </button>
+                      <span>⚖️</span> Adjudicate Dispute
+                    </router-link>
                   </div>
 
                   <!-- Regular Status Override shortcuts -->

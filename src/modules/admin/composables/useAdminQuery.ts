@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { computed } from 'vue'
 import { AdminService } from '../services/admin.service'
-import type { ListParams } from '../services/admin.service'
+import type { ListParams, ResolveDisputePayload } from '../services/admin.service'
 
 // Query Key Factory
 export const adminKeys = {
@@ -157,10 +157,16 @@ export function useOverrideOrderStatus() {
 export function useResolveDispute() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, resolution }: { id: string; resolution: 'refund' | 'dismiss' }) =>
-      AdminService.resolveDispute(id, resolution),
+    mutationFn: ({
+      id,
+      payload,
+    }: {
+      id: string
+      payload: ResolveDisputePayload
+    }) => AdminService.resolveDispute(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...adminKeys.all, 'orders'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-orders'] })
     },
   })
 }
