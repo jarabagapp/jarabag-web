@@ -46,6 +46,15 @@ const coinsUsed = computed(() => {
   return props.order?.jaraCoinsUsed ?? 0
 })
 
+const isAlreadyAdjudicated = computed(() => {
+  if (!props.order) return false
+  return (
+    props.order.disputeStatus === 'resolved' ||
+    props.order.disputeStatus === 'dismissed' ||
+    (props.order.isDisputed === false && Boolean(props.order.disputeResolutionAction))
+  )
+})
+
 const evidencePhotos = computed<string[]>(() => {
   if (!props.order) return []
   return props.order.disputeEvidencePhotos || props.order.evidencePhotos || []
@@ -129,7 +138,9 @@ const handleSubmit = async () => {
           : undefined,
       adminNotes: adminNotes.value.trim(),
       applyVendorStrike:
-        selectedAction.value === 'full_refund' ? applyVendorStrike.value : false,
+        selectedAction.value === 'full_refund' || selectedAction.value === 'partial_refund'
+          ? applyVendorStrike.value
+          : false,
     }
 
     await resolveDisputeMutation.mutateAsync({
@@ -309,7 +320,7 @@ const handleSubmit = async () => {
                 <span class="text-text-muted">Past Disputes / Strikes:</span>
                 <span class="font-bold text-text-main">
                   {{ order.vendor?.disputeCount ?? 0 }} disputes •
-                  <span class="text-red-500">{{ order.vendor?.strikeCount ?? 0 }} strike(s)</span>
+                  <span class="text-red-500">{{ order.vendor?.vendorStrikeCount ?? order.vendor?.strikeCount ?? 0 }} strike(s)</span>
                 </span>
               </div>
               <div v-if="order.bag?.pickupWindowStart" class="flex items-center justify-between">
@@ -321,8 +332,32 @@ const handleSubmit = async () => {
             </div>
           </div>
 
+          <!-- Recorded Ruling Summary (when already resolved/dismissed) -->
+          <div
+            v-if="isAlreadyAdjudicated"
+            class="bg-emerald-500/10 border border-emerald-500/25 rounded-xl p-5 space-y-3"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-500">
+                Recorded Arbitration Ruling
+              </span>
+              <span class="text-[11px] font-mono text-text-muted">
+                {{ formatDate(order.resolvedAt) }}
+              </span>
+            </div>
+            <div class="text-sm font-bold text-text-main capitalize">
+              Decision: {{ (order.disputeResolutionAction || order.disputeStatus || 'resolved').replace('_', ' ') }}
+              <span v-if="order.disputeRefundAmount" class="text-emerald-500 ml-2">
+                ({{ formatCurrency(order.disputeRefundAmount) }}<span v-if="order.disputeCoinsRefunded"> + {{ order.disputeCoinsRefunded }} coins</span>)
+              </span>
+            </div>
+            <p class="text-xs text-text-sub bg-surface-base border border-border-strong rounded-lg p-3 leading-relaxed">
+              {{ order.disputeResolutionNotes || 'Adjudicated by administrator.' }}
+            </p>
+          </div>
+
           <!-- Adjudication Decision Form -->
-          <div class="bg-surface-raised border border-border-subtle rounded-xl p-5 space-y-4">
+          <div v-else class="bg-surface-raised border border-border-subtle rounded-xl p-5 space-y-4">
             <span class="text-xs font-bold text-text-muted uppercase tracking-wider block">
               Arbitration Ruling & Action
             </span>
@@ -413,30 +448,38 @@ const handleSubmit = async () => {
                       </span>
                     </div>
 
-                    <!-- Calculated split -->
-                    <div class="bg-surface-base border border-border-strong rounded-lg p-3 text-xs grid grid-cols-3 gap-2 text-center">
-                      <div>
-                        <div class="text-[10px] text-text-muted">Customer Refund</div>
-                        <div class="font-extrabold text-emerald-500 mt-0.5">
-                          {{ formatCurrency(Number(partialRefundAmount) || 0) }}
+                      <div class="bg-surface-base border border-border-strong rounded-lg p-3 text-xs grid grid-cols-3 gap-2 text-center">
+                        <div>
+                          <div class="text-[10px] text-text-muted">Customer Refund</div>
+                          <div class="font-extrabold text-emerald-500 mt-0.5">
+                            {{ formatCurrency(Number(partialRefundAmount) || 0) }}
+                          </div>
+                        </div>
+                        <div>
+                          <div class="text-[10px] text-text-muted">Vendor Remainder (80%)</div>
+                          <div class="font-extrabold text-text-main mt-0.5">
+                            {{ formatCurrency(partialVendorRemainder) }}
+                          </div>
+                        </div>
+                        <div>
+                          <div class="text-[10px] text-text-muted">Platform Fee (20%)</div>
+                          <div class="font-extrabold text-text-sub mt-0.5">
+                            {{ formatCurrency(partialPlatformFee) }}
+                          </div>
                         </div>
                       </div>
-                      <div>
-                        <div class="text-[10px] text-text-muted">Vendor Remainder (80%)</div>
-                        <div class="font-extrabold text-text-main mt-0.5">
-                          {{ formatCurrency(partialVendorRemainder) }}
-                        </div>
-                      </div>
-                      <div>
-                        <div class="text-[10px] text-text-muted">Platform Fee (20%)</div>
-                        <div class="font-extrabold text-text-sub mt-0.5">
-                          {{ formatCurrency(partialPlatformFee) }}
-                        </div>
-                      </div>
+
+                      <label class="flex items-center gap-2 text-xs font-bold text-red-400 cursor-pointer pt-1" @click.stop>
+                        <input
+                          type="checkbox"
+                          v-model="applyVendorStrike"
+                          class="rounded accent-red-500"
+                        />
+                        <span>Apply Vendor Strike (+1 penalty strike to store profile)</span>
+                      </label>
                     </div>
                   </div>
-                </div>
-              </label>
+                </label>
 
               <!-- Dismiss Claim -->
               <label
@@ -492,9 +535,10 @@ const handleSubmit = async () => {
             @click="handleClose"
             class="px-4 py-2 rounded-xl text-sm font-semibold text-text-sub hover:text-text-main hover:bg-surface-base border border-border-strong transition-all cursor-pointer"
           >
-            Cancel
+            {{ isAlreadyAdjudicated ? 'Close' : 'Cancel' }}
           </button>
           <button
+            v-if="!isAlreadyAdjudicated"
             @click="handleSubmit"
             :disabled="!isValid || isSubmitting"
             data-testid="execute-resolution-btn"

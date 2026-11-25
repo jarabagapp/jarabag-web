@@ -10,8 +10,10 @@ interface OrderRecord {
   bagId: string
   quantity: number
   amount: number
-  status: 'pending' | 'ready-for-pickup' | 'picked-up' | 'cancelled' | 'refunded'
-  paymentStatus: 'pending' | 'held-in-escrow' | 'released' | 'refunded'
+  cashPaid?: number
+  jaraCoinsUsed?: number
+  status: 'pending' | 'confirmed' | 'ready' | 'picked-up' | 'cancelled' | 'refunded'
+  paymentStatus?: 'pending' | 'paid' | 'refunded' | 'failed'
   isDisputed: boolean
   disputeReason?: string
   createdAt: string
@@ -47,7 +49,7 @@ const listParams = computed(() => ({
 }))
 
 const { data, isLoading: loading, error } = useAdminOrders(() => listParams.value)
-const orders = computed(() => data.value?.orders || [])
+const orders = computed<OrderRecord[]>(() => data.value?.orders || [])
 const total = computed(() => data.value?.total || 0)
 
 // ─── Web Audio Real-Time Order Arrival Chime ───
@@ -94,16 +96,31 @@ const handlePageChange = (p: number) => {
   page.value = p
 }
 
-const handleStatusOverride = async (order: OrderRecord, newStatus: string) => {
-  if (!confirm(`Are you sure you want to force order status override to "${newStatus}"?`)) {
+const handleStatusOverride = async (order: OrderRecord, newStatus: OrderRecord['status']) => {
+  const actionHint =
+    newStatus === 'cancelled' || newStatus === 'refunded'
+      ? `This will refund the customer's escrow payment & Jara Coins and restore bag stock.`
+      : newStatus === 'picked-up'
+        ? `This will settle and disburse vendor earnings from escrow.`
+        : `This will mark the order ready for customer pickup.`
+
+  if (!confirm(`Force order #${order.id.slice(-6).toUpperCase()} status to "${newStatus}"?\n\n${actionHint}`)) {
     return
   }
 
   try {
     await overrideOrderStatusMutation.mutateAsync({ id: order.id, status: newStatus })
   } catch (err: any) {
-    alert(err.message || 'Failed to override order status.')
+    alert(err?.response?.data?.message || err.message || 'Failed to override order status.')
   }
+}
+
+const isActiveOrder = (status: string) => ['pending', 'confirmed', 'ready'].includes(status)
+
+const formatPaymentBadge = (o: OrderRecord) => {
+  if (o.paymentStatus) return o.paymentStatus
+  if (o.status === 'refunded' || o.status === 'cancelled') return 'refunded'
+  return 'wallet paid'
 }
 
 const formatDate = (dateStr: string) => {
@@ -119,7 +136,8 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
-  }).format(amount)
+    maximumFractionDigits: 0,
+  }).format(amount || 0)
 }
 </script>
 
@@ -145,7 +163,8 @@ const formatCurrency = (amount: number) => {
             >
               <option value="">All Statuses</option>
               <option value="pending">Pending</option>
-              <option value="ready-for-pickup">Ready for Pickup</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="ready">Ready for Pickup</option>
               <option value="picked-up">Picked Up</option>
               <option value="cancelled">Cancelled</option>
               <option value="refunded">Refunded</option>
@@ -191,11 +210,11 @@ const formatCurrency = (amount: number) => {
         <h3 class="text-lg font-bold text-text-main font-display">No Orders Found</h3>
         <p class="text-text-sub text-sm max-w-sm">No shopping bags or orders match your filters. Clear search tags or check back later.</p>
         <button
-          v-if="searchQuery"
-          @click="searchQuery = ''"
+          v-if="searchQuery || filterStatus || filterDisputed"
+          @click="searchQuery = ''; filterStatus = ''; filterDisputed = ''"
           class="bg-orange-600 hover:bg-orange-500 text-white font-semibold py-2 px-4 rounded-lg text-xs cursor-pointer"
         >
-          Clear Search
+          Clear Filters
         </button>
       </div>
 
@@ -225,31 +244,36 @@ const formatCurrency = (amount: number) => {
                 </td>
                 <td class="py-4 px-6">
                   <div class="font-semibold text-text-main" v-if="o.bag">{{ o.bag.title }}</div>
-                  <div class="text-xs text-text-muted mt-0.5">Qty: {{ o.quantity }} • Rate: {{ formatCurrency(o.amount / o.quantity) }}</div>
+                  <div class="text-xs text-text-muted mt-0.5">
+                    Qty: {{ o.quantity || 1 }} • Rate: {{ formatCurrency(o.amount / Math.max(1, o.quantity || 1)) }}
+                  </div>
                 </td>
                 <td class="py-4 px-6">
                   <div class="font-bold text-text-main">{{ formatCurrency(o.amount) }}</div>
+                  <div v-if="(o.jaraCoinsUsed ?? 0) > 0" class="text-[10px] text-amber-500 font-semibold">
+                    Cash: {{ formatCurrency(o.cashPaid ?? o.amount) }} + {{ o.jaraCoinsUsed }} Coins
+                  </div>
                   <span
                     :class="{
                       'bg-neutral-800 text-neutral-400 border border-neutral-700': o.paymentStatus === 'pending',
-                      'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20': o.paymentStatus === 'held-in-escrow',
-                      'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20': o.paymentStatus === 'released',
-                      'bg-red-500/10 text-red-500 border border-red-500/20': o.paymentStatus === 'refunded',
+                      'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20': o.paymentStatus === 'paid' || (!o.paymentStatus && o.status !== 'refunded' && o.status !== 'cancelled'),
+                      'bg-red-500/10 text-red-500 border border-red-500/20': o.paymentStatus === 'refunded' || o.paymentStatus === 'failed' || o.status === 'refunded' || o.status === 'cancelled',
                     }"
                     class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded mt-1 inline-block"
                   >
-                    {{ o.paymentStatus }}
+                    {{ formatPaymentBadge(o) }}
                   </span>
                 </td>
                 <td class="py-4 px-6">
                   <div class="space-y-1">
                     <span
                       :class="{
-                        'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20': o.status === 'pending' || o.status === 'ready-for-pickup',
+                        'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20': o.status === 'pending' || o.status === 'confirmed',
+                        'bg-blue-500/10 text-blue-500 border border-blue-500/20': o.status === 'ready',
                         'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20': o.status === 'picked-up',
                         'bg-red-500/10 text-red-500 border border-red-500/20': o.status === 'cancelled' || o.status === 'refunded',
                       }"
-                      class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md"
+                      class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md inline-block"
                     >
                       {{ o.status }}
                     </span>
@@ -271,29 +295,35 @@ const formatCurrency = (amount: number) => {
                   </div>
 
                   <!-- Regular Status Override shortcuts -->
-                  <div v-else class="flex justify-end gap-1.5">
+                  <div v-else-if="isActiveOrder(o.status)" class="flex flex-wrap justify-end gap-1.5">
                     <button
-                      v-if="o.status === 'pending'"
-                      @click="handleStatusOverride(o, 'ready-for-pickup')"
+                      v-if="o.status === 'pending' || o.status === 'confirmed'"
+                      @click="handleStatusOverride(o, 'ready')"
                       class="text-[10px] text-orange-500 hover:bg-orange-500/10 font-bold px-2 py-1 rounded cursor-pointer border border-orange-500/20"
                     >
                       Set Ready
                     </button>
                     <button
-                      v-if="o.status === 'ready-for-pickup'"
                       @click="handleStatusOverride(o, 'picked-up')"
                       class="text-[10px] text-emerald-500 hover:bg-emerald-500/10 font-bold px-2 py-1 rounded cursor-pointer border border-emerald-500/20"
                     >
                       Force Pickup
                     </button>
                     <button
-                      v-if="o.status === 'pending' || o.status === 'ready-for-pickup'"
+                      @click="handleStatusOverride(o, 'refunded')"
+                      class="text-[10px] text-amber-500 hover:bg-amber-500/10 font-bold px-2 py-1 rounded cursor-pointer border border-amber-500/20"
+                    >
+                      Refund
+                    </button>
+                    <button
                       @click="handleStatusOverride(o, 'cancelled')"
                       class="text-[10px] text-red-500 hover:bg-red-500/10 font-bold px-2 py-1 rounded cursor-pointer border border-red-500/20"
                     >
-                      Cancel Order
+                      Cancel
                     </button>
                   </div>
+
+                  <span v-else class="text-xs text-text-muted italic">Settled</span>
                 </td>
               </tr>
             </tbody>

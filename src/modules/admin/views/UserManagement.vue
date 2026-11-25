@@ -31,6 +31,9 @@ interface UserRecord {
   permissions?: string[]
   customRole: RoleRecord | null
   isBlocked: boolean
+  walletBalance?: number
+  jaraCoins?: number
+  isJaraPassSubscriber?: boolean
   createdAt: string
 }
 
@@ -41,6 +44,7 @@ const pageSize = ref(10)
 
 // Filters & Search
 const filterRole = ref('')
+const filterStatus = ref('')
 const searchQuery = ref('')
 const debouncedSearchQuery = refDebounced(searchQuery, 300)
 
@@ -49,6 +53,7 @@ const listParams = computed(() => ({
   page: page.value,
   pageSize: pageSize.value,
   role: filterRole.value || undefined,
+  status: filterStatus.value || undefined,
   search: debouncedSearchQuery.value.trim() || undefined,
 }))
 
@@ -110,7 +115,7 @@ const allSystemPermissions = [
 ]
 
 // Watchers for search/filter
-watch([filterRole, debouncedSearchQuery], () => {
+watch([filterRole, filterStatus, debouncedSearchQuery], () => {
   page.value = 1
 })
 
@@ -148,17 +153,21 @@ const handleCreateAdminSubmit = async () => {
     createError.value = 'Name, email, and phone number are required'
     return
   }
+  if (!newPassword.value || newPassword.value.trim().length < 8) {
+    createError.value = 'An initial password of at least 8 characters is required'
+    return
+  }
 
   createLoading.value = true
   createError.value = ''
 
   try {
     await createAdminMutation.mutateAsync({
-      name: newName.value,
-      email: newEmail.value,
-      phone: newPhone.value,
+      name: newName.value.trim(),
+      email: newEmail.value.trim().toLowerCase(),
+      phone: newPhone.value.trim(),
       role: newRole.value,
-      password: newPassword.value || undefined,
+      password: newPassword.value,
       customRole: newRole.value === 'admin' && newCustomRole.value ? newCustomRole.value : null,
       permissions: newRole.value === 'admin' && !newCustomRole.value ? newPermissions.value : [],
     })
@@ -171,7 +180,7 @@ const handleCreateAdminSubmit = async () => {
     newCustomRole.value = ''
     newPermissions.value = []
   } catch (err: any) {
-    createError.value = err.message || 'Failed to create admin profile.'
+    createError.value = err?.response?.data?.message || err.message || 'Failed to create admin profile.'
   } finally {
     createLoading.value = false
   }
@@ -333,7 +342,7 @@ const getCompiledPreview = (text: string) => {
 // Helper to watch selected custom role and lock permissions checkbox list
 const handleNewRoleChange = () => {
   if (newCustomRole.value) {
-    const matched = customRolesList.value.find((r) => r.id === newCustomRole.value)
+    const matched = customRolesList.value.find((r: any) => (r.id || r._id) === newCustomRole.value)
     if (matched) {
       newPermissions.value = [...matched.permissions]
     }
@@ -344,7 +353,7 @@ const handleNewRoleChange = () => {
 
 const handleEditRoleChange = () => {
   if (selectedCustomRole.value) {
-    const matched = customRolesList.value.find((r) => r.id === selectedCustomRole.value)
+    const matched = customRolesList.value.find((r: any) => (r.id || r._id) === selectedCustomRole.value)
     if (matched) {
       selectedPermissions.value = [...matched.permissions]
     }
@@ -386,6 +395,18 @@ const handleEditRoleChange = () => {
               <option value="vendor">Vendors</option>
               <option value="admin">Admins</option>
               <option value="superadmin">Superadmins</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label class="text-xs font-bold text-text-muted uppercase tracking-wide">Status:</label>
+            <select
+              v-model="filterStatus"
+              class="bg-surface-base border border-border-strong rounded-lg px-3 py-1.5 text-sm text-text-main focus:outline-none"
+            >
+              <option value="">All Accounts</option>
+              <option value="active">Active Only</option>
+              <option value="blocked">Suspended Only</option>
             </select>
           </div>
         </div>
@@ -440,7 +461,21 @@ const handleEditRoleChange = () => {
             <tbody class="divide-y divide-border-subtle">
               <tr v-for="u in users" :key="u.id" class="hover:bg-surface-base/20 text-sm">
                 <td class="py-4 px-6">
-                  <div class="font-semibold text-text-main">{{ u.name }}</div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-semibold text-text-main">{{ u.name }}</span>
+                    <span
+                      v-if="u.isBlocked"
+                      class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-red-500/15 text-red-500 border border-red-500/30"
+                    >
+                      Suspended
+                    </span>
+                    <span
+                      v-else-if="u.isJaraPassSubscriber"
+                      class="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-500 border border-amber-500/30"
+                    >
+                      👑 VIP
+                    </span>
+                  </div>
                   <div class="text-[10px] font-bold text-text-muted uppercase tracking-widest mt-0.5">ID: {{ u.id }}</div>
                 </td>
                 <td class="py-4 px-6 text-text-sub">
@@ -481,9 +516,30 @@ const handleEditRoleChange = () => {
                       </span>
                     </div>
                   </div>
-                  <div v-else class="text-xs text-text-muted font-light">—</div>
+                  <div v-else class="text-xs text-text-sub space-y-0.5">
+                    <div>Wallet: <strong class="text-text-main">₦{{ (u.walletBalance ?? 0).toLocaleString('en-NG') }}</strong></div>
+                    <div class="text-[11px] text-amber-500 font-semibold">{{ (u.jaraCoins ?? 0).toLocaleString('en-NG') }} Jara Coins</div>
+                  </div>
                 </td>
-                <td class="py-4 px-6 text-right space-x-2">
+                <td class="py-4 px-6 text-right space-x-1.5">
+                  <!-- Push Alert -->
+                  <router-link
+                    v-if="u.role === 'consumer' || u.role === 'vendor'"
+                    :to="`/admin/emails?tab=push&userId=${u.id}&userName=${encodeURIComponent(u.name)}`"
+                    class="text-xs text-purple-400 hover:text-purple-300 font-bold px-2 py-1 rounded hover:bg-purple-500/10 transition-colors"
+                  >
+                    Push
+                  </router-link>
+
+                  <!-- Wallet Override (Superadmin) -->
+                  <router-link
+                    v-if="authStore.user?.role === 'superadmin' && (u.role === 'consumer' || u.role === 'vendor')"
+                    :to="`/admin/wallets?userId=${u.id}&userName=${encodeURIComponent(u.name)}`"
+                    class="text-xs text-amber-500 hover:text-amber-400 font-bold px-2 py-1 rounded hover:bg-amber-500/10 transition-colors"
+                  >
+                    Wallet
+                  </router-link>
+
                   <!-- Send Mail -->
                   <button
                     v-if="u.email"

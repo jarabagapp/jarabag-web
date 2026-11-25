@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { ref, watch, computed, nextTick } from 'vue'
+import { ref, watch, computed, nextTick, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { refDebounced } from '@vueuse/core'
 import AdminLayout from '../components/AdminLayout.vue'
 import {
   useAdminEmailSchedules,
   useAdminTemplates,
   useScheduleEmail,
+  useDeleteEmailSchedule,
+  useCreateTemplate,
+  useUpdateTemplate,
+  useDeleteTemplate,
+  useAdminNotificationStats,
+  useBroadcastNotification,
 } from '../composables/useAdminQuery'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css'
@@ -182,6 +189,155 @@ const { data: templatesData } = useAdminTemplates()
 const templates = computed(() => templatesData.value || [])
 
 const scheduleEmailMutation = useScheduleEmail()
+const deleteEmailScheduleMutation = useDeleteEmailSchedule()
+const createTemplateMutation = useCreateTemplate()
+const updateTemplateMutation = useUpdateTemplate()
+const deleteTemplateMutation = useDeleteTemplate()
+const { data: pushStats } = useAdminNotificationStats()
+const broadcastPushMutation = useBroadcastNotification()
+
+const route = useRoute()
+const activeHubTab = ref<'emails' | 'templates' | 'push'>('emails')
+
+// Email Templates Manager State
+const showTemplateModal = ref(false)
+const editingTemplateId = ref<string | null>(null)
+const tmplName = ref('')
+const tmplSubject = ref('')
+const tmplBody = ref('')
+const tmplError = ref('')
+const tmplSaving = ref(false)
+
+const openCreateTemplateModal = () => {
+  editingTemplateId.value = null
+  tmplName.value = ''
+  tmplSubject.value = ''
+  tmplBody.value = '<p>Hello {{name}},</p><p>Write your message here...</p>'
+  tmplError.value = ''
+  showTemplateModal.value = true
+}
+
+const openEditTemplateModal = (t: any) => {
+  editingTemplateId.value = t.id || t._id
+  tmplName.value = t.name
+  tmplSubject.value = t.subject
+  tmplBody.value = t.body
+  tmplError.value = ''
+  showTemplateModal.value = true
+}
+
+const handleSaveTemplate = async () => {
+  if (!tmplName.value.trim() || !tmplSubject.value.trim() || !tmplBody.value.trim()) {
+    tmplError.value = 'Template name, subject, and HTML body are required.'
+    return
+  }
+  tmplSaving.value = true
+  tmplError.value = ''
+  try {
+    if (editingTemplateId.value) {
+      await updateTemplateMutation.mutateAsync({
+        id: editingTemplateId.value,
+        dto: {
+          name: tmplName.value.trim(),
+          subject: tmplSubject.value.trim(),
+          body: tmplBody.value,
+        },
+      })
+    } else {
+      await createTemplateMutation.mutateAsync({
+        name: tmplName.value.trim(),
+        subject: tmplSubject.value.trim(),
+        body: tmplBody.value,
+      })
+    }
+    showTemplateModal.value = false
+  } catch (err: any) {
+    tmplError.value = err?.response?.data?.message || err.message || 'Failed to save template.'
+  } finally {
+    tmplSaving.value = false
+  }
+}
+
+const handleDeleteTemplate = async (t: any) => {
+  if (!confirm(`Delete template "${t.name}"?`)) return
+  try {
+    await deleteTemplateMutation.mutateAsync(t.id || t._id)
+  } catch (err: any) {
+    alert(err?.response?.data?.message || err.message || 'Failed to delete template.')
+  }
+}
+
+const handleCancelEmailSchedule = async (s: EmailScheduleRecord, event: Event) => {
+  event.stopPropagation()
+  if (!confirm(`Cancel pending email campaign "${s.subject}"?`)) return
+  try {
+    await deleteEmailScheduleMutation.mutateAsync(s.id)
+  } catch (err: any) {
+    alert(err?.response?.data?.message || err.message || 'Failed to cancel scheduled campaign.')
+  }
+}
+
+// Push Notification Broadcast State
+const pushAudience = ref<'all_consumers' | 'all_vendors' | 'all_users' | 'single_user'>('all_consumers')
+const pushUserId = ref('')
+const pushUserHint = ref('')
+const pushTitle = ref('')
+const pushBody = ref('')
+const pushBagId = ref('')
+const pushImageUrl = ref('')
+const pushSending = ref(false)
+const pushFeedback = ref('')
+const pushError = ref('')
+
+const handleSendPushBroadcast = async () => {
+  pushFeedback.value = ''
+  pushError.value = ''
+  if (!pushTitle.value.trim() || !pushBody.value.trim()) {
+    pushError.value = 'Push notification title and message body are required.'
+    return
+  }
+  if (pushAudience.value === 'single_user' && !pushUserId.value.trim()) {
+    pushError.value = 'Please enter a target User ID for single-user push.'
+    return
+  }
+  if (!confirm(`Send instant push notification "${pushTitle.value}" to ${pushAudience.value.replace('_', ' ')}?`)) {
+    return
+  }
+  pushSending.value = true
+  try {
+    const res = await broadcastPushMutation.mutateAsync({
+      audience: pushAudience.value,
+      userId: pushAudience.value === 'single_user' ? pushUserId.value.trim() : undefined,
+      title: pushTitle.value.trim(),
+      body: pushBody.value.trim(),
+      bagId: pushBagId.value.trim() || undefined,
+      imageUrl: pushImageUrl.value.trim() || undefined,
+    })
+    pushFeedback.value = res.message || `Sent to ${res.sentToUsers} user(s)!`
+    pushTitle.value = ''
+    pushBody.value = ''
+    pushBagId.value = ''
+    pushImageUrl.value = ''
+  } catch (err: any) {
+    pushError.value = err?.response?.data?.message || err.message || 'Failed to send push broadcast.'
+  } finally {
+    pushSending.value = false
+  }
+}
+
+onMounted(() => {
+  if (route.query.tab === 'push') {
+    activeHubTab.value = 'push'
+  } else if (route.query.tab === 'templates') {
+    activeHubTab.value = 'templates'
+  }
+  if (typeof route.query.userId === 'string' && route.query.userId) {
+    activeHubTab.value = 'push'
+    pushAudience.value = 'single_user'
+    pushUserId.value = route.query.userId
+    pushUserHint.value = typeof route.query.userName === 'string' ? route.query.userName : ''
+  }
+})
 
 watch(debouncedSearchQuery, () => {
   page.value = 1
@@ -432,20 +588,243 @@ const formatDate = (dateStr: string) => {
       <!-- Header Actions -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 class="text-3xl font-black text-text-main tracking-tight font-display">Scheduled Campaigns</h2>
-          <p class="text-text-sub text-sm mt-1">Compose newsletters, system alerts, or marketing broadcasts and schedule them.</p>
+          <h2 class="text-3xl font-black text-text-main tracking-tight font-display">Campaigns &amp; Push Alerts</h2>
+          <p class="text-text-sub text-sm mt-1">Dispatch instant deal push notifications, manage reusable email templates, and schedule broadcasts.</p>
         </div>
 
-        <div>
+        <div class="flex items-center gap-2.5">
           <button
+            v-if="activeHubTab === 'templates'"
+            @click="openCreateTemplateModal"
+            class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-orange-600/20 active:scale-98 transition-all text-sm cursor-pointer"
+          >
+            + New Email Template
+          </button>
+          <button
+            v-else-if="activeHubTab === 'emails'"
             @click="showCreateModal = true"
             class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-orange-600/20 active:scale-98 transition-all text-sm cursor-pointer"
           >
-            ✉️ Schedule Broadcast
+            ✉️ Schedule Email Broadcast
           </button>
         </div>
       </div>
 
+      <!-- Hub Switcher Tabs -->
+      <div class="flex items-center gap-1.5 p-1 bg-surface-raised rounded-xl border border-border-subtle w-fit">
+        <button
+          type="button"
+          @click="activeHubTab = 'emails'"
+          :class="activeHubTab === 'emails' ? 'bg-orange-600 text-white font-bold shadow-sm' : 'text-text-sub hover:text-text-main font-semibold'"
+          class="px-4 py-2 rounded-lg text-xs transition-all cursor-pointer"
+        >
+          📅 Scheduled Emails
+        </button>
+        <button
+          type="button"
+          @click="activeHubTab = 'push'"
+          :class="activeHubTab === 'push' ? 'bg-orange-600 text-white font-bold shadow-sm' : 'text-text-sub hover:text-text-main font-semibold'"
+          class="px-4 py-2 rounded-lg text-xs transition-all cursor-pointer"
+        >
+          🔔 Push Deal Broadcasts
+        </button>
+        <button
+          type="button"
+          @click="activeHubTab = 'templates'"
+          :class="activeHubTab === 'templates' ? 'bg-orange-600 text-white font-bold shadow-sm' : 'text-text-sub hover:text-text-main font-semibold'"
+          class="px-4 py-2 rounded-lg text-xs transition-all cursor-pointer"
+        >
+          📝 Email Templates ({{ templates.length }})
+        </button>
+      </div>
+
+      <!-- TAB 2: PUSH DEAL BROADCASTS -->
+      <div v-if="activeHubTab === 'push'" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-7 bg-surface-raised border border-border-subtle rounded-2xl p-6 shadow-xl space-y-5">
+          <div>
+            <h3 class="text-lg font-black text-text-main font-display">🔔 Instant Mobile Push Notification</h3>
+            <p class="text-xs text-text-muted mt-1">
+              Deliver real-time Expo / FCM / APNs push banners to JaraBag mobile users and optionally deep-link straight to a live food deal.
+            </p>
+          </div>
+
+          <div v-if="pushError" class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-xl text-xs font-semibold">
+            ⚠️ {{ pushError }}
+          </div>
+          <div v-if="pushFeedback" class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 px-4 py-3 rounded-xl text-xs font-semibold">
+            ✅ {{ pushFeedback }}
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Target Audience</label>
+              <select
+                v-model="pushAudience"
+                class="w-full bg-surface-base border border-border-strong rounded-xl px-3.5 py-2.5 text-sm text-text-main focus:outline-none"
+              >
+                <option value="all_consumers">All Consumers (Food Lovers)</option>
+                <option value="all_vendors">All Vendors (Kitchens)</option>
+                <option value="all_users">All Mobile Users</option>
+                <option value="single_user">Specific User ID</option>
+              </select>
+            </div>
+
+            <div v-if="pushAudience === 'single_user'" class="space-y-1.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">
+                User ID <span v-if="pushUserHint" class="text-orange-500 normal-case">({{ pushUserHint }})</span>
+              </label>
+              <input
+                v-model="pushUserId"
+                type="text"
+                placeholder="Mongo ObjectId..."
+                class="w-full bg-surface-base border border-border-strong rounded-xl px-3.5 py-2.5 text-sm text-text-main focus:outline-none"
+              />
+            </div>
+
+            <div v-else class="space-y-1.5">
+              <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Optional Deal Bag ID (Deep Link)</label>
+              <input
+                v-model="pushBagId"
+                type="text"
+                placeholder="e.g. 6650c8e2... (opens /bag/:id)"
+                class="w-full bg-surface-base border border-border-strong rounded-xl px-3.5 py-2.5 text-sm text-text-main focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Notification Title</label>
+            <input
+              v-model="pushTitle"
+              type="text"
+              maxlength="80"
+              placeholder="🔥 Hot Dinner Deals Live Near You!"
+              class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-2.5 text-sm text-text-main focus:outline-none focus:border-orange-500 font-semibold"
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Notification Message</label>
+            <textarea
+              v-model="pushBody"
+              rows="3"
+              maxlength="220"
+              placeholder="Fresh Jollof & Grill boxes up to 50% off from verified kitchens around you. Tap to reserve before pickup closes!"
+              class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-2.5 text-sm text-text-main focus:outline-none focus:border-orange-500"
+            ></textarea>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Optional Rich Banner Image URL</label>
+            <input
+              v-model="pushImageUrl"
+              type="url"
+              placeholder="https://res.cloudinary.com/..."
+              class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-2.5 text-sm text-text-main focus:outline-none"
+            />
+          </div>
+
+          <button
+            type="button"
+            @click="handleSendPushBroadcast"
+            :disabled="pushSending"
+            class="w-full bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-orange-600/20 cursor-pointer text-sm"
+          >
+            {{ pushSending ? 'Dispatching Push...' : '🚀 Send Push Notification Now' }}
+          </button>
+        </div>
+
+        <div class="lg:col-span-5 space-y-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-surface-raised border border-border-subtle rounded-2xl p-5">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Registered Devices</span>
+              <div class="text-2xl font-black text-orange-500 font-display mt-1">{{ pushStats?.registeredDevices ?? 0 }}</div>
+              <span class="text-[10px] text-text-muted">Active Expo push tokens</span>
+            </div>
+            <div class="bg-surface-raised border border-border-subtle rounded-2xl p-5">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Opted-In Profiles</span>
+              <div class="text-2xl font-black text-emerald-500 font-display mt-1">{{ pushStats?.usersWithPushEnabled ?? 0 }}</div>
+              <span class="text-[10px] text-text-muted">Push alerts enabled</span>
+            </div>
+          </div>
+
+          <div class="bg-surface-raised border border-border-subtle rounded-2xl p-5 space-y-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-text-sub">Recent Push Broadcasts</h4>
+            <div v-if="!(pushStats?.recentBroadcasts?.length)" class="text-xs text-text-muted italic py-6 text-center">
+              No admin push broadcasts sent yet.
+            </div>
+            <div v-else class="space-y-2.5 max-h-[300px] overflow-y-auto">
+              <div
+                v-for="(b, idx) in pushStats.recentBroadcasts"
+                :key="idx"
+                class="bg-surface-base border border-border-strong rounded-xl p-3 space-y-1"
+              >
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs font-bold text-text-main truncate">{{ b.title }}</span>
+                  <span class="text-[10px] font-bold text-orange-500 shrink-0">{{ b.recipientCount }} users</span>
+                </div>
+                <p class="text-[11px] text-text-sub line-clamp-2">{{ b.body }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: EMAIL TEMPLATES MANAGER -->
+      <div v-else-if="activeHubTab === 'templates'" class="space-y-6">
+        <div class="bg-surface-raised border border-border-subtle rounded-2xl p-4 text-xs text-text-sub">
+          <strong class="text-orange-500">System Automated Template Hooks:</strong> Naming a template
+          <code class="px-1.5 py-0.5 bg-surface-base rounded">Account Suspended</code>,
+          <code class="px-1.5 py-0.5 bg-surface-base rounded">Account Restored</code>,
+          <code class="px-1.5 py-0.5 bg-surface-base rounded">Vendor Verified</code>, or
+          <code class="px-1.5 py-0.5 bg-surface-base rounded">Vendor Revoked</code>
+          automatically customizes the transactional emails sent when moderating users/vendors.
+        </div>
+
+        <div v-if="templates.length === 0" class="bg-surface-raised border border-border-subtle rounded-2xl p-12 text-center space-y-3">
+          <span class="text-4xl">📝</span>
+          <h3 class="text-lg font-bold text-text-main font-display">No Saved Email Templates</h3>
+          <p class="text-xs text-text-sub">Create reusable HTML templates with dynamic placeholders.</p>
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div
+            v-for="t in templates"
+            :key="t.id"
+            class="bg-surface-raised border border-border-subtle rounded-2xl p-5 flex flex-col justify-between space-y-4"
+          >
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <h4 class="font-bold text-text-main font-display">{{ t.name }}</h4>
+                <span class="text-[10px] font-mono text-text-muted">Template</span>
+              </div>
+              <div class="text-xs font-semibold text-orange-500">Subject: {{ t.subject }}</div>
+              <p class="text-xs text-text-sub line-clamp-3 font-mono bg-surface-base border border-border-strong rounded-lg p-2.5">
+                {{ t.body }}
+              </p>
+            </div>
+            <div class="flex justify-end gap-2 border-t border-border-subtle pt-3">
+              <button
+                type="button"
+                @click="openEditTemplateModal(t)"
+                class="text-xs font-bold text-orange-500 hover:bg-orange-500/10 px-3 py-1 rounded-lg cursor-pointer"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                @click="handleDeleteTemplate(t)"
+                class="text-xs font-bold text-red-500 hover:bg-red-500/10 px-3 py-1 rounded-lg cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 1: SCHEDULED EMAILS -->
+      <template v-else>
       <!-- Search Toolbar -->
       <div class="bg-surface-raised border border-border-subtle p-4 rounded-xl flex items-center justify-between gap-4">
         <div class="text-xs font-bold text-text-muted uppercase tracking-wide">
@@ -536,10 +915,20 @@ const formatDate = (dateStr: string) => {
                   </span>
                 </td>
                 <td class="py-4 px-6 max-w-xs">
-                  <div v-if="s.error" class="text-xs text-red-400 font-light truncate" :title="s.error">
-                    {{ s.error }}
+                  <div class="flex items-center justify-between gap-2">
+                    <div v-if="s.error" class="text-xs text-red-400 font-light truncate" :title="s.error">
+                      {{ s.error }}
+                    </div>
+                    <div v-else class="text-xs text-text-muted font-light">—</div>
+                    <button
+                      v-if="s.status === 'pending' || s.status === 'failed'"
+                      type="button"
+                      @click="handleCancelEmailSchedule(s, $event)"
+                      class="text-[10px] font-bold text-red-500 hover:bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded cursor-pointer shrink-0"
+                    >
+                      {{ s.status === 'pending' ? 'Cancel' : 'Remove' }}
+                    </button>
                   </div>
-                  <div v-else class="text-xs text-text-muted font-light">—</div>
                 </td>
               </tr>
             </tbody>
@@ -567,6 +956,74 @@ const formatDate = (dateStr: string) => {
               Next
             </button>
           </div>
+        </div>
+      </div>
+      </template>
+    </div>
+
+    <!-- Email Template Create / Edit Modal -->
+    <div v-if="showTemplateModal" class="fixed inset-0 bg-black/65 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-surface-raised border border-border-subtle max-w-xl w-full rounded-2xl p-6 shadow-2xl space-y-5">
+        <div>
+          <h3 class="text-xl font-bold text-text-main font-display">
+            {{ editingTemplateId ? 'Edit Email Template' : 'Create Email Template' }}
+          </h3>
+          <p class="text-xs text-text-muted mt-1" v-pre>
+            Supports dynamic placeholders: {{name}}, {{email}}, {{phone}}, {{role}}, {{walletBalance}}.
+          </p>
+        </div>
+
+        <div v-if="tmplError" class="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-xl text-xs font-semibold">
+          {{ tmplError }}
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub mb-1.5">Template Name</label>
+            <input
+              v-model="tmplName"
+              type="text"
+              placeholder="e.g. Weekend Flash Deals or Vendor Verified"
+              class="w-full bg-surface-base border border-border-strong rounded-xl px-3.5 py-2.5 text-sm text-text-main focus:outline-none focus:border-orange-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub mb-1.5">Subject Line</label>
+            <input
+              v-model="tmplSubject"
+              type="text"
+              placeholder="e.g. Fresh weekend food deals waiting for you, {{name}}!"
+              class="w-full bg-surface-base border border-border-strong rounded-xl px-3.5 py-2.5 text-sm text-text-main focus:outline-none focus:border-orange-500"
+            />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub mb-1.5">HTML Body</label>
+            <textarea
+              v-model="tmplBody"
+              rows="7"
+              class="w-full bg-surface-base border border-border-strong rounded-xl px-3.5 py-2.5 text-xs font-mono text-text-main focus:outline-none focus:border-orange-500"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button
+            type="button"
+            @click="showTemplateModal = false"
+            class="px-4 py-2 border border-border-strong hover:bg-surface-base rounded-xl text-xs font-semibold text-text-sub hover:text-text-main cursor-pointer"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            @click="handleSaveTemplate"
+            :disabled="tmplSaving"
+            class="px-5 py-2 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 rounded-xl text-xs font-bold text-white cursor-pointer"
+          >
+            {{ tmplSaving ? 'Saving...' : 'Save Template' }}
+          </button>
         </div>
       </div>
     </div>

@@ -1,13 +1,32 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const currentTheme = ref('dark')
+const mobileMenuOpen = ref(false)
 let idleTimeout: ReturnType<typeof setTimeout> | null = null
+
+const isSuperAdmin = computed(() => authStore.user?.role === 'superadmin')
+const userPermissions = computed<string[]>(() => {
+  if (isSuperAdmin.value) return ['all']
+  const u: any = authStore.user
+  if (u?.customRole?.permissions?.length) return u.customRole.permissions
+  return u?.permissions || []
+})
+
+const hasPerm = (perm: string) => isSuperAdmin.value || userPermissions.value.includes(perm)
+
+watch(
+  () => route.fullPath,
+  () => {
+    mobileMenuOpen.value = false
+  },
+)
 
 const handleLogout = () => {
   if (idleTimeout) clearTimeout(idleTimeout)
@@ -19,14 +38,17 @@ const resetIdleTimer = () => {
   if (idleTimeout) clearTimeout(idleTimeout)
   idleTimeout = setTimeout(() => {
     handleLogout()
-  }, 3 * 60 * 1000) // 3 minutes idle time
+  }, 20 * 60 * 1000) // 20 minutes idle session timeout
 }
 
 const toggleTheme = () => {
   const current = document.documentElement.getAttribute('data-theme')
-  const systemPrefersDark = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+  const systemPrefersDark =
+    typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : false
   const effectiveTheme = current ?? (systemPrefersDark ? 'dark' : 'light')
-  
+
   const nextTheme = effectiveTheme === 'dark' ? 'light' : 'dark'
   document.documentElement.setAttribute('data-theme', nextTheme)
   localStorage.setItem('jarabag_theme', nextTheme)
@@ -39,11 +61,13 @@ onMounted(() => {
     document.documentElement.setAttribute('data-theme', savedTheme)
     currentTheme.value = savedTheme
   } else {
-    const systemPrefersDark = typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : false
+    const systemPrefersDark =
+      typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : false
     currentTheme.value = systemPrefersDark ? 'dark' : 'light'
   }
 
-  // Bind interaction events to reset idle timer
   const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart']
   events.forEach((event) => {
     window.addEventListener(event, resetIdleTimer)
@@ -52,7 +76,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  // Unbind interaction events and clean timeout
   const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart']
   events.forEach((event) => {
     window.removeEventListener(event, resetIdleTimer)
@@ -63,14 +86,33 @@ onUnmounted(() => {
 
 <template>
   <div class="h-screen overflow-hidden bg-surface-base text-text-main flex font-sans transition-colors duration-normal selection:bg-orange-500 selection:text-white">
+    <!-- Mobile Drawer Backdrop -->
+    <div
+      v-if="mobileMenuOpen"
+      @click="mobileMenuOpen = false"
+      class="fixed inset-0 bg-black/60 backdrop-blur-xs z-30 lg:hidden"
+    ></div>
+
     <!-- Sidebar -->
-    <aside class="w-64 border-r border-border-subtle bg-surface-base flex flex-col z-20 transition-colors duration-normal">
+    <aside
+      :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+      class="fixed lg:static inset-y-0 left-0 w-64 border-r border-border-subtle bg-surface-base flex flex-col z-40 transition-transform duration-200 ease-out"
+    >
       <!-- Brand Logo -->
-      <div class="h-20 border-b border-border-subtle flex items-center px-6 gap-3">
-        <img src="/jarabag-icon.svg" alt="Jarabag Logo" class="w-8 h-8 object-contain drop-shadow-sm" />
-        <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-text-main to-text-sub bg-clip-text text-transparent">
-          Jarabag Admin
-        </span>
+      <div class="h-20 border-b border-border-subtle flex items-center justify-between px-6">
+        <div class="flex items-center gap-3">
+          <img src="/jarabag-icon.svg" alt="Jarabag Logo" class="w-8 h-8 object-contain drop-shadow-sm" />
+          <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-text-main to-text-sub bg-clip-text text-transparent">
+            Jarabag Admin
+          </span>
+        </div>
+        <button
+          @click="mobileMenuOpen = false"
+          class="lg:hidden p-1.5 rounded-lg text-text-muted hover:text-text-main hover:bg-surface-raised cursor-pointer"
+          aria-label="Close sidebar"
+        >
+          ✕
+        </button>
       </div>
 
       <!-- Navigation Links -->
@@ -84,6 +126,7 @@ onUnmounted(() => {
         </router-link>
 
         <router-link
+          v-if="hasPerm('manage_customers')"
           to="/admin/users"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
@@ -92,7 +135,7 @@ onUnmounted(() => {
         </router-link>
 
         <router-link
-          v-if="authStore.user?.role === 'superadmin'"
+          v-if="isSuperAdmin"
           to="/admin/roles"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
@@ -101,6 +144,7 @@ onUnmounted(() => {
         </router-link>
 
         <router-link
+          v-if="hasPerm('manage_vendors')"
           to="/admin/vendors"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
@@ -109,6 +153,16 @@ onUnmounted(() => {
         </router-link>
 
         <router-link
+          v-if="hasPerm('manage_vendors')"
+          to="/admin/bags"
+          active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
+          class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
+        >
+          <span class="text-lg">🍲</span> Deal Listings
+        </router-link>
+
+        <router-link
+          v-if="hasPerm('manage_payments')"
           to="/admin/wallets"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
@@ -117,6 +171,7 @@ onUnmounted(() => {
         </router-link>
 
         <router-link
+          v-if="hasPerm('manage_vendors') && hasPerm('manage_customers')"
           to="/admin/orders"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
@@ -125,6 +180,7 @@ onUnmounted(() => {
         </router-link>
 
         <router-link
+          v-if="hasPerm('manage_vendors') && hasPerm('manage_customers')"
           to="/admin/disputes"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
@@ -133,14 +189,16 @@ onUnmounted(() => {
         </router-link>
 
         <router-link
+          v-if="hasPerm('schedule_emails')"
           to="/admin/emails"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
         >
-          <span class="text-lg">📅</span> Scheduled Emails
+          <span class="text-lg">📣</span> Campaigns & Push
         </router-link>
 
         <router-link
+          v-if="isSuperAdmin"
           to="/admin/settings"
           active-class="bg-orange-600/10 text-orange-500 border border-orange-500/20"
           class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-text-sub hover:text-text-main hover:bg-surface-raised border border-transparent transition-all"
@@ -163,13 +221,20 @@ onUnmounted(() => {
     <!-- Main Content Area -->
     <div class="flex-1 flex flex-col min-w-0">
       <!-- Top Bar -->
-      <header class="h-20 border-b border-border-subtle flex items-center justify-between px-8 bg-surface-base/50 backdrop-blur-md sticky top-0 z-10 transition-colors duration-normal">
-        <div>
-          <h1 class="text-lg font-bold text-text-main font-display">System Operations</h1>
+      <header class="h-20 border-b border-border-subtle flex items-center justify-between px-4 sm:px-8 bg-surface-base/50 backdrop-blur-md sticky top-0 z-10 transition-colors duration-normal">
+        <div class="flex items-center gap-3">
+          <button
+            @click="mobileMenuOpen = true"
+            class="lg:hidden p-2 border border-border-strong bg-surface-base hover:bg-surface-raised rounded-lg text-text-main cursor-pointer"
+            aria-label="Open navigation menu"
+          >
+            ☰
+          </button>
+          <h1 class="text-base sm:text-lg font-bold text-text-main font-display">System Operations</h1>
         </div>
 
-        <div class="flex items-center gap-4">
-          <div class="flex flex-col items-end">
+        <div class="flex items-center gap-2.5 sm:gap-4">
+          <div class="hidden sm:flex flex-col items-end">
             <span class="text-sm font-semibold text-text-main">{{ authStore.user?.name ?? 'Admin User' }}</span>
             <span
               :class="authStore.user?.role === 'superadmin' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' : 'bg-surface-raised text-text-sub border border-border-strong'"
@@ -197,8 +262,8 @@ onUnmounted(() => {
         </div>
       </header>
 
-      <!-- Page Content Content -->
-      <main class="flex-1 p-8 overflow-y-auto bg-surface-base transition-colors duration-normal">
+      <!-- Page Content -->
+      <main class="flex-1 p-4 sm:p-8 overflow-y-auto bg-surface-base transition-colors duration-normal">
         <slot></slot>
       </main>
     </div>

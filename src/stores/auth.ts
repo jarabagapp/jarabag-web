@@ -6,6 +6,15 @@ import { AuthService } from '../modules/auth/services/auth.service'
 export type AuthStep = 'idle' | 'verifying-otp' | 'authenticated'
 
 export const useAuthStore = defineStore('auth', () => {
+  if (
+    typeof window !== 'undefined' &&
+    localStorage.getItem('jarabag_user') &&
+    !localStorage.getItem('jarabag_access_token')
+  ) {
+    localStorage.removeItem('jarabag_user')
+    localStorage.removeItem('jarabag_auth_step')
+  }
+
   const user = ref<User | null>(
     typeof window !== 'undefined' && localStorage.getItem('jarabag_user')
       ? JSON.parse(localStorage.getItem('jarabag_user')!)
@@ -120,6 +129,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (err) {
       console.error('Dev login failed:', err)
+      throw err
     } finally {
       isLoading.value = false
     }

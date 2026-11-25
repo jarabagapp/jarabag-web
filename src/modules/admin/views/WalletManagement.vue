@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { refDebounced } from '@vueuse/core'
 import AdminLayout from '../components/AdminLayout.vue'
-import { useAdminTransactions, useOverrideBalance, useAdminWalletStats } from '../composables/useAdminQuery'
+import { useAdminTransactions, useOverrideBalance, useAdminWalletStats, useAdminSettings } from '../composables/useAdminQuery'
 
 interface TransactionRecord {
   id: string
   userId: string
-  type: 'top-up' | 'withdrawal' | 'payment' | 'refund'
+  type: 'top-up' | 'withdrawal' | 'payment' | 'refund' | 'commission' | 'bonus'
+  status?: 'pending' | 'success' | 'failed'
   amount: number
   currency: string
   description: string
@@ -19,6 +21,11 @@ interface TransactionRecord {
     phone: string
   }
 }
+
+const route = useRoute()
+const { data: settingsData } = useAdminSettings()
+const commissionPct = computed(() => settingsData.value?.commissionPercentage ?? 5)
+const targetUserHint = ref('')
 
 const page = ref(1)
 const pageSize = ref(10)
@@ -156,14 +163,26 @@ const handleWalletOverrideSubmit = async () => {
 
     showOverrideModal.value = false
     targetUserId.value = ''
+    targetUserHint.value = ''
     overrideAmount.value = 0
     overrideDesc.value = ''
   } catch (err: any) {
-    overrideError.value = err.message || 'Failed to override user wallet balance.'
+    overrideError.value = err?.response?.data?.message || err.message || 'Failed to override user wallet balance.'
   } finally {
     overrideLoading.value = false
   }
 }
+
+const isPositiveTx = (type: string) =>
+  type === 'top-up' || type === 'refund' || type === 'bonus' || type === 'commission'
+
+onMounted(() => {
+  if (typeof route.query.userId === 'string' && route.query.userId) {
+    targetUserId.value = route.query.userId
+    targetUserHint.value = typeof route.query.userName === 'string' ? route.query.userName : ''
+    showOverrideModal.value = true
+  }
+})
 
 const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleString('en-US', {
@@ -212,7 +231,7 @@ const formatCurrency = (amount: number) => {
         </div>
 
         <div class="bg-surface-raised border border-border-subtle p-5 rounded-2xl shadow-sm">
-          <div class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Platform Revenue (5%)</div>
+          <div class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Platform Revenue ({{ commissionPct }}%)</div>
           <div class="text-2xl font-black text-emerald-500 mt-1 font-display">{{ formatCurrency(totals.totalCommissions) }}</div>
           <div class="text-[10px] text-emerald-600/80 mt-1 font-semibold">Jarabag recurring platform profit</div>
         </div>
@@ -237,7 +256,7 @@ const formatCurrency = (amount: number) => {
             <h3 class="text-sm font-bold uppercase tracking-wider text-text-sub font-display">Revenue and Volume Trends (Last 30 Days)</h3>
             <div class="flex gap-4 text-xs font-semibold">
               <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-orange-500 rounded-full inline-block"></span> Daily Volume</span>
-              <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-emerald-500 rounded-full inline-block"></span> 5% Commission</span>
+              <span class="flex items-center gap-1.5"><span class="w-3 h-3 bg-emerald-500 rounded-full inline-block"></span> {{ commissionPct }}% Commission</span>
             </div>
           </div>
 
@@ -331,7 +350,7 @@ const formatCurrency = (amount: number) => {
             <div class="space-y-2">
               <h5 class="text-xs font-bold text-text-main">Is Jarabag Profitable?</h5>
               <p class="text-xs text-text-sub leading-relaxed">
-                Yes! Jarabag earns a sustainable <span class="font-bold text-emerald-500">5.0% commission</span> on all successful order transactions.
+                Yes! Jarabag earns a sustainable <span class="font-bold text-emerald-500">{{ commissionPct }}% commission</span> on all successful order transactions.
                 Manual overrides are isolated administrative adjustments (compensation, corrections) and do not affect underlying transaction commission margins.
               </p>
             </div>
@@ -339,7 +358,7 @@ const formatCurrency = (amount: number) => {
 
           <div class="border-t border-border-subtle pt-4 mt-4 flex items-center justify-between">
             <span class="text-xs text-text-sub font-semibold">Net Platform Margin:</span>
-            <span class="text-sm font-black text-emerald-500">5.0% Fixed</span>
+            <span class="text-sm font-black text-emerald-500">{{ commissionPct }}% Active</span>
           </div>
         </div>
       </div>
@@ -392,6 +411,7 @@ const formatCurrency = (amount: number) => {
                 <th class="py-4 px-6">Transaction Ref</th>
                 <th class="py-4 px-6">Account Holder</th>
                 <th class="py-4 px-6">Category</th>
+                <th class="py-4 px-6">Status</th>
                 <th class="py-4 px-6">Description</th>
                 <th class="py-4 px-6">Amount</th>
                 <th class="py-4 px-6 text-right">Created At</th>
@@ -412,6 +432,7 @@ const formatCurrency = (amount: number) => {
                   <span
                     :class="{
                       'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20': t.type === 'top-up' || t.type === 'refund',
+                      'bg-amber-500/10 text-amber-500 border border-amber-500/20': t.type === 'bonus' || t.type === 'commission',
                       'bg-red-500/10 text-red-500 border border-red-500/20': t.type === 'withdrawal' || t.type === 'payment',
                     }"
                     class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
@@ -419,12 +440,24 @@ const formatCurrency = (amount: number) => {
                     {{ t.type }}
                   </span>
                 </td>
+                <td class="py-4 px-6">
+                  <span
+                    :class="{
+                      'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20': !t.status || t.status === 'success',
+                      'bg-amber-500/10 text-amber-500 border border-amber-500/20': t.status === 'pending',
+                      'bg-red-500/10 text-red-500 border border-red-500/20': t.status === 'failed',
+                    }"
+                    class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md"
+                  >
+                    {{ t.status || 'success' }}
+                  </span>
+                </td>
                 <td class="py-4 px-6 text-text-sub max-w-xs truncate" :title="t.description">
                   {{ t.description }}
                 </td>
                 <td class="py-4 px-6 font-black font-display text-sm">
-                  <span :class="t.type === 'top-up' || t.type === 'refund' ? 'text-emerald-500' : 'text-red-500'">
-                    {{ t.type === 'top-up' || t.type === 'refund' ? '+' : '-' }}
+                  <span :class="isPositiveTx(t.type) ? 'text-emerald-500' : 'text-red-500'">
+                    {{ isPositiveTx(t.type) ? '+' : '-' }}
                     {{ formatCurrency(t.amount) }}
                   </span>
                 </td>
@@ -475,7 +508,10 @@ const formatCurrency = (amount: number) => {
 
         <div class="space-y-4">
           <div>
-            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub mb-2">Target User ID</label>
+            <label class="block text-xs font-bold uppercase tracking-wider text-text-sub mb-2">
+              Target User ID
+              <span v-if="targetUserHint" class="text-orange-500 font-semibold normal-case ml-1">({{ targetUserHint }})</span>
+            </label>
             <input
               v-model="targetUserId"
               type="text"

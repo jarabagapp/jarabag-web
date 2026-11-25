@@ -16,23 +16,23 @@ const searchQuery = ref('')
 const debouncedSearch = refDebounced(searchQuery, 300)
 const selectedOrder = ref<any | null>(null)
 
-// We query orders with isDisputed or all disputed records
+// Query orders that have dispute data
 const { data, isLoading, error } = useAdminOrders(() => ({
   page: 1,
   pageSize: 100,
+  hasDispute: 'true',
 }))
 
 const allOrders = computed(() => data.value?.orders || [])
 
-// Filter orders that have dispute data (either currently isDisputed or have disputeStatus/category)
+// Filter orders that genuinely have dispute data
 const disputeOrders = computed(() => {
   return allOrders.value.filter((o: any) => {
-    return (
+    return Boolean(
       o.isDisputed ||
       o.disputeStatus ||
       o.disputeCategory ||
-      o.disputeReason ||
-      o.status === 'refunded'
+      o.disputeReason,
     )
   })
 })
@@ -71,7 +71,7 @@ const filteredOrders = computed(() => {
         o.disputeStatus === 'pending' || (o.isDisputed && o.disputeStatus !== 'resolved' && o.disputeStatus !== 'dismissed')
       if (!isPending) return false
     } else if (activeTab.value === 'resolved') {
-      if (o.disputeStatus !== 'resolved' && o.status !== 'refunded') return false
+      if (o.disputeStatus !== 'resolved') return false
     } else if (activeTab.value === 'dismissed') {
       if (o.disputeStatus !== 'dismissed') return false
     }

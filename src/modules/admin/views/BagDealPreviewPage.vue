@@ -158,6 +158,14 @@ const toggleMode = () => {
 let downloadToastTimer: ReturnType<typeof setTimeout> | null = null
 
 const triggerDownload = (store: 'apple' | 'google') => {
+  const storeUrl =
+    store === 'apple'
+      ? import.meta.env.VITE_APP_STORE_URL?.trim()
+      : import.meta.env.VITE_PLAY_STORE_URL?.trim()
+  if (storeUrl && typeof window !== 'undefined') {
+    window.open(storeUrl, '_blank', 'noopener,noreferrer')
+    return
+  }
   downloadStoreName.value = store === 'apple' ? 'App Store' : 'Google Play'
   showDownloadAlert.value = true
   if (downloadToastTimer) clearTimeout(downloadToastTimer)
@@ -269,6 +277,9 @@ const fetchBagDeal = async () => {
   try {
     const res = await apiClient.get('/bags/' + bagId.value)
     const payload = res.data?.data || res.data
+    if (payload && !payload.id && payload._id) {
+      payload.id = payload._id
+    }
     const qtyLeft = payload?.quantityRemaining ?? payload?.quantity ?? 0
     if (
       !payload ||

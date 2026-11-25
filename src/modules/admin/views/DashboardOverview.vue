@@ -1,8 +1,15 @@
 <script setup lang="ts">
-import { useAdminStats } from '../composables/useAdminQuery'
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useAdminStats, useAdminSettings } from '../composables/useAdminQuery'
 import AdminLayout from '../components/AdminLayout.vue'
 
+const authStore = useAuthStore()
 const { data: stats, isLoading: loading, error } = useAdminStats()
+const { data: settings } = useAdminSettings()
+
+const commissionPct = computed(() => settings.value?.commissionPercentage ?? 5)
+const isSuperAdmin = computed(() => authStore.user?.role === 'superadmin')
 
 const formatNumber = (num: number) => {
   return new Intl.NumberFormat('en-NG', { maximumFractionDigits: 0 }).format(num)
@@ -63,16 +70,19 @@ const formatCurrency = (amount: number) => {
         </div>
 
         <!-- KPI Card: Active Listings -->
-        <div class="bg-surface-raised border border-border-subtle p-6 rounded-2xl flex items-center justify-between shadow-xl">
+        <router-link
+          to="/admin/bags"
+          class="bg-surface-raised border border-border-subtle hover:border-orange-500/40 p-6 rounded-2xl flex items-center justify-between shadow-xl transition-colors"
+        >
           <div>
             <p class="text-xs font-bold uppercase tracking-wider text-text-muted">Active Listings</p>
             <p class="text-3xl font-black text-text-main font-display mt-2">
               {{ formatNumber(stats?.activeBags ?? 0) }}
             </p>
-            <span class="text-[10px] text-orange-500 font-semibold bg-orange-500/10 px-2 py-0.5 rounded mt-2 inline-block">Live JaraBags</span>
+            <span class="text-[10px] text-orange-500 font-semibold bg-orange-500/10 px-2 py-0.5 rounded mt-2 inline-block">Live JaraBags →</span>
           </div>
           <div class="text-4xl bg-surface-base p-4 rounded-xl">🍲</div>
-        </div>
+        </router-link>
 
         <!-- KPI Card: Total Orders -->
         <div class="bg-surface-raised border border-border-subtle p-6 rounded-2xl flex items-center justify-between shadow-xl">
@@ -98,10 +108,10 @@ const formatCurrency = (amount: number) => {
           <div class="text-4xl bg-surface-base p-4 rounded-xl">₦</div>
         </div>
 
-        <!-- KPI Card: Platform Commission (5%) -->
+        <!-- KPI Card: Platform Commission -->
         <div class="bg-surface-raised border border-border-subtle p-6 rounded-2xl flex items-center justify-between shadow-xl">
           <div>
-            <p class="text-xs font-bold uppercase tracking-wider text-text-muted">Platform Commission (5%)</p>
+            <p class="text-xs font-bold uppercase tracking-wider text-text-muted">Platform Commission ({{ commissionPct }}%)</p>
             <p class="text-3xl font-black text-orange-500 font-display mt-2">
               {{ formatCurrency(stats?.totalCommission ?? 0) }}
             </p>
@@ -118,30 +128,42 @@ const formatCurrency = (amount: number) => {
           <p class="text-xs text-text-sub leading-normal">
             Quickly jump between platform panels to execute actions. You must have the corresponding permissions.
           </p>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
             <router-link
               to="/admin/users"
-              class="p-4 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
+              class="p-3.5 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
             >
               👤 Manage Users
             </router-link>
             <router-link
               to="/admin/vendors"
-              class="p-4 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
+              class="p-3.5 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
             >
-              🏪 Manage Vendors
+              🏪 Verify Vendors
+            </router-link>
+            <router-link
+              to="/admin/bags"
+              class="p-3.5 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
+            >
+              🍲 Moderate Deals
             </router-link>
             <router-link
               to="/admin/wallets"
-              class="p-4 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
+              class="p-3.5 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
             >
               💳 Financial Ledger
             </router-link>
             <router-link
               to="/admin/orders"
-              class="p-4 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
+              class="p-3.5 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
             >
-              🛍️ Dispatch Overrides
+              🛍️ Order Overrides
+            </router-link>
+            <router-link
+              to="/admin/emails"
+              class="p-3.5 bg-surface-base hover:bg-surface-base/80 border border-border-strong rounded-xl text-center font-bold text-xs hover:border-orange-500/30 transition-all"
+            >
+              📣 Push & Emails
             </router-link>
           </div>
         </div>
@@ -150,16 +172,22 @@ const formatCurrency = (amount: number) => {
           <div class="space-y-2">
             <h3 class="text-lg font-bold text-text-main font-display">System Health & Config</h3>
             <p class="text-xs text-text-sub leading-relaxed">
-              Ensure that your configurations, email schedules, and notifications servers are healthy.
-              For system adjustments, check the platform settings below.
+              Manage platform commissions, boost fees, Jara Pass pricing, cashback loyalty tiers, and no-show escrow split policies.
             </p>
           </div>
           <router-link
+            v-if="isSuperAdmin"
             to="/admin/settings"
             class="w-full bg-surface-base border border-border-strong hover:bg-surface-base/80 text-center font-bold text-xs py-3.5 rounded-xl block hover:border-orange-500/30 transition-all"
           >
             ⚙️ Edit Platform Rules
           </router-link>
+          <div
+            v-else
+            class="w-full bg-surface-base/50 border border-border-subtle text-center text-text-muted font-semibold text-xs py-3.5 rounded-xl"
+          >
+            🔒 Global Platform Rules require Superadmin access
+          </div>
         </div>
       </div>
     </div>

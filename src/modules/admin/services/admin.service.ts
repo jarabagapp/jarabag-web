@@ -6,7 +6,9 @@ export interface ListParams {
   pageSize?: number
   role?: string
   status?: string
+  category?: string
   isDisputed?: string
+  hasDispute?: string
   search?: string
 }
 
@@ -15,6 +17,15 @@ export interface ResolveDisputePayload {
   partialRefundAmount?: number
   adminNotes: string
   applyVendorStrike?: boolean
+}
+
+export interface BroadcastNotificationPayload {
+  audience: 'all_consumers' | 'all_vendors' | 'all_users' | 'single_user'
+  userId?: string
+  title: string
+  body: string
+  bagId?: string
+  imageUrl?: string
 }
 
 export class AdminService {
@@ -51,6 +62,10 @@ export class AdminService {
     vipCashbackRate?: number
     maxStandardOrderCashback?: number
     maxVipOrderCashback?: number
+    boostBagDailyFee?: number
+    boostWideDailyFee?: number
+    boostCityDailyFee?: number
+    jaraPassMonthlyFee?: number
   }): Promise<any> {
     const { data } = await apiClient.patch('/bags/settings', dto)
     return data.data || data
@@ -77,7 +92,7 @@ export class AdminService {
 
   static async updateAdminPermissions(
     id: string,
-    dto: { permissions: string[]; customRole: string | null }
+    dto: { permissions: string[]; customRole: string | null },
   ): Promise<User> {
     const { data } = await apiClient.put(`/admin/users/${id}/permissions`, dto)
     return data.data || data
@@ -94,13 +109,44 @@ export class AdminService {
     return data.data || data
   }
 
-  static async toggleVerifyVendor(id: string, verified: boolean, notify?: boolean): Promise<any> {
-    const { data } = await apiClient.put(`/admin/vendors/${id}/verify`, { verified, notify })
+  static async toggleVerifyVendor(
+    id: string,
+    verified: boolean,
+    notify?: boolean,
+    verificationLevel?: 'unverified' | 'verified' | 'gold',
+  ): Promise<any> {
+    const { data } = await apiClient.put(`/admin/vendors/${id}/verify`, {
+      verified,
+      notify,
+      verificationLevel,
+    })
+    return data.data || data
+  }
+
+  static async unsuspendVendor(id: string, resetStrikes = false): Promise<any> {
+    const { data } = await apiClient.put(`/admin/vendors/${id}/unsuspend`, { resetStrikes })
+    return data.data || data
+  }
+
+  // Bag / Deal Listings Moderation
+  static async getBags(params: ListParams): Promise<{ bags: any[]; total: number }> {
+    const { data } = await apiClient.get('/admin/bags', { params })
+    return data.data || data
+  }
+
+  static async updateBagStatus(
+    id: string,
+    status: 'available' | 'expired',
+    reason?: string,
+  ): Promise<any> {
+    const { data } = await apiClient.put(`/admin/bags/${id}/status`, { status, reason })
     return data.data || data
   }
 
   // Wallets & Transactions
-  static async getTransactions(params: ListParams): Promise<{ transactions: WalletTransaction[]; total: number }> {
+  static async getTransactions(
+    params: ListParams,
+  ): Promise<{ transactions: WalletTransaction[]; total: number }> {
     const { data } = await apiClient.get('/admin/wallets/transactions', { params })
     return data.data || data
   }
@@ -115,7 +161,12 @@ export class AdminService {
     return data.data || data
   }
 
-  // Orders
+  static async getWalletStats(): Promise<{ totals: any; daily: any[] }> {
+    const { data } = await apiClient.get('/admin/wallets/stats')
+    return data.data || data
+  }
+
+  // Orders & Disputes
   static async getOrders(params: ListParams): Promise<{ orders: any[]; total: number }> {
     const { data } = await apiClient.get('/admin/orders', { params })
     return data.data || data
@@ -126,10 +177,7 @@ export class AdminService {
     return data.data || data
   }
 
-  static async resolveDispute(
-    id: string,
-    payload: ResolveDisputePayload
-  ): Promise<any> {
+  static async resolveDispute(id: string, payload: ResolveDisputePayload): Promise<any> {
     const { data } = await apiClient.put(`/admin/orders/${id}/resolve-dispute`, payload)
     return data.data || data
   }
@@ -145,7 +193,10 @@ export class AdminService {
     return data.data || data
   }
 
-  static async updateRole(id: string, dto: { name: string; permissions: string[] }): Promise<Role> {
+  static async updateRole(
+    id: string,
+    dto: { name: string; permissions: string[] },
+  ): Promise<Role> {
     const { data } = await apiClient.put(`/admin/roles/${id}`, dto)
     return data.data || data
   }
@@ -161,12 +212,19 @@ export class AdminService {
     return data.data || data
   }
 
-  static async createTemplate(dto: { name: string; subject: string; body: string }): Promise<EmailTemplate> {
+  static async createTemplate(dto: {
+    name: string
+    subject: string
+    body: string
+  }): Promise<EmailTemplate> {
     const { data } = await apiClient.post('/admin/emails/templates', dto)
     return data.data || data
   }
 
-  static async updateTemplate(id: string, dto: { name: string; subject: string; body: string }): Promise<EmailTemplate> {
+  static async updateTemplate(
+    id: string,
+    dto: { name: string; subject: string; body: string },
+  ): Promise<EmailTemplate> {
     const { data } = await apiClient.put(`/admin/emails/templates/${id}`, dto)
     return data.data || data
   }
@@ -177,21 +235,45 @@ export class AdminService {
   }
 
   // Email Schedules
-  static async getEmailSchedules(params: ListParams): Promise<{ schedules: EmailSchedule[]; total: number }> {
+  static async getEmailSchedules(
+    params: ListParams,
+  ): Promise<{ schedules: EmailSchedule[]; total: number }> {
     const { data } = await apiClient.get('/admin/emails/schedule', { params })
     return data.data || data
   }
 
-  static async scheduleEmail(dto: { to: string; subject: string; body: string; scheduledAt: string; targetingFilters?: any }): Promise<EmailSchedule> {
+  static async scheduleEmail(dto: {
+    to: string
+    subject: string
+    body: string
+    scheduledAt: string
+    targetingFilters?: any
+  }): Promise<EmailSchedule> {
     const { data } = await apiClient.post('/admin/emails/schedule', dto)
     return data.data || data
   }
 
-  static async getWalletStats(): Promise<{ totals: any; daily: any[] }> {
-    const { data } = await apiClient.get('/admin/wallets/stats')
+  static async deleteEmailSchedule(id: string): Promise<any> {
+    const { data } = await apiClient.delete(`/admin/emails/schedule/${id}`)
+    return data.data || data
+  }
+
+  // Push Notification Broadcasts
+  static async getNotificationStats(): Promise<{
+    registeredDevices: number
+    usersWithPushEnabled: number
+    recentBroadcasts: any[]
+  }> {
+    const { data } = await apiClient.get('/admin/notifications/stats')
+    return data.data || data
+  }
+
+  static async broadcastNotification(
+    dto: BroadcastNotificationPayload,
+  ): Promise<{ sentToUsers: number; message: string }> {
+    const { data } = await apiClient.post('/admin/notifications/broadcast', dto)
     return data.data || data
   }
 }
 
 export const adminService = AdminService
-

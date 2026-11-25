@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, markRaw } from 'vue'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
@@ -90,6 +90,14 @@ const toggleMode = (event?: MouseEvent) => {
 }
 
 const triggerDownload = (store: string) => {
+  const storeUrl =
+    store === 'apple'
+      ? import.meta.env.VITE_APP_STORE_URL?.trim()
+      : import.meta.env.VITE_PLAY_STORE_URL?.trim()
+  if (storeUrl && typeof window !== 'undefined') {
+    window.open(storeUrl, '_blank', 'noopener,noreferrer')
+    return
+  }
   downloadStoreName.value = store === 'apple' ? 'App Store' : 'Google Play'
   showDownloadAlert.value = true
   setTimeout(() => {
@@ -388,11 +396,11 @@ interface FloatingElement {
 }
 
 const floatingElements = ref<FloatingElement[]>([
-  { id: 1, x: '8%', y: '18%', size: 44, rotation: 12, delay: 0, speed: 5, component: PhCookingPot, type: 'icon' },
-  { id: 2, x: '88%', y: '14%', size: 52, rotation: -18, delay: 0.8, speed: 6, component: PhBread, type: 'icon' },
+  { id: 1, x: '8%', y: '18%', size: 44, rotation: 12, delay: 0, speed: 5, component: markRaw(PhCookingPot), type: 'icon' },
+  { id: 2, x: '88%', y: '14%', size: 52, rotation: -18, delay: 0.8, speed: 6, component: markRaw(PhBread), type: 'icon' },
   { id: 3, x: '82%', y: '78%', size: 38, rotation: 15, delay: 0.4, speed: 4.5, label: '₦', type: 'coin' },
-  { id: 4, x: '10%', y: '82%', size: 48, rotation: -10, delay: 1.2, speed: 5.5, component: PhLeaf, type: 'icon' },
-  { id: 5, x: '78%', y: '48%', size: 32, rotation: 22, delay: 1.6, speed: 4, component: PhSparkle, type: 'icon' },
+  { id: 4, x: '10%', y: '82%', size: 48, rotation: -10, delay: 1.2, speed: 5.5, component: markRaw(PhLeaf), type: 'icon' },
+  { id: 5, x: '78%', y: '48%', size: 32, rotation: 22, delay: 1.6, speed: 4, component: markRaw(PhSparkle), type: 'icon' },
 ])
 
 let ticking = false

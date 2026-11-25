@@ -97,6 +97,16 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
+    path: '/admin/bags',
+    name: 'admin-bags',
+    component: () => import('@/modules/admin/views/BagListingsManagement.vue'),
+    meta: {
+      title: 'Deal Listings — Jarabag Admin',
+      requiresAdmin: true,
+      scrollTop: true,
+    },
+  },
+  {
     path: '/admin/roles',
     name: 'admin-roles',
     component: () => import('@/modules/admin/views/RolesManagement.vue'),
@@ -180,6 +190,16 @@ const router = createRouter({
 router.beforeEach((to) => {
   const auth = useAuthStore()
   const normalizedPath = to.path.replace(/\/+$/, '') || '/'
+
+  // Route admin subdomain root (https://admin.jarabagapp.com/) directly to the Admin Portal
+  if (
+    typeof window !== 'undefined' &&
+    window.location.hostname.startsWith('admin.') &&
+    normalizedPath === '/'
+  ) {
+    return '/admin'
+  }
+
   const isAdminLogin = normalizedPath === '/admin/login'
   const isAdminRoute = normalizedPath === '/admin' || normalizedPath.startsWith('/admin/')
 

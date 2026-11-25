@@ -60,6 +60,8 @@ const handleLogin = async () => {
   }
 }
 
+const isDev = import.meta.env.DEV
+
 // Dev login helper
 const handleDevLogin = async (role: 'admin' | 'superadmin') => {
   loading.value = true
@@ -72,8 +74,8 @@ const handleDevLogin = async (role: 'admin' | 'superadmin') => {
       error.value = 'Bypass role returned is not admin-level.'
       authStore.logout()
     }
-  } catch {
-    error.value = 'Dev login failed'
+  } catch (err: any) {
+    error.value = err?.response?.data?.message || 'Dev login failed'
   } finally {
     loading.value = false
   }
@@ -112,7 +114,7 @@ const handleDevLogin = async (role: 'admin' | 'superadmin') => {
                 required
                 autocomplete="email"
                 class="w-full bg-neutral-950 border border-neutral-800 focus:border-orange-500 rounded-lg px-4 py-2.5 text-white focus:outline-none transition-colors"
-                placeholder="admin@jarabag.com"
+                placeholder="admin@jarabagapp.com"
               />
             </div>
           </div>
@@ -145,8 +147,8 @@ const handleDevLogin = async (role: 'admin' | 'superadmin') => {
           </div>
         </form>
 
-        <!-- Dev Bypass Tool -->
-        <div class="mt-8 border-t border-neutral-800 pt-6">
+        <!-- Dev Bypass Tool (Development only — never shown in production) -->
+        <div v-if="isDev" class="mt-8 border-t border-neutral-800 pt-6">
           <p class="text-xs font-bold uppercase tracking-wider text-neutral-400 text-center mb-4">
             🛠️ Developer Quick Bypass
           </p>

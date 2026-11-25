@@ -42,9 +42,23 @@ export interface Vendor {
 
 /* ─── JaraBag (Surplus Listing) ─── */
 
-export type BagCategory = 'rice-dishes' | 'soups-stews' | 'grills' | 'pastries' | 'mixed' | 'beverages'
+export type BagCategory =
+  | 'rice-dishes'
+  | 'soups-stews'
+  | 'swallow'
+  | 'grills'
+  | 'snacks'
+  | 'noodles-pasta'
+  | 'pastries'
+  | 'desserts'
+  | 'salads-wraps'
+  | 'continental'
+  | 'drinks'
+  | 'other'
+  | 'mixed'
+  | 'beverages'
 
-export type BagStatus = 'available' | 'reserved' | 'picked-up' | 'expired'
+export type BagStatus = 'available' | 'reserved' | 'picked-up' | 'expired' | 'scheduled'
 
 export interface JaraBag {
   id: string
@@ -88,12 +102,19 @@ export interface Order {
 
 /* ─── Wallet ─── */
 
-export type TransactionType = 'top-up' | 'payment' | 'refund' | 'commission' | 'withdrawal'
+export type TransactionType =
+  | 'top-up'
+  | 'payment'
+  | 'refund'
+  | 'commission'
+  | 'withdrawal'
+  | 'bonus'
 
 export interface WalletTransaction {
   id: string
   userId: string
   type: TransactionType
+  status?: 'pending' | 'success' | 'failed'
   amount: number
   currency: string
   description: string
@@ -214,5 +235,9 @@ export interface PlatformSettings {
   vipCashbackRate?: number
   maxStandardOrderCashback?: number
   maxVipOrderCashback?: number
+  boostBagDailyFee?: number
+  boostWideDailyFee?: number
+  boostCityDailyFee?: number
+  jaraPassMonthlyFee?: number
 }
 

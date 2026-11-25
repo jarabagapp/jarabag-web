@@ -11,6 +11,10 @@ const form = reactive({
   vipCashbackRate: 5.0,
   maxStandardOrderCashback: 250,
   maxVipOrderCashback: 1000,
+  boostBagDailyFee: 200,
+  boostWideDailyFee: 400,
+  boostCityDailyFee: 800,
+  jaraPassMonthlyFee: 1500,
 })
 
 const maxListingDuration = ref(24)
@@ -37,62 +41,69 @@ const saving = ref(false)
 
 const error = computed(() => {
   if (localError.value) return localError.value
-  if (fetchError.value) return (fetchError.value as any).message || 'Failed to fetch settings'
+  if (fetchError.value) return (fetchError.value as any)?.response?.data?.message || (fetchError.value as any).message || 'Failed to fetch settings'
   return ''
 })
 
-// Watch settings value to populate local state
-watch(settings, (val) => {
-  if (val) {
-    maxListingDuration.value = val.maxListingDurationHours || val.maxListingDuration || 24
-    description.value = val.description || ''
-    inconvenienceAmount.value = val.inconvenienceAmount !== undefined ? val.inconvenienceAmount : 50
-    commissionPercentage.value = val.commissionPercentage !== undefined ? val.commissionPercentage : 5
-    maxCommissionAmount.value = val.maxCommissionAmount !== undefined ? val.maxCommissionAmount : 0
-    noShowFirstConsumerRefundPercentage.value = val.noShowFirstConsumerRefundPercentage !== undefined ? val.noShowFirstConsumerRefundPercentage : 50
-    noShowFirstVendorSharePercentage.value = val.noShowFirstVendorSharePercentage !== undefined ? val.noShowFirstVendorSharePercentage : 40
-    noShowFirstPlatformSharePercentage.value = val.noShowFirstPlatformSharePercentage !== undefined ? val.noShowFirstPlatformSharePercentage : 10
-    noShowRepeatConsumerRefundPercentage.value = val.noShowRepeatConsumerRefundPercentage !== undefined ? val.noShowRepeatConsumerRefundPercentage : 5
-    noShowRepeatVendorSharePercentage.value = val.noShowRepeatVendorSharePercentage !== undefined ? val.noShowRepeatVendorSharePercentage : 70
-    noShowRepeatPlatformSharePercentage.value = val.noShowRepeatPlatformSharePercentage !== undefined ? val.noShowRepeatPlatformSharePercentage : 25
-    lateCancelConsumerRefundPercentage.value = val.lateCancelConsumerRefundPercentage !== undefined ? val.lateCancelConsumerRefundPercentage : 50
-    lateCancelVendorSharePercentage.value = val.lateCancelVendorSharePercentage !== undefined ? val.lateCancelVendorSharePercentage : 40
-    lateCancelPlatformSharePercentage.value = val.lateCancelPlatformSharePercentage !== undefined ? val.lateCancelPlatformSharePercentage : 10
-    minVendorListingBalance.value = val.minVendorListingBalance !== undefined ? val.minVendorListingBalance : 0
+watch(
+  settings,
+  (val) => {
+    if (val) {
+      maxListingDuration.value = val.maxListingDurationHours || val.maxListingDuration || 24
+      description.value = val.description || ''
+      inconvenienceAmount.value = val.inconvenienceAmount !== undefined ? val.inconvenienceAmount : 50
+      commissionPercentage.value = val.commissionPercentage !== undefined ? val.commissionPercentage : 5
+      maxCommissionAmount.value = val.maxCommissionAmount !== undefined ? val.maxCommissionAmount : 0
+      noShowFirstConsumerRefundPercentage.value = val.noShowFirstConsumerRefundPercentage !== undefined ? val.noShowFirstConsumerRefundPercentage : 50
+      noShowFirstVendorSharePercentage.value = val.noShowFirstVendorSharePercentage !== undefined ? val.noShowFirstVendorSharePercentage : 40
+      noShowFirstPlatformSharePercentage.value = val.noShowFirstPlatformSharePercentage !== undefined ? val.noShowFirstPlatformSharePercentage : 10
+      noShowRepeatConsumerRefundPercentage.value = val.noShowRepeatConsumerRefundPercentage !== undefined ? val.noShowRepeatConsumerRefundPercentage : 5
+      noShowRepeatVendorSharePercentage.value = val.noShowRepeatVendorSharePercentage !== undefined ? val.noShowRepeatVendorSharePercentage : 70
+      noShowRepeatPlatformSharePercentage.value = val.noShowRepeatPlatformSharePercentage !== undefined ? val.noShowRepeatPlatformSharePercentage : 25
+      lateCancelConsumerRefundPercentage.value = val.lateCancelConsumerRefundPercentage !== undefined ? val.lateCancelConsumerRefundPercentage : 50
+      lateCancelVendorSharePercentage.value = val.lateCancelVendorSharePercentage !== undefined ? val.lateCancelVendorSharePercentage : 40
+      lateCancelPlatformSharePercentage.value = val.lateCancelPlatformSharePercentage !== undefined ? val.lateCancelPlatformSharePercentage : 10
+      minVendorListingBalance.value = val.minVendorListingBalance !== undefined ? val.minVendorListingBalance : 0
 
-    form.standardCashbackRate = val.standardCashbackRate ?? 2.5
-    form.vipCashbackRate = val.vipCashbackRate ?? 5.0
-    form.maxStandardOrderCashback = val.maxStandardOrderCashback ?? 250
-    form.maxVipOrderCashback = val.maxVipOrderCashback ?? 1000
-  }
-}, { immediate: true })
+      form.standardCashbackRate = val.standardCashbackRate ?? 2.5
+      form.vipCashbackRate = val.vipCashbackRate ?? 5.0
+      form.maxStandardOrderCashback = val.maxStandardOrderCashback ?? 250
+      form.maxVipOrderCashback = val.maxVipOrderCashback ?? 1000
+      form.boostBagDailyFee = val.boostBagDailyFee ?? 200
+      form.boostWideDailyFee = val.boostWideDailyFee ?? 400
+      form.boostCityDailyFee = val.boostCityDailyFee ?? 800
+      form.jaraPassMonthlyFee = val.jaraPassMonthlyFee ?? 1500
+    }
+  },
+  { immediate: true },
+)
 
 const handleSaveSettings = async () => {
   localError.value = ''
   success.value = ''
 
-  // Validate Late Cancellation Splits
-  const lateCancelSum = Number(lateCancelConsumerRefundPercentage.value) + 
-                       Number(lateCancelVendorSharePercentage.value) + 
-                       Number(lateCancelPlatformSharePercentage.value)
+  const lateCancelSum =
+    Number(lateCancelConsumerRefundPercentage.value) +
+    Number(lateCancelVendorSharePercentage.value) +
+    Number(lateCancelPlatformSharePercentage.value)
   if (lateCancelSum !== 100) {
     localError.value = `Late Cancellation Split percentages must sum to exactly 100% (currently ${lateCancelSum}%).`
     return
   }
 
-  // Validate First No-Show Splits
-  const noShowFirstSum = Number(noShowFirstConsumerRefundPercentage.value) + 
-                        Number(noShowFirstVendorSharePercentage.value) + 
-                        Number(noShowFirstPlatformSharePercentage.value)
+  const noShowFirstSum =
+    Number(noShowFirstConsumerRefundPercentage.value) +
+    Number(noShowFirstVendorSharePercentage.value) +
+    Number(noShowFirstPlatformSharePercentage.value)
   if (noShowFirstSum !== 100) {
     localError.value = `First No-Show Split percentages must sum to exactly 100% (currently ${noShowFirstSum}%).`
     return
   }
 
-  // Validate Repeat No-Show Splits
-  const noShowRepeatSum = Number(noShowRepeatConsumerRefundPercentage.value) + 
-                         Number(noShowRepeatVendorSharePercentage.value) + 
-                         Number(noShowRepeatPlatformSharePercentage.value)
+  const noShowRepeatSum =
+    Number(noShowRepeatConsumerRefundPercentage.value) +
+    Number(noShowRepeatVendorSharePercentage.value) +
+    Number(noShowRepeatPlatformSharePercentage.value)
   if (noShowRepeatSum !== 100) {
     localError.value = `Repeat No-Show Split percentages must sum to exactly 100% (currently ${noShowRepeatSum}%).`
     return
@@ -101,7 +112,7 @@ const handleSaveSettings = async () => {
   saving.value = true
   try {
     await updateSettingsMutation.mutateAsync({
-      maxListingDurationHours: maxListingDuration.value,
+      maxListingDurationHours: Number(maxListingDuration.value),
       description: description.value,
       inconvenienceAmount: Number(inconvenienceAmount.value),
       commissionPercentage: Number(commissionPercentage.value),
@@ -121,11 +132,15 @@ const handleSaveSettings = async () => {
       vipCashbackRate: Number(form.vipCashbackRate),
       maxStandardOrderCashback: Number(form.maxStandardOrderCashback),
       maxVipOrderCashback: Number(form.maxVipOrderCashback),
+      boostBagDailyFee: Number(form.boostBagDailyFee),
+      boostWideDailyFee: Number(form.boostWideDailyFee),
+      boostCityDailyFee: Number(form.boostCityDailyFee),
+      jaraPassMonthlyFee: Number(form.jaraPassMonthlyFee),
     })
     success.value = 'Platform settings updated successfully!'
     notifyUsers.value = false
   } catch (err: any) {
-    localError.value = err.message || 'Failed to update settings'
+    localError.value = err?.response?.data?.message || err.message || 'Failed to update settings'
   } finally {
     saving.value = false
   }
@@ -139,7 +154,7 @@ const handleSaveSettings = async () => {
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-subtle pb-6">
         <div>
           <h2 class="text-3xl font-black text-text-main tracking-tight font-display">Platform Settings</h2>
-          <p class="text-text-sub text-sm mt-1">Manage platform economics, transaction fees, no-show forfeits, and guidelines.</p>
+          <p class="text-text-sub text-sm mt-1">Manage platform economics, transaction fees, boost promotions, loyalty cashback, and forfeit rules.</p>
         </div>
         <div class="flex items-center gap-2">
           <span class="bg-orange-500/10 text-orange-500 border border-orange-500/20 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -155,7 +170,6 @@ const handleSaveSettings = async () => {
 
       <!-- Form Content -->
       <div v-else class="space-y-6">
-        <!-- Error / Success feedback banner -->
         <div v-if="error" class="bg-red-500/10 border border-red-500/20 text-red-500 px-6 py-4 rounded-xl text-sm flex items-center gap-3">
           <span>⚠️</span>
           <span class="font-medium">{{ error }}</span>
@@ -168,7 +182,6 @@ const handleSaveSettings = async () => {
         <form @submit.prevent="handleSaveSettings" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <!-- LEFT SIDE: General & Fees (7 Cols) -->
           <div class="lg:col-span-7 space-y-8">
-            
             <!-- Card 1: Platform Revenue & Fees -->
             <div class="bg-surface-raised border border-border-subtle rounded-2xl p-6 shadow-xl space-y-6">
               <div>
@@ -179,7 +192,6 @@ const handleSaveSettings = async () => {
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-                <!-- Commission Percentage -->
                 <div class="space-y-2">
                   <label for="commissionPercentage" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
                     Platform Commission (%)
@@ -198,11 +210,10 @@ const handleSaveSettings = async () => {
                     <span class="absolute right-4 text-sm font-bold text-text-muted">%</span>
                   </div>
                   <p class="text-[10px] text-text-muted leading-relaxed">
-                    The percentage fee deducted from the total order value when settling order payments to vendors.
+                    Deducted from total order value when settling order payments to vendors.
                   </p>
                 </div>
 
-                <!-- Max Commission Amount -->
                 <div class="space-y-2">
                   <label for="maxCommissionAmount" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
                     Max Commission Cap (₦)
@@ -219,11 +230,10 @@ const handleSaveSettings = async () => {
                     <span class="absolute right-4 text-sm font-bold text-text-muted">₦</span>
                   </div>
                   <p class="text-[10px] text-text-muted leading-relaxed">
-                    Deduction limit per order. Set to <strong>0</strong> to enforce standard uncapped percentage.
+                    Deduction limit per order. Set to <strong>0</strong> for uncapped percentage.
                   </p>
                 </div>
 
-                <!-- Inconvenience amount (Jara Coins Goodwill Bonus) -->
                 <div class="md:col-span-2 space-y-2">
                   <label for="inconvenienceAmount" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
                     Vendor-Fault Consumer Goodwill Bonus (Jara Coins)
@@ -240,38 +250,69 @@ const handleSaveSettings = async () => {
                     <span class="absolute right-4 text-xs font-bold text-text-muted">Coins</span>
                   </div>
                   <p class="text-[10px] text-text-muted leading-relaxed">
-                    Non-withdrawable Jara Coins credited to the consumer as a goodwill discount bonus when a vendor cancels or fails to prepare an order (vendors receive a fulfillment strike rather than a cash deduction).
+                    Non-withdrawable Jara Coins credited to the consumer when a vendor cancels or fails to prepare an order.
                   </p>
                 </div>
               </div>
             </div>
 
-            <!-- Cashback & Loyalty Settings -->
-            <div class="bg-surface rounded-2xl border border-border/50 p-6 space-y-4">
-              <h3 class="text-lg font-bold text-text-main flex items-center gap-2">
-                <span>💰</span> Cashback & Loyalty Rewards
-              </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-semibold text-text-sub mb-1">Standard Cashback Rate (%)</label>
-                  <input v-model.number="form.standardCashbackRate" type="number" step="0.1" min="0" max="50" class="w-full input-field" />
+            <!-- Card 2: Cashback & Loyalty Settings -->
+            <div class="bg-surface-raised border border-border-subtle rounded-2xl p-6 shadow-xl space-y-6">
+              <div>
+                <h3 class="text-lg font-black text-text-main font-display flex items-center gap-2">
+                  <span>🎁</span> Cashback &amp; Loyalty Rewards
+                </h3>
+                <p class="text-xs text-text-muted mt-1">Configure Jara Coins cashback earned on verified pickups for standard and Jara Pass VIP members.</p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Standard Cashback Rate (%)</label>
+                  <input v-model.number="form.standardCashbackRate" type="number" step="0.1" min="0" max="50" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
                 </div>
-                <div>
-                  <label class="block text-sm font-semibold text-text-sub mb-1">VIP Cashback Rate (%)</label>
-                  <input v-model.number="form.vipCashbackRate" type="number" step="0.1" min="0" max="50" class="w-full input-field" />
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">VIP Cashback Rate (%)</label>
+                  <input v-model.number="form.vipCashbackRate" type="number" step="0.1" min="0" max="50" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
                 </div>
-                <div>
-                  <label class="block text-sm font-semibold text-text-sub mb-1">Max Standard Cashback (Coins)</label>
-                  <input v-model.number="form.maxStandardOrderCashback" type="number" min="0" class="w-full input-field" />
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Max Standard Cashback (Coins)</label>
+                  <input v-model.number="form.maxStandardOrderCashback" type="number" min="0" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
                 </div>
-                <div>
-                  <label class="block text-sm font-semibold text-text-sub mb-1">Max VIP Cashback (Coins)</label>
-                  <input v-model.number="form.maxVipOrderCashback" type="number" min="0" class="w-full input-field" />
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Max VIP Cashback (Coins)</label>
+                  <input v-model.number="form.maxVipOrderCashback" type="number" min="0" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
                 </div>
               </div>
             </div>
 
-            <!-- Card 2: General Listing Policy -->
+            <!-- Card 3: Boost Promotions & Jara Pass VIP Pricing -->
+            <div class="bg-surface-raised border border-border-subtle rounded-2xl p-6 shadow-xl space-y-6">
+              <div>
+                <h3 class="text-lg font-black text-text-main font-display flex items-center gap-2">
+                  <span>🚀</span> Boost Promotions &amp; Jara Pass VIP Pricing
+                </h3>
+                <p class="text-xs text-text-muted mt-1">Configure vendor geo-boost daily fees and consumer VIP monthly membership pricing.</p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Standard 5km Boost (₦ / day)</label>
+                  <input v-model.number="form.boostBagDailyFee" type="number" min="0" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
+                </div>
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Wide 15km Boost (₦ / day)</label>
+                  <input v-model.number="form.boostWideDailyFee" type="number" min="0" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
+                </div>
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">City Spotlight Boost (₦ / day)</label>
+                  <input v-model.number="form.boostCityDailyFee" type="number" min="0" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
+                </div>
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-text-sub">Jara Pass VIP Monthly Fee (₦)</label>
+                  <input v-model.number="form.jaraPassMonthlyFee" type="number" min="0" class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 4: General Listing Policy -->
             <div class="bg-surface-raised border border-border-subtle rounded-2xl p-6 shadow-xl space-y-6">
               <div>
                 <h3 class="text-lg font-black text-text-main font-display flex items-center gap-2">
@@ -281,50 +322,49 @@ const handleSaveSettings = async () => {
               </div>
 
               <div class="space-y-5 pt-2">
-                <!-- Max listing duration hours -->
-                <div class="space-y-2">
-                  <label for="maxListingDuration" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
-                    Max Listing Visibility Window (Hours)
-                  </label>
-                  <div class="relative flex items-center">
-                    <input
-                      id="maxListingDuration"
-                      v-model="maxListingDuration"
-                      type="number"
-                      min="1"
-                      max="168"
-                      required
-                      class="w-full max-w-xs bg-surface-base border border-border-strong rounded-xl pl-4 pr-16 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold"
-                    />
-                    <span class="absolute left-64 text-sm font-bold text-text-muted">Hours</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div class="space-y-2">
+                    <label for="maxListingDuration" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
+                      Max Listing Visibility Window (Hours)
+                    </label>
+                    <div class="relative flex items-center">
+                      <input
+                        id="maxListingDuration"
+                        v-model="maxListingDuration"
+                        type="number"
+                        min="1"
+                        max="168"
+                        required
+                        class="w-full bg-surface-base border border-border-strong rounded-xl pl-4 pr-16 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold"
+                      />
+                      <span class="absolute right-4 text-sm font-bold text-text-muted">Hours</span>
+                    </div>
+                    <p class="text-[10px] text-text-muted leading-relaxed">
+                      Maximum hours (1–168h) a bag listing stays active before automatic expiry.
+                    </p>
                   </div>
-                  <p class="text-[10px] text-text-muted leading-relaxed">
-                    Maximum hours a bag listing stays visible to consumers before getting automatically expired by our scheduler.
-                  </p>
+
+                  <div class="space-y-2">
+                    <label for="minVendorListingBalance" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
+                      Minimum Vendor Wallet Balance (₦)
+                    </label>
+                    <div class="relative flex items-center">
+                      <input
+                        id="minVendorListingBalance"
+                        v-model="minVendorListingBalance"
+                        type="number"
+                        min="0"
+                        required
+                        class="w-full bg-surface-base border border-border-strong rounded-xl pl-4 pr-12 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold"
+                      />
+                      <span class="absolute right-4 text-sm font-bold text-text-muted">₦</span>
+                    </div>
+                    <p class="text-[10px] text-text-muted leading-relaxed">
+                      Minimum balance required to publish or relist bags (0 = no balance lock).
+                    </p>
+                  </div>
                 </div>
 
-                <!-- Min Vendor Listing Balance -->
-                <div class="space-y-2">
-                  <label for="minVendorListingBalance" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
-                    Minimum Vendor Wallet Balance (₦)
-                  </label>
-                  <div class="relative flex items-center">
-                    <input
-                      id="minVendorListingBalance"
-                      v-model="minVendorListingBalance"
-                      type="number"
-                      min="0"
-                      required
-                      class="w-full max-w-xs bg-surface-base border border-border-strong rounded-xl pl-4 pr-16 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm font-semibold"
-                    />
-                    <span class="absolute left-64 text-sm font-bold text-text-muted">₦</span>
-                  </div>
-                  <p class="text-[10px] text-text-muted leading-relaxed">
-                    The minimum wallet balance a food vendor must maintain to list new bags or relist expired bags.
-                  </p>
-                </div>
-
-                <!-- Description guidelines text -->
                 <div class="space-y-2">
                   <label for="description" class="block text-xs font-bold uppercase tracking-wider text-text-sub">
                     Default Vendor Creation Guidelines Description
@@ -333,23 +373,16 @@ const handleSaveSettings = async () => {
                     id="description"
                     v-model="description"
                     rows="4"
-                    required
-                    placeholder="By listing surplus food, you guarantee that it has been prepared in clean premises..."
+                    placeholder="By listing food deals on Jarabag, you guarantee that meals are prepared in clean, hygienic premises..."
                     class="w-full bg-surface-base border border-border-strong rounded-xl px-4 py-3 text-text-main focus:outline-none focus:border-orange-500 text-sm leading-relaxed"
                   ></textarea>
-                  <p class="text-[10px] text-text-muted leading-relaxed">
-                    Instructions/terms visible to food vendors on their dashboard when listing new bags.
-                  </p>
                 </div>
               </div>
             </div>
-
           </div>
 
           <!-- RIGHT SIDE: Splits & Policies (5 Cols) -->
           <div class="lg:col-span-5 space-y-8">
-            
-            <!-- Card 3: Forfeit Split Policies -->
             <div class="bg-surface-raised border border-border-subtle rounded-2xl p-6 shadow-xl space-y-6">
               <div>
                 <h3 class="text-lg font-black text-text-main font-display flex items-center gap-2">
@@ -358,9 +391,8 @@ const handleSaveSettings = async () => {
                 <p class="text-xs text-text-muted mt-1">Specify how reservation deposits are divided. Sum must equal exactly 100%.</p>
               </div>
 
-              <!-- Policies List -->
               <div class="space-y-6 pt-2">
-                <!-- Policy 1: Late Cancellation -->
+                <!-- Late Cancellation -->
                 <div class="bg-surface-base/40 border border-border-strong rounded-xl p-4 space-y-3">
                   <div class="flex items-center justify-between">
                     <span class="text-xs font-bold uppercase tracking-wide text-text-sub">Late Cancel Split</span>
@@ -387,7 +419,7 @@ const handleSaveSettings = async () => {
                   </div>
                 </div>
 
-                <!-- Policy 2: First No-Show -->
+                <!-- First No-Show -->
                 <div class="bg-surface-base/40 border border-border-strong rounded-xl p-4 space-y-3">
                   <div class="flex items-center justify-between">
                     <span class="text-xs font-bold uppercase tracking-wide text-text-sub">First No-Show Split</span>
@@ -414,7 +446,7 @@ const handleSaveSettings = async () => {
                   </div>
                 </div>
 
-                <!-- Policy 3: Repeat No-Show -->
+                <!-- Repeat No-Show -->
                 <div class="bg-surface-base/40 border border-border-strong rounded-xl p-4 space-y-3">
                   <div class="flex items-center justify-between">
                     <span class="text-xs font-bold uppercase tracking-wide text-text-sub">Subsequent No-Show Split</span>
@@ -445,7 +477,6 @@ const handleSaveSettings = async () => {
 
             <!-- Submit Button Bar -->
             <div class="space-y-4 pt-4">
-              <!-- Notify Users Checkbox -->
               <div class="flex items-start gap-3 bg-surface-base/40 border border-border-strong rounded-xl p-4 transition-colors hover:border-orange-500/30">
                 <input
                   id="notifyUsers"
@@ -471,7 +502,6 @@ const handleSaveSettings = async () => {
                 {{ saving ? 'Saving configurations...' : '💾 Apply Global Settings' }}
               </button>
             </div>
-
           </div>
         </form>
       </div>
